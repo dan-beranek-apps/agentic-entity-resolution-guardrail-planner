@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" role="img" aria-labelledby="title desc">
+  <title id="title">Agentic Entity Resolution Guardrail Planner</title>
+  <desc id="desc">A six-node entity-resolution graph enclosed by four open corner marks representing a defined planning and commit boundary.</desc>
+  <rect width="512" height="512" rx="92" fill="#080b12"/>
+
+  <!-- Open boundary brackets: a defined scope, not a runtime shield. -->
+  <g fill="none" stroke="#154cff" stroke-width="10" stroke-linecap="square" stroke-linejoin="miter">
+    <path d="M142 82 H82 V142"/>
+    <path d="M370 82 H430 V142"/>
+    <path d="M430 370 V430 H370"/>
+    <path d="M142 430 H82 V370"/>
+  </g>
+
+  <!-- DIO/ODI-derived six-node graph: five perimeter nodes and one central node. -->
+  <g fill="none" stroke="#8eabff" stroke-width="7" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M256 145 L355 214 L317 333 L195 333 L157 214 Z"/>
+    <path d="M256 256 L256 145 M256 256 L355 214 M256 256 L317 333 M256 256 L195 333 M256 256 L157 214"/>
+  </g>
+
+  <g fill="#f7f8fb" stroke="#080b12" stroke-width="7">
+    <circle cx="256" cy="145" r="17"/>
+    <circle cx="355" cy="214" r="17"/>
+    <circle cx="317" cy="333" r="17"/>
+    <circle cx="195" cy="333" r="17"/>
+    <circle cx="157" cy="214" r="17"/>
+  </g>
+  <circle cx="256" cy="256" r="23" fill="#154cff" stroke="#f7f8fb" stroke-width="6"/>
+</svg>

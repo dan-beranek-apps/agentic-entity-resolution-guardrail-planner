@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="420" viewBox="0 0 1200 420" role="img" aria-labelledby="title desc">
+<title id="title">Guardrail planning workflow</title>
+<desc id="desc">Four design-time stages: agent proposal, evidence and scope assessment, commit-boundary design, and engineering handoff. The workflow produces a plan; it does not execute a customer mutation.</desc>
+<defs>
+  <linearGradient id="bg" x1="0" x2="1" y1="0" y2="1"><stop offset="0" stop-color="#0b1220"/><stop offset="1" stop-color="#111c31"/></linearGradient>
+  <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#8ea8ff"/></marker>
+  <style>.head{font:700 22px system-ui,sans-serif;fill:#f7f8fb}.body{font:16px system-ui,sans-serif;fill:#c6d1e5}.small{font:14px system-ui,sans-serif;fill:#9eafd0}.num{font:700 14px system-ui,sans-serif;fill:#9eb5ff;letter-spacing:1.5px}</style>
+</defs>
+<rect width="1200" height="420" rx="28" fill="url(#bg)"/>
+<g stroke="#8ea8ff" stroke-width="3" fill="none" marker-end="url(#arrow)"><path d="M276 190 H314"/><path d="M566 190 H604"/><path d="M856 190 H894"/></g>
+<g>
+<rect x="36" y="78" width="240" height="224" rx="18" fill="#17243b" stroke="#4969b8" stroke-width="2"/><text x="60" y="116" class="num">01 / INPUT</text><text x="60" y="157" class="head">Agent proposal</text><text x="60" y="194" class="body"><tspan x="60">MERGE · SPLIT · UNMERGE</tspan><tspan x="60" dy="26">Application context</tspan><tspan x="60" dy="26">Identity proposition</tspan></text>
+<rect x="326" y="78" width="240" height="224" rx="18" fill="#17243b" stroke="#4969b8" stroke-width="2"/><text x="350" y="116" class="num">02 / ASSESS</text><text x="350" y="157" class="head">Evidence &amp; scope</text><text x="350" y="194" class="body"><tspan x="350">Provenance and validity</tspan><tspan x="350" dy="26">Conflicts and policy gaps</tspan><tspan x="350" dy="26">Unknowns remain visible</tspan></text>
+<rect x="616" y="78" width="240" height="224" rx="18" fill="#17243b" stroke="#4969b8" stroke-width="2"/><text x="640" y="116" class="num">03 / DESIGN</text><text x="640" y="157" class="head">Commit boundary</text><text x="640" y="194" class="body"><tspan x="640">Pre-write controls</tspan><tspan x="640" dy="26">Approval and version binding</tspan><tspan x="640" dy="26">HOLD / defer conditions</tspan></text>
+<rect x="906" y="78" width="258" height="224" rx="18" fill="#17243b" stroke="#4969b8" stroke-width="2"/><text x="930" y="116" class="num">04 / HANDOFF</text><text x="930" y="157" class="head">Engineering plan</text><text x="930" y="194" class="body"><tspan x="930">Markdown deliverables</tspan><tspan x="930" dy="26">Machine-readable JSON</tspan><tspan x="930" dy="26">Tests, gaps and provenance</tspan></text>
+</g>
+<rect x="36" y="336" width="1128" height="48" rx="12" fill="#101a2b" stroke="#34476a"/><text x="600" y="366" text-anchor="middle" class="small">DESIGN-TIME PLANNING ONLY · No customer write, live authorization, deployment or runtime enforcement</text>
+</svg>
