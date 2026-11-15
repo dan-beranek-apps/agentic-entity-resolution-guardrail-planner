@@ -55,7 +55,7 @@ Reference-backed mode can use the public, read-only DIO/ODI Reference MCP:
 - The buyer connects the endpoint separately in a compatible agent/client.
 - The MCP provides reference material; it does not receive customer records, inspect customer application state or authorize customer writes.
 
-The product's design approach is informed by the conceptual paper [Constraining the Commit Boundary: A DIO/ODI-Informed Authorization Guardrail for Agentic Entity Resolution](https://arxiv.org/abs/2610.37407). The paper is a conceptual architecture, not an implemented or empirically validated runtime supervisor. Buyers do not need prior knowledge of DIO/ODI.
+The product's design approach is informed by the conceptual paper [Constraining the Commit Boundary: A DIO/ODI-Informed Authorization Guardrail for Agentic Entity Resolution](https://arxiv.org/abs/2610.37407). The paper is a conceptual architecture. Buyers do not need prior knowledge of DIO/ODI.
 
 ## Product and repository naming
 
