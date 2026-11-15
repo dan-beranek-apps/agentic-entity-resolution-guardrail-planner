@@ -2,6 +2,8 @@
 
 This directory contains the **nine canonical planning deliverables** produced by Agentic Entity Resolution Guardrail Planner, Skill **v0.4.0**, in a reference-backed run dated 15 November 2026.
 
+**Release provenance:** Skill v0.4.1 aligns the Skill identifier, package directory and schema namespaces with the canonical product identity. This is a naming and packaging update only; the planning logic is unchanged. The sample below remains correctly attributed to its original v0.4.0 run, and its provenance has not been rewritten.
+
 The scenario is synthetic: an AI agent proposes merging two CRM customer-account records. The plan does not determine whether the records represent the same legal entity and does not execute or authorize a merge.
 
 ## Deliverables
