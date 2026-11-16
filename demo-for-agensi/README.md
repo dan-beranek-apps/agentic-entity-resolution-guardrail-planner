@@ -6,6 +6,8 @@ This directory contains the **nine canonical planning deliverables** produced by
 
 The scenario is synthetic: an AI agent proposes merging two CRM customer-account records. The plan does not determine whether the records represent the same legal entity and does not execute or authorize a merge.
 
+The planner is published separately as a design-time Agent Skill on Agensi: [Agentic Entity Resolution Guardrail Planner](https://www.agensi.io/r/DANIELBERANEK?to=/skills/agentic-entity-resolution-guardrail-planner).
+
 ## Deliverables
 
 | File | Purpose |
