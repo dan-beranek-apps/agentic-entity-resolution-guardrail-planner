@@ -12,6 +12,12 @@ It is designed for workflows where an agent proposes a persistent change to enti
 
 > **This is a design-time planning tool.** It does not execute a mutation, authorize a live operation, write to a customer system, deploy a runtime guard or guarantee safe production behaviour. The customer's application must implement and test the resulting controls.
 
+## Get the product
+
+The Agentic Entity Resolution Guardrail Planner is published on Agensi as a design-time Agent Skill.
+
+[Open Agentic Entity Resolution Guardrail Planner on Agensi](https://www.agensi.io/r/DANIELBERANEK?to=/skills/agentic-entity-resolution-guardrail-planner)
+
 ## What it does
 
 1. **Qualifies the operation** — identifies the identity-changing workflow and its scope.
