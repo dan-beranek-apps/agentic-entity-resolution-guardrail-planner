@@ -14,6 +14,7 @@ The public product website is built as a static site and published through GitHu
 - Methodology and DIO/ODI research background: https://dan-beranek.github.io/agentic-entity-resolution-guardrail-planner/methodology/
 - Extended machine-readable context: https://dan-beranek.github.io/agentic-entity-resolution-guardrail-planner/llms-full.txt
 - Synthetic CRM demonstration: https://dan-beranek.github.io/agentic-entity-resolution-guardrail-planner/demo/
+- Social preview image: `assets/branding/social-preview.png` (1200 × 630 PNG), referenced by Open Graph and Twitter metadata on all three public pages.
 
 The website is written in English. It deliberately does not display a fixed product price; current commercial terms remain on the distribution platform. The main navigation links to the standalone DIO/ODI methodology page; research publications are displayed as bibliographic references rather than feature cards.
 
@@ -29,7 +30,7 @@ https://www.agensi.io/r/DANIELBERANEK?to=/skills/agentic-entity-resolution-guard
 
 Requirements: Node.js 22 or later. No external packages are required. Run node scripts/build-site.mjs from the repository root.
 
-The generated static site is written to dist/. The build validates the distribution-platform configuration, CTA insertion points, affiliate route, absence of fixed prices and required output files.
+The generated static site is written to dist/. The build validates the distribution-platform configuration, CTA insertion points, affiliate route, absence of fixed prices, the 1200 × 630 social preview and page metadata. The ordered `meta keywords` projection is sourced from `metadata/keywords.json` in the DIO/ODI Reference Model repository (registry v2.6.0, `commit-boundary-paper` profile); it is used as semantic coverage metadata, not as a ranking-oriented SEO tag. Its local manifest is `assets/data/dio-odi-keyword-projection.json`.
 
 ## Product scope
 

@@ -1,0 +1,99 @@
+{
+  "projection_version": "1.0.0",
+  "source": {
+    "repository": "dan-beranek/dio-odi-reference-model",
+    "file": "metadata/keywords.json",
+    "url": "https://github.com/dan-beranek/dio-odi-reference-model/blob/main/metadata/keywords.json",
+    "registry_version": "2.6.0",
+    "registry_status": "canonical-approved"
+  },
+  "profile": {
+    "id": "commit-boundary-paper",
+    "purpose": "Ordered DIO/ODI semantic keyword projection for the Agentic Entity Resolution Guardrail Planner website.",
+    "chunk_order": [
+      "C0_identity_invariant",
+      "C1_reconstruction_environments",
+      "C2_work_positioning",
+      "C3_reconstruction_mechanics",
+      "C4_k6",
+      "C5_failures_robustness",
+      "C6_machine_readable_representation"
+    ],
+    "chunks": {
+      "C0_identity_invariant": "all",
+      "C1_reconstruction_environments": "all",
+      "C2_work_positioning": [
+        "Agentic Entity Resolution",
+        "commit-boundary authorization",
+        "identity-changing mutations",
+        "claim-specific evidence promotion",
+        "authorization-eligible evidence"
+      ],
+      "C3_reconstruction_mechanics": [
+        "observation domain",
+        "identity-preserving constraints",
+        "referential continuity",
+        "semantic coherence"
+      ],
+      "C4_k6": "none",
+      "C5_failures_robustness": [
+        "entity resolution",
+        "Reconstruction Failure Modes",
+        "Referential Reconstruction Failures",
+        "Entity Substitution",
+        "Merge Failure",
+        "Split Failure",
+        "Entity Omission",
+        "Semantic Coherence Failures",
+        "Semantic Fragmentation",
+        "Temporal Reconstruction Failures",
+        "Temporal Discontinuity",
+        "Temporal Misalignment",
+        "Contextual Adequacy Failures",
+        "Contextual Displacement"
+      ],
+      "C6_machine_readable_representation": [
+        "provenance"
+      ]
+    }
+  },
+  "projection_rule": "Use the complete resolved_keywords sequence unchanged. Preserve registry order; do not create a manually curated SEO subset.",
+  "use": "The HTML meta name=keywords field is retained as a machine-readable semantic coverage surface, not as a ranking-oriented SEO mechanism.",
+  "keyword_count": 34,
+  "resolved_keywords": [
+    "Digital Identity Optimization",
+    "DIO",
+    "Ontology of Digital Identity",
+    "ODI",
+    "digital identity",
+    "identity reconstruction",
+    "artificial intelligence",
+    "search engines",
+    "knowledge graphs",
+    "human observers",
+    "Agentic Entity Resolution",
+    "commit-boundary authorization",
+    "identity-changing mutations",
+    "claim-specific evidence promotion",
+    "authorization-eligible evidence",
+    "observation domain",
+    "identity-preserving constraints",
+    "referential continuity",
+    "semantic coherence",
+    "entity resolution",
+    "Reconstruction Failure Modes",
+    "Referential Reconstruction Failures",
+    "Entity Substitution",
+    "Merge Failure",
+    "Split Failure",
+    "Entity Omission",
+    "Semantic Coherence Failures",
+    "Semantic Fragmentation",
+    "Temporal Reconstruction Failures",
+    "Temporal Discontinuity",
+    "Temporal Misalignment",
+    "Contextual Adequacy Failures",
+    "Contextual Displacement",
+    "provenance"
+  ]
+}

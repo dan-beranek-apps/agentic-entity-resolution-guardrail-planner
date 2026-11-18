@@ -5,6 +5,9 @@ import { fileURLToPath } from "node:url";
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const dist = path.join(root, "dist");
 const configPath = path.join(root, "assets/data/distribution-platforms.json");
+const keywordProjectionPath = path.join(root, "assets/data/dio-odi-keyword-projection.json");
+const socialPreviewRelativePath = "assets/branding/social-preview.png";
+const socialPreviewUrl = "https://dan-beranek.github.io/agentic-entity-resolution-guardrail-planner/" + socialPreviewRelativePath;
 
 function escapeHtml(value) {
   return String(value)
@@ -24,6 +27,11 @@ async function exists(filePath) {
 }
 
 const config = JSON.parse(await fs.readFile(configPath, "utf8"));
+const keywordProjection = JSON.parse(await fs.readFile(keywordProjectionPath, "utf8"));
+if (keywordProjection.source?.registry_version !== "2.6.0" || keywordProjection.source?.registry_status !== "canonical-approved" || keywordProjection.profile?.id !== "commit-boundary-paper" || !Array.isArray(keywordProjection.resolved_keywords) || keywordProjection.resolved_keywords.length !== 34) {
+  throw new Error("DIO/ODI keyword projection must use the approved 2.6.0 commit-boundary-paper profile with all 34 resolved terms.");
+}
+const expectedKeywordContent = keywordProjection.resolved_keywords.join(", ");
 if (!Array.isArray(config.platforms) || config.platforms.length === 0) {
   throw new Error("Add at least one platform to assets/data/distribution-platforms.json.");
 }
@@ -121,7 +129,9 @@ const requiredOutputs = [
   "assets/site.css",
   "assets/site.js",
   "assets/data/distribution-platforms.json",
+  "assets/data/dio-odi-keyword-projection.json",
   "assets/branding/agentic-entity-resolution-guardrail-planner-logo.svg",
+  "assets/branding/social-preview.png",
   "assets/diagrams/investigation-workflow.svg",
   "demo-for-agensi/00-README.md",
   "demo-for-agensi/guardrail-spec.json",
@@ -141,4 +151,26 @@ console.log("Static site built successfully.");
 console.log("Available platforms: " + platforms.map((platform) => platform.name).join(", "));
 console.log("Affiliate CTA placements: " + markerCount);
 console.log("Fixed prices on website: none");
+
+const socialImage = await fs.readFile(path.join(dist, socialPreviewRelativePath));
+const pngSignature = Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]);
+if (!socialImage.subarray(0, 8).equals(pngSignature) || socialImage.readUInt32BE(16) !== 1200 || socialImage.readUInt32BE(20) !== 630) {
+  throw new Error("Social preview must be a valid 1200x630 PNG.");
+}
+for (const page of ["index.html", "methodology/index.html", "demo/index.html"]) {
+  const pageHtml = await fs.readFile(path.join(dist, page), "utf8");
+  const keywordMatch = pageHtml.match(/<meta name="keywords" content="([^"]*)">/);
+  if (!keywordMatch || keywordMatch[1] !== expectedKeywordContent) throw new Error("DIO/ODI Keywords metadata does not match the complete ordered registry projection in " + page + ".");
+  for (const marker of [
+    '<meta name="dio-odi-keyword-profile" content="commit-boundary-paper">',
+    '<meta name="dio-odi-keyword-registry-version" content="2.6.0">',
+    '<meta property="og:image" content="' + socialPreviewUrl + '">',
+    '<meta name="twitter:image" content="' + socialPreviewUrl + '">',
+    '<meta name="twitter:card" content="summary_large_image">',
+    '<meta property="og:image:width" content="1200">',
+    '<meta property="og:image:height" content="630">'
+  ]) if (!pageHtml.includes(marker)) throw new Error("Missing required social/semantic metadata marker in " + page + ": " + marker);
+}
+console.log("Social preview: 1200x630 PNG, referenced by Open Graph and Twitter metadata on all pages.");
+console.log("DIO/ODI Keywords: " + keywordProjection.resolved_keywords.length + " ordered terms from " + keywordProjection.profile.id + " (registry " + keywordProjection.source.registry_version + ").");
 console.log("Output directory: " + dist);
