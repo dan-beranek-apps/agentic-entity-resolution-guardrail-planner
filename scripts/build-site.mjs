@@ -223,7 +223,6 @@ function resolveWorkIdSet(items, context) {
   for (const item of items ?? []) {
     const workId = matchRegistryWork(item.id, context);
     if (workId) ids.add(workId);
-    else if (/^(?:https?:\\/\\/)?(?:dx\\.)?doi\\.org\\/10\\.|^(?:https?:\\/\\/)?arxiv\\.org\\/abs\\//i.test(item.id)) {
     else if (["https://doi.org/10.","http://doi.org/10.","https://dx.doi.org/10.","https://arxiv.org/abs/","http://arxiv.org/abs/"].some((prefix) => item.id.toLowerCase().startsWith(prefix))) {
     }
   }
