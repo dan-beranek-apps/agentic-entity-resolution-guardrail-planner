@@ -48,8 +48,21 @@ try {
 }
 const keywordRegistrySha256 = createHash("sha256").update(registryText).digest("hex");
 const keywordRegistry = JSON.parse(registryText);
-if (keywordRegistry.status !== registrySource.status_required || keywordRegistry.registry_version !== registrySource.minimum_registry_version) {
-  throw new Error(`Expected canonical-approved keyword registry ${registrySource.minimum_registry_version}; received ${keywordRegistry.registry_version} (${keywordRegistry.status}).`);
+function parseVersion(value) {
+  const match = /^(\\d+)\\.(\\d+)\\.(\\d+)$/.exec(value ?? "");
+  if (!match) throw new Error("Invalid semantic version in keyword registry: " + value);
+  return match.slice(1).map(Number);
+}
+function compareVersions(left, right) {
+  for (let index = 0; index < 3; index++) {
+    if (left[index] !== right[index]) return left[index] - right[index];
+  }
+  return 0;
+}
+const registryVersion = parseVersion(keywordRegistry.registry_version);
+const minimumRegistryVersion = parseVersion(registrySource.minimum_registry_version);
+if (keywordRegistry.status !== registrySource.status_required || registryVersion[0] !== registrySource.compatible_major || compareVersions(registryVersion, minimumRegistryVersion) < 0) {
+  throw new Error("Expected canonical-approved keyword registry >=" + registrySource.minimum_registry_version + " within compatible major " + registrySource.compatible_major + "; received " + keywordRegistry.registry_version + " (" + keywordRegistry.status + ").");
 }
 if (!Array.isArray(artifactMetadata.artifacts) || artifactMetadata.artifacts.length !== 3) {
   throw new Error("Expected exactly three registered public artefacts.");
