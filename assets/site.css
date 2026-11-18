@@ -196,3 +196,17 @@ code{padding:.08rem .25rem;background:rgba(8,11,18,.06);font-size:.9em}
 @media(max-width:900px){.primary-nav,.header-cta{display:none}.mobile-menu{display:block}.hero-grid,.split-section,.section-heading,.reference-grid{grid-template-columns:1fr}.hero-grid{gap:3rem}.hero-copy{max-width:50rem}.hero-visual{max-width:48rem}.section-heading{gap:1.2rem;align-items:start}.investigation-groups{grid-template-columns:1fr}.workflow{grid-template-columns:repeat(2,minmax(0,1fr))}.audience-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.deliverables,.case-study{grid-template-columns:1fr}.case-facts{border-top:1px solid var(--line);border-left:0}.case-facts>div{min-height:7.5rem}}
 @media(max-width:620px){.shell{width:min(calc(100% - 2rem),var(--max))}.header-inner{min-height:4.4rem}.brand-copy{font-size:.7rem}.hero{padding:3.5rem 0 3.8rem}h1{font-size:clamp(2.8rem,13vw,4rem)}h2{font-size:clamp(2.4rem,11vw,3.5rem)}.hero-grid{gap:2.3rem}.hero-meta{display:grid;gap:.55rem}.hero-stat-row{gap:.35rem}.hero-stat-row>div{padding:.75rem .55rem}.hero-stat-row strong{font-size:1.5rem}.hero-stat-row span{font-size:.59rem}.signal-grid,.comparison-grid,.workflow,.control-grid,.boundary-grid,.audience-grid,.decision-band{grid-template-columns:1fr}.signal-card{min-height:auto}.signal-card+.signal-card{border-top:1px solid var(--line-dark)}.workflow-step{min-height:0}.workflow-number{margin-bottom:1.2rem}.decision-band{padding:1.4rem}.case-facts>div{min-height:6.5rem;padding:1rem}.case-facts strong{font-size:2.2rem}.deliverable-list a{grid-template-columns:2.5rem 1fr 1rem;font-size:.75rem}.footer-main{grid-template-columns:1fr;gap:2rem;padding:3rem 0}.footer-bottom{align-items:flex-start;flex-direction:column}.control-item{grid-template-columns:4.6rem 1fr}.demo-table th,.demo-table td{padding:.7rem;font-size:.72rem}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{transition-duration:.01ms!important;animation-duration:.01ms!important;animation-iteration-count:1!important}}
+
+/* Standalone methodology page */
+.method-hero{padding:clamp(4.5rem,8vw,7rem) 0}
+.method-hero h1{max-width:20ch;font-size:clamp(3rem,5.8vw,5rem)}
+.method-lead{max-width:58rem;margin:0 0 1.25rem;color:#fff;font-size:clamp(1.2rem,2vw,1.55rem);line-height:1.55}
+.method-intro{max-width:54rem;margin:.8rem 0 0;color:#c6cdd9;font-size:1rem;line-height:1.7}
+.method-publications{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1.4rem 3rem}
+.method-publication{padding:1.25rem 0;border-top:1px solid var(--line-dark)}
+.method-publication>span{display:block;margin-bottom:.7rem;color:var(--blue-light);font-size:.65rem;font-weight:850;letter-spacing:.1em;text-transform:uppercase}
+.method-publication h3{max-width:40rem;color:var(--white);font-family:Georgia,serif;font-size:1.35rem;font-weight:400;line-height:1.4}
+.method-publication a{display:inline-block;margin-top:.2rem;color:#dce5ff;font-size:.78rem;font-weight:750;text-decoration:underline;text-underline-offset:.2rem}
+.method-return{margin-top:2.2rem;padding-top:1.2rem;border-top:1px solid var(--line)}
+.method-return .text-link{font-size:.9rem}
+@media(max-width:760px){.method-publications{grid-template-columns:1fr}}
