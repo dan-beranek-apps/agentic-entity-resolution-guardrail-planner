@@ -2,6 +2,8 @@
 
 > A confident entity match is not permission to merge.
 
+For the extended product, methodology, workflow, output, evidence and limitation context, see [llms-full.txt](https://dan-beranek.github.io/agentic-entity-resolution-guardrail-planner/llms-full.txt).
+
 ## Product
 
 Agentic Entity Resolution Guardrail Planner is a design-time Agent Skill for engineering teams working with agentic entity-resolution workflows. It does not simply ask an agent to propose a MERGE, SPLIT, or UNMERGE. It investigates the proposed workflow from multiple angles before producing a reviewable recommendation and a structured engineering plan.
