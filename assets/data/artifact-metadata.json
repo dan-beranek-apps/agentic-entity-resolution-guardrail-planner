@@ -9,7 +9,12 @@
     "snapshot_path": "assets/data/keyword-registry.snapshot.json",
     "description": "The canonical ordered DIO/ODI keyword grammar and approved object-specific keyword profiles. The live source is fetched during the build; the committed snapshot is an offline fallback.",
     "compatible_major": 2,
-    "compatibility_policy": "Accept canonical-approved releases at or above minimum_registry_version within compatible_major; stop the build when the major version changes."
+    "compatibility_policy": "Accept canonical-approved releases at or above minimum_registry_version within compatible_major; stop the build when the major version changes.",
+    "works_file": "metadata/works.json",
+    "works_snapshot_path": "assets/data/works-registry.snapshot.json",
+    "relations_file": "metadata/relations.json",
+    "relations_snapshot_path": "assets/data/relations-registry.snapshot.json",
+    "registry_discovery": "https://vocab.danielberanek.cz/metadata/README.md"
   },
   "site": {
     "id": "https://dan-beranek.github.io/agentic-entity-resolution-guardrail-planner/#website",
