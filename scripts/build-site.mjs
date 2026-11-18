@@ -263,6 +263,7 @@ for (const artifact of resolvedArtifacts) {
   for (const id of citationIds) artifactRelations.push({ subject: artifact.id, subject_uri: artifact.url, predicate: "cites", object: id, object_uri: canonicalWorkUri(workById.get(id)) });
   for (const id of basedOnIds) artifactRelations.push({ subject: artifact.id, subject_uri: artifact.url, predicate: "isBasedOn", object: id, object_uri: canonicalWorkUri(workById.get(id)) });
   for (const id of technologyIds) artifactRelations.push({ subject: artifact.id, subject_uri: artifact.url, predicate: "usesTechnology", object: id, object_uri: canonicalWorkUri(workById.get(id)) });
+  for (const id of derivedSourceIds) artifactRelations.push({ subject: artifact.id, subject_uri: artifact.url, predicate: "hasUpstreamSource", object: id, object_uri: canonicalWorkUri(workById.get(id)) });
   for (const id of localBasedOnIds) {
     const target = resolvedArtifacts.find((candidate) => candidate.id === id);
     artifactRelations.push({ subject: artifact.id, subject_uri: artifact.url, predicate: "isBasedOn", object: id, object_uri: target.url });
@@ -275,12 +276,24 @@ for (const artifact of resolvedArtifacts) {
 }
 
 const allReferencedWorkIds = new Set(resolvedArtifacts.flatMap((artifact) => artifact.referenced_work_ids));
-const referencedBy = new Map();
+const directlyReferencedBy = new Map();
+const presentInDerivedLineageOf = new Map();
+const usedAsTechnologyBy = new Map();
 for (const artifact of resolvedArtifacts) {
-  for (const workId of artifact.referenced_work_ids) {
-    const ids = referencedBy.get(workId) ?? [];
+  for (const workId of new Set([...(artifact.cited_work_ids ?? []), ...(artifact.declared_based_on_work_ids ?? [])])) {
+    const ids = directlyReferencedBy.get(workId) ?? [];
     ids.push(artifact.id);
-    referencedBy.set(workId, ids);
+    directlyReferencedBy.set(workId, ids);
+  }
+  for (const workId of artifact.upstream_derivation_work_ids ?? []) {
+    const ids = presentInDerivedLineageOf.get(workId) ?? [];
+    ids.push(artifact.id);
+    presentInDerivedLineageOf.set(workId, ids);
+  }
+  for (const workId of artifact.technology_work_ids ?? []) {
+    const ids = usedAsTechnologyBy.get(workId) ?? [];
+    ids.push(artifact.id);
+    usedAsTechnologyBy.set(workId, ids);
   }
 }
 const referencedWorkProfiles = [...allReferencedWorkIds].map((workId) => {
@@ -291,9 +304,13 @@ const referencedWorkProfiles = [...allReferencedWorkIds].map((workId) => {
     id: workId,
     title: work.title,
     artifact_type: work.type,
-    lifecycle_status: work.status ?? work.keyword_profile_status,
+    artifact_role: work.artifact_role ?? work.role ?? work.purpose ?? null,
+    lifecycle_status: work.lifecycle_status ?? work.status ?? work.publication_status ?? null,
+    keyword_profile_status: work.keyword_profile_status,
     keyword_profile_id: work.keyword_profile,
-    referenced_by_artifact_ids: referencedBy.get(workId) ?? [],
+    directly_referenced_by_artifact_ids: directlyReferencedBy.get(workId) ?? [],
+    present_in_derived_lineage_of_artifact_ids: presentInDerivedLineageOf.get(workId) ?? [],
+    used_as_technology_by_artifact_ids: usedAsTechnologyBy.get(workId) ?? [],
     keywords: projection.keywords,
     keyword_chunks: projection.chunks,
     keyword_rationales: projection.profile.term_rationales ?? {},
@@ -480,6 +497,8 @@ const resolvedMetadata = {
       sha256: relationsRegistrySha256
     }
   },
+  site: artifactMetadata.site,
+  author: artifactMetadata.author,
   artifacts: resolvedArtifacts,
   referenced_work_profiles: referencedWorkProfiles,
   artifact_relations: artifactRelations,
