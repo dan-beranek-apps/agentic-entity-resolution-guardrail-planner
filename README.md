@@ -11,6 +11,7 @@ The investigation covers operation scope, entity context, evidence and provenanc
 The public product website is built as a static site and published through GitHub Pages:
 
 - Product overview: https://dan-beranek.github.io/agentic-entity-resolution-guardrail-planner/
+- Methodology and DIO/ODI research background: https://dan-beranek.github.io/agentic-entity-resolution-guardrail-planner/methodology/
 - Synthetic CRM demonstration: https://dan-beranek.github.io/agentic-entity-resolution-guardrail-planner/demo/
 
 The website is written in English. It deliberately does not display a fixed product price; current commercial terms remain on the distribution platform.
