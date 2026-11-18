@@ -120,8 +120,14 @@ function resolveCanonicalProfile(profileId, profile, requireAllRationales) {
     }
   }
 
-  if (!Array.isArray(profile.resolved_keywords) || profile.resolved_keywords.join("\\u0000") !== resolved.join("\\u0000")) {
+  if (Array.isArray(profile.resolved_keywords) && profile.resolved_keywords.join("\\u0000") !== resolved.join("\\u0000")) {
     throw new Error(profileId + ": resolved_keywords does not match the ordered canonical chunk projection.");
+  }
+  if (requireAllRationales && profile.resolved_keywords !== undefined) {
+    throw new Error(profileId + ": derived surface profiles must generate their keyword sequence from selectors, not store a duplicate resolved list.");
+  }
+  if (!requireAllRationales && !Array.isArray(profile.resolved_keywords)) {
+    throw new Error(profileId + ": canonical work profiles must include a resolved_keywords sequence.");
   }
   const c0 = new Set(keywordRegistry.chunks.C0_identity_invariant.terms);
   const requiredRationales = requireAllRationales ? new Set(resolved.filter((term) => !c0.has(term))) : new Set(c1);
