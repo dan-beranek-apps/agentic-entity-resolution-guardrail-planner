@@ -122,6 +122,11 @@
           "https://dan-beranek.github.io/agentic-entity-resolution-guardrail-planner/methodology/",
           "https://dan-beranek.github.io/agentic-entity-resolution-guardrail-planner/demo/"
         ]
+      },
+      "keyword_policy": {
+        "inheritance": "none",
+        "rationale": "Cited and supporting works are represented as separate referenced_work_profiles with their own canonical keyword sequences; their keywords are never copied into this page's profile.",
+        "allow_reconstruction_taxonomy": false
       }
     },
     {
@@ -213,6 +218,11 @@
           "https://doi.org/10.5281/zenodo.23269323",
           "https://doi.org/10.5281/zenodo.23272897"
         ]
+      },
+      "keyword_policy": {
+        "inheritance": "none",
+        "rationale": "Cited and supporting works are represented as separate referenced_work_profiles with their own canonical keyword sequences; their keywords are never copied into this page's profile.",
+        "allow_reconstruction_taxonomy": false
       }
     },
     {
@@ -362,6 +372,11 @@
         "derivedFrom": [
           "https://arxiv.org/abs/2610.37407"
         ]
+      },
+      "keyword_policy": {
+        "inheritance": "none",
+        "rationale": "Cited and supporting works are represented as separate referenced_work_profiles with their own canonical keyword sequences; their keywords are never copied into this page's profile.",
+        "allow_reconstruction_taxonomy": false
       }
     }
   ]
