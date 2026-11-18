@@ -1,0 +1,26 @@
+{
+  "schema_version": "1.0",
+  "description": "Single source of truth for Agent Skill distribution links. Add further platforms as additional entries in the platforms array; all purchase-link placements are generated from this file.",
+  "platforms": [
+    {
+      "id": "agensi",
+      "name": "Agensi",
+      "url": "https://www.agensi.io/r/DANIELBERANEK?to=/skills/agentic-entity-resolution-guardrail-planner",
+      "button_label": "Get the Agent Skill",
+      "availability": "available",
+      "affiliate": true,
+      "primary": true,
+      "order": 10
+    },
+    {
+      "id": "additional-platform",
+      "name": "Additional platform",
+      "url": "",
+      "button_label": "Get the Agent Skill",
+      "availability": "planned",
+      "affiliate": true,
+      "primary": false,
+      "order": 100
+    }
+  ]
+}
