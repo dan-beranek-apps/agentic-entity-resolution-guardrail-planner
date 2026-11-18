@@ -5,6 +5,7 @@ import { fileURLToPath } from "node:url";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const dist = path.join(root, "dist");
+const base = "https://dan-beranek.github.io/agentic-entity-resolution-guardrail-planner";
 const configPath = path.join(root, "assets/data/distribution-platforms.json");
 const artifactMetadataPath = path.join(root, "assets/data/artifact-metadata.json");
 const resolvedArtifactMetadataPath = path.join(dist, "assets/data/resolved-artifact-metadata.json");
@@ -229,7 +230,6 @@ const requiredOutputs = [
   "assets/data/distribution-platforms.json",
   "assets/data/artifact-metadata.json",
   "assets/data/keyword-registry.snapshot.json",
-  "assets/data/resolved-artifact-metadata.json",
   "assets/branding/agentic-entity-resolution-guardrail-planner-logo.svg",
   "assets/branding/social-preview.png",
   "assets/diagrams/investigation-workflow.svg",
@@ -271,7 +271,8 @@ const resolvedMetadata = {
   },
   artifacts: resolvedArtifacts
 };
-await fs.writeFile(resolvedArtifactMetadataPath, JSON.stringify(resolvedMetadata, null, 2) + "\\n", "utf8");
+await fs.writeFile(resolvedArtifactMetadataPath, JSON.stringify(resolvedMetadata, null, 2) + "\n", "utf8");
+if (!(await exists(resolvedArtifactMetadataPath))) throw new Error("Resolved artifact metadata JSON was not generated.");
 
 const websiteNode = {
   "@type": "WebSite",
@@ -307,6 +308,8 @@ const productNode = {
   about: productArtifact.about_concepts.map((id) => ({ "@id": id })),
   isBasedOn: productArtifact.based_on.map((item) => ({ "@id": item.id })),
   citation: productArtifact.citations.map((item) => ({ "@id": item.id })),
+  subjectOf: [{ "@id": base + "/methodology/#webpage" }],
+  workExample: [{ "@id": base + "/demo/#case-study" }],
   additionalProperty: [
     { "@type": "PropertyValue", propertyID: "artifactRole", name: "Artifact role", value: productArtifact.artifact_role },
     { "@type": "PropertyValue", propertyID: "lifecycleStatus", name: "Lifecycle status", value: productArtifact.lifecycle_status },
@@ -351,7 +354,16 @@ const graphFor = (artifact) => {
       { "@type": "PropertyValue", propertyID: "lifecycleStatus", name: "Lifecycle status", value: artifact.lifecycle_status },
       { "@type": "PropertyValue", propertyID: "keywordProfile", name: "DIO/ODI keyword profile", value: artifact.keyword_profile_id },
       { "@type": "PropertyValue", propertyID: "keywordRegistryVersion", name: "Keyword registry version", value: keywordRegistry.registry_version },
-      { "@type": "PropertyValue", propertyID: "keywordRegistrySha256", name: "Keyword registry SHA-256", value: keywordRegistrySha256 }
+      { "@type": "PropertyValue", propertyID: "keywordRegistrySha256", name: "Keyword registry SHA-256", value: keywordRegistrySha256 },
+      ...(artifact.technologies ?? []).map((technology) => ({
+        "@type": "PropertyValue",
+        propertyID: "technology",
+        name: technology.name,
+        value: [technology.role, technology.status, technology.endpoint, technology.transport, technology.formats?.join(", ")].filter(Boolean).join("; ")
+      })),
+      ...(artifact.output_formats ?? []).map((format) => ({
+        "@type": "PropertyValue", propertyID: "outputFormat", name: "Output format", value: format
+      }))
     ]
   };
   if (isProduct) pageNode.mainEntity = { "@id": productArtifact.url + "#product" };
@@ -406,10 +418,10 @@ for (const artifact of resolvedArtifacts) {
     '<meta name="dio-odi-keyword-profile" content="' + escapeHtml(artifact.keyword_profile_id) + '">',
     '<meta name="dio-odi-keyword-registry-version" content="' + escapeHtml(keywordRegistry.registry_version) + '">',
     '<meta name="dio-odi-keyword-registry-sha256" content="' + keywordRegistrySha256 + '">'
-  ].join("\\n  ");
-  const jsonLd = "<script type=\\"application/ld+json\\">\\n" +
-    JSON.stringify(graphFor(artifact), null, 2).replaceAll("<", "\\\\u003c") +
-    "\\n</script>";
+  ].join("\n  ");
+  const jsonLd = "<script type=\"application/ld+json\">\n" +
+    JSON.stringify(graphFor(artifact), null, 2).replaceAll("<", "\\u003c") +
+    "\n</script>";
   pageHtml = pageHtml.replace(keywordMarker, keywordMarkup).replace(structuredMarker, jsonLd);
   const expectedKeywords = artifact.keywords.join(", ");
   const keywordMatch = pageHtml.match(/<meta name="keywords" content="([^"]*)">/);
