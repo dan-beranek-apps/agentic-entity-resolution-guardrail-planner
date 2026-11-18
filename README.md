@@ -30,7 +30,7 @@ https://www.agensi.io/r/DANIELBERANEK?to=/skills/agentic-entity-resolution-guard
 
 Requirements: Node.js 22 or later. No external packages are required. Run node scripts/build-site.mjs from the repository root.
 
-The generated static site is written to dist/. The build validates the distribution-platform configuration, CTA insertion points, affiliate route, absence of fixed prices, the 1200 × 630 social preview and page metadata. The ordered `meta keywords` projection is sourced from `metadata/keywords.json` in the DIO/ODI Reference Model repository (registry v2.6.0, `commit-boundary-paper` profile); it is used as semantic coverage metadata, not as a ranking-oriented SEO tag. Its local manifest is `assets/data/dio-odi-keyword-projection.json`.
+The generated static site is written to dist/. The build validates the distribution-platform configuration, CTA insertion points, affiliate route, absence of fixed prices, the 1200 × 630 social preview and page metadata. Each public page has its own approved DIO/ODI semantic profile. The build fetches the canonical keyword registry (`metadata/keywords.json`, currently v2.7.0) from the DIO/ODI Reference Model repository, resolves each page's profile into the full ordered sequence, and generates both its `meta keywords` field and JSON-LD. C0 remains invariant; C1 is selected per artefact from the global environment candidate pool. Object roles, technologies, versions, lineage and the resolved keyword sequences are published together in `assets/data/resolved-artifact-metadata.json`. A local registry snapshot is used only if the canonical source cannot be reached.
 
 ## Product scope
 
@@ -72,6 +72,9 @@ This repository contains the public product overview, website source and demonst
 - assets/branding/ — product logo.
 - assets/diagrams/ — product workflow diagrams.
 - assets/data/distribution-platforms.json — central distribution and affiliate-link configuration.
+- assets/data/artifact-metadata.json — object identities, roles, versions, technologies and typed relations for the three public artefacts.
+- assets/data/keyword-registry.snapshot.json — offline fallback for the canonical DIO/ODI keyword registry.
+- assets/data/resolved-artifact-metadata.json — generated page-specific keyword projections and machine-readable artefact metadata.
 - assets/site.css and assets/site.js — frontend styling and behaviour.
 - demo/ — curated overview of the synthetic example.
 - demo-for-agensi/ — original planning deliverables.
