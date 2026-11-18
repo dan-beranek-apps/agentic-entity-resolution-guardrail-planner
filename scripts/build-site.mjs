@@ -353,6 +353,8 @@ const requiredOutputs = [
   "assets/data/distribution-platforms.json",
   "assets/data/artifact-metadata.json",
   "assets/data/keyword-registry.snapshot.json",
+  "assets/data/works-registry.snapshot.json",
+  "assets/data/relations-registry.snapshot.json",
   "assets/branding/agentic-entity-resolution-guardrail-planner-logo.svg",
   "assets/branding/social-preview.png",
   "assets/diagrams/investigation-workflow.svg",
@@ -382,17 +384,35 @@ if (!socialImage.subarray(0, 8).equals(pngSignature) || socialImage.readUInt32BE
 }
 await fs.mkdir(path.dirname(resolvedArtifactMetadataPath), { recursive: true });
 const resolvedMetadata = {
-  schema_version: "1.0.0",
+  schema_version: "1.1.0",
   registry_source: {
     repository: registrySource.repository,
-    file: registrySource.file,
-    fetched_from: registryOrigin,
-    registry_version: keywordRegistry.registry_version,
-    registry_status: keywordRegistry.status,
-    sha256: keywordRegistrySha256,
-    chunk_order: keywordOrder
+    discovery: registrySource.registry_discovery,
+    keyword_registry: {
+      file: registrySource.file,
+      fetched_from: keywordResource.fetched_from,
+      registry_version: keywordRegistry.registry_version,
+      registry_status: keywordRegistry.status,
+      sha256: keywordRegistrySha256,
+      chunk_order: keywordOrder
+    },
+    works_registry: {
+      file: registrySource.works_file,
+      fetched_from: worksResource.fetched_from,
+      registry_version: worksRegistry.registry_version,
+      registry_status: worksRegistry.status,
+      sha256: worksRegistrySha256
+    },
+    relations_registry: {
+      file: registrySource.relations_file,
+      fetched_from: relationsResource.fetched_from,
+      registry_version: relationsRegistry.registry_version,
+      sha256: relationsRegistrySha256
+    }
   },
-  artifacts: resolvedArtifacts
+  artifacts: resolvedArtifacts,
+  referenced_work_profiles: referencedWorkProfiles,
+  reference_relations: referenceRelations
 };
 await fs.writeFile(resolvedArtifactMetadataPath, JSON.stringify(resolvedMetadata, null, 2) + "\n", "utf8");
 if (!(await exists(resolvedArtifactMetadataPath))) throw new Error("Resolved artifact metadata JSON was not generated.");
@@ -444,14 +464,37 @@ const productNode = {
   ]
 };
 const referenceNodes = new Map();
+const referencedWorkById = new Map(referencedWorkProfiles.map((profile) => [profile.id, profile]));
+function canonicalWorkUri(work) {
+  const candidate = work.arxiv?.concept_url || work.canonical_url || work.reference_model_concept_doi_url ||
+    work.preferred_relation_identifier || work.current_version_doi || work.version_doi || work.concept_doi;
+  if (!candidate) return null;
+  return /^https?:\\/\\//i.test(candidate) ? candidate : "https://doi.org/" + candidate;
+}
 for (const artifact of resolvedArtifacts) {
   for (const item of [...(artifact.citations ?? []), ...(artifact.based_on ?? [])]) {
     if (!referenceNodes.has(item.id)) {
+      const workId = matchRegistryWork(item.id, artifact.id + " JSON-LD");
+      const workProfile = workId ? referencedWorkById.get(workId) : null;
+      const work = workId ? workById.get(workId) : null;
+      const parentWorkIds = workId ? referenceRelations
+        .filter((edge) => edge.subject === workId && edge.relation === "isDerivedFrom")
+        .map((edge) => edge.object) : [];
+      const isBasedOn = parentWorkIds.map((id) => canonicalWorkUri(workById.get(id))).filter(Boolean).map((id) => ({ "@id": id }));
       referenceNodes.set(item.id, {
         "@id": item.id,
         "@type": item.type || "CreativeWork",
-        name: item.name,
-        url: item.id
+        name: item.name || work?.title,
+        url: item.id,
+        ...(workProfile ? { keywords: workProfile.keywords } : {}),
+        ...(workId ? {
+          isBasedOn,
+          additionalProperty: [
+            { "@type": "PropertyValue", propertyID: "registryWorkId", name: "DIO/ODI registry work ID", value: workId },
+            { "@type": "PropertyValue", propertyID: "keywordProfile", name: "DIO/ODI keyword profile", value: workProfile.keyword_profile_id },
+            { "@type": "PropertyValue", propertyID: "artifactType", name: "Artifact type", value: workProfile.artifact_type }
+          ]
+        } : {})
       });
     }
   }
@@ -472,6 +515,7 @@ const graphFor = (artifact) => {
     keywords: artifact.keywords,
     about: artifact.about_concepts.map((id) => ({ "@id": id })),
     citation: (artifact.citations ?? []).map((item) => ({ "@id": item.id })),
+    isBasedOn: (artifact.based_on ?? []).map((item) => ({ "@id": item.id })),
     additionalProperty: [
       { "@type": "PropertyValue", propertyID: "artifactRole", name: "Artifact role", value: artifact.artifact_role },
       { "@type": "PropertyValue", propertyID: "lifecycleStatus", name: "Lifecycle status", value: artifact.lifecycle_status },
