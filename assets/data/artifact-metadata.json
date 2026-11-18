@@ -7,7 +7,9 @@
     "minimum_registry_version": "2.7.0",
     "status_required": "canonical-approved",
     "snapshot_path": "assets/data/keyword-registry.snapshot.json",
-    "description": "The canonical ordered DIO/ODI keyword grammar and approved object-specific keyword profiles. The live source is fetched during the build; the committed snapshot is an offline fallback."
+    "description": "The canonical ordered DIO/ODI keyword grammar and approved object-specific keyword profiles. The live source is fetched during the build; the committed snapshot is an offline fallback.",
+    "compatible_major": 2,
+    "compatibility_policy": "Accept canonical-approved releases at or above minimum_registry_version within compatible_major; stop the build when the major version changes."
   },
   "site": {
     "id": "https://dan-beranek.github.io/agentic-entity-resolution-guardrail-planner/#website",
