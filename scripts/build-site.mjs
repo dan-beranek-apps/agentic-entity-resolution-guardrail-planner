@@ -158,11 +158,11 @@ const resolvedArtifacts = artifactMetadata.artifacts.map((artifact) => {
 function normalizeWorkIdentifier(value) {
   if (typeof value !== "string" || !value.trim()) return null;
   const trimmed = value.trim().replace(/[),.;]+$/, "");
-  const doiMatch = trimmed.match(/^(?:https?:\\/\\/(?:dx\\.)?doi\\.org\\/)?(10\\.\\d{4,9}\\/[^?#\\s]+)$/i);
-  if (doiMatch) return "doi:" + doiMatch[1].replace(/\\/+$/, "").toLowerCase();
-  const arxivMatch = trimmed.match(/^(?:https?:\\/\\/)?arxiv\\.org\\/abs\\/([0-9]+\\.[0-9]{4,5}(?:v[0-9]+)?)$/i);
+  const doiMatch = trimmed.match(/^(?:https?:\/\/(?:dx\.)?doi\.org\/)?(10\.\d{4,9}\/[^?#\s]+)$/i);
+  if (doiMatch) return "doi:" + doiMatch[1].replace(/\/+$/, "").toLowerCase();
+  const arxivMatch = trimmed.match(/^(?:https?:\/\/)?arxiv\.org\/abs\/([0-9]+\.[0-9]{4,5}(?:v[0-9]+)?)$/i);
   if (arxivMatch) return "arxiv:" + arxivMatch[1].toLowerCase();
-  return trimmed.replace(/\\/+$/, "").toLowerCase();
+  return trimmed.replace(/\/+$/, "").toLowerCase();
 }
 
 function identifiersForWork(work) {
@@ -218,7 +218,7 @@ for (const artifact of resolvedArtifacts) {
   for (const item of [...(artifact.citations ?? []), ...(artifact.based_on ?? [])]) {
     const workId = matchRegistryWork(item.id, artifact.id + " citations/based_on");
     if (workId) directIds.add(workId);
-    else if (/^(?:https?:\\/\\/)?(?:dx\\.)?doi\\.org\\/10\\.|^(?:https?:\\/\\/)?arxiv\\.org\\/abs\\//i.test(item.id)) {
+    else if (/^(?:https?:\/\/)?(?:dx\.)?doi\.org\/10\.|^(?:https?:\/\/)?arxiv\.org\/abs\//i.test(item.id)) {
       throw new Error(artifact.id + ": external citation does not resolve to a DIO/ODI works-registry record: " + item.id);
     }
   }
