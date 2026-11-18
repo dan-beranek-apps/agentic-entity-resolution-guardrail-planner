@@ -234,14 +234,31 @@ for (const artifact of resolvedArtifacts) {
   const citationIds = resolveWorkIdSet(artifact.citations, artifact.id + " citations");
   const basedOnIds = resolveWorkIdSet(artifact.based_on, artifact.id + " isBasedOn");
   const technologyIds = new Set();
+  const technologyRelationsById = new Map();
   for (const technology of artifact.technologies ?? []) {
     const candidate = technology.endpoint ?? technology.url ?? technology.repository;
     const workId = matchRegistryWork(candidate, artifact.id + " technology " + technology.name);
-    if (workId) technologyIds.add(workId);
+    if (workId) {
+      technologyIds.add(workId);
+      const predicate = technology.status === "optional"
+        ? "offersOptionalIntegration"
+        : technology.status === "referenced"
+          ? "referencesTechnology"
+          : "usesTechnology";
+      const current = technologyRelationsById.get(workId);
+      if (!current || predicate === "usesTechnology") {
+        technologyRelationsById.set(workId, { predicate, name: technology.name, status: technology.status ?? null, role: technology.role ?? null });
+      }
+    }
   }
   const runtimeEndpoint = artifact.reference_run?.endpoint;
   const runtimeWorkId = matchRegistryWork(runtimeEndpoint, artifact.id + " reference run");
-  if (runtimeWorkId) technologyIds.add(runtimeWorkId);
+  if (runtimeWorkId) {
+    technologyIds.add(runtimeWorkId);
+    if (!technologyRelationsById.has(runtimeWorkId)) {
+      technologyRelationsById.set(runtimeWorkId, { predicate: "usesTechnology", name: artifact.reference_run.mcp_server ?? "Runtime reference service", status: "used", role: artifact.reference_run.reference_scope ?? null });
+    }
+  }
   const localBasedOnIds = new Set();
   for (const item of artifact.based_on ?? []) {
     const local = resolvedArtifacts.find((candidate) =>
@@ -262,7 +279,19 @@ for (const artifact of resolvedArtifacts) {
   artifact.keyword_inheritance = "none";
   for (const id of citationIds) artifactRelations.push({ subject: artifact.id, subject_uri: artifact.url, predicate: "cites", object: id, object_uri: canonicalWorkUri(workById.get(id)) });
   for (const id of basedOnIds) artifactRelations.push({ subject: artifact.id, subject_uri: artifact.url, predicate: "isBasedOn", object: id, object_uri: canonicalWorkUri(workById.get(id)) });
-  for (const id of technologyIds) artifactRelations.push({ subject: artifact.id, subject_uri: artifact.url, predicate: "usesTechnology", object: id, object_uri: canonicalWorkUri(workById.get(id)) });
+  for (const id of technologyIds) {
+    const relation = technologyRelationsById.get(id) ?? { predicate: "usesTechnology" };
+    artifactRelations.push({
+      subject: artifact.id,
+      subject_uri: artifact.url,
+      predicate: relation.predicate,
+      object: id,
+      object_uri: canonicalWorkUri(workById.get(id)),
+      technology_name: relation.name ?? null,
+      technology_status: relation.status ?? null,
+      role: relation.role ?? null
+    });
+  }
   for (const id of derivedSourceIds) artifactRelations.push({ subject: artifact.id, subject_uri: artifact.url, predicate: "hasUpstreamSource", object: id, object_uri: canonicalWorkUri(workById.get(id)) });
   for (const id of localBasedOnIds) {
     const target = resolvedArtifacts.find((candidate) => candidate.id === id);
