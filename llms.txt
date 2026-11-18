@@ -43,9 +43,20 @@ Reference-backed mode can use the public, read-only DIO/ODI Reference MCP at htt
 
 The design approach is informed by the conceptual paper https://arxiv.org/abs/2610.37407. Buyers do not need prior knowledge of DIO/ODI.
 
+## Methodology and DIO/ODI research
+
+The Planner was created by Daniel Beránek, author of Digital Identity Optimization (DIO) and the Ontology of Digital Identity (ODI). Its design operationalizes an evolving research and design framework for digital identity, evidence, authorization and identity-changing operations. Buyers do not need prior knowledge of DIO/ODI.
+
+The central planning distinction is between an agent's proposed entity match and the evidence and engineering controls required before a persistent identity-changing operation can be committed. The optional DIO/ODI Reference MCP is public and read-only; it provides reference material only and does not receive customer records or authorize customer writes.
+
+- Methodology and related research: https://dan-beranek.github.io/agentic-entity-resolution-guardrail-planner/methodology/
+- DIO/ODI Reference MCP: https://mcp.danielberanek.cz/mcp
+- DIO/ODI Reference Model: https://vocab.danielberanek.cz/
+
 ## Public resources
 
 - Product overview: https://dan-beranek.github.io/agentic-entity-resolution-guardrail-planner/
+- Methodology: https://dan-beranek.github.io/agentic-entity-resolution-guardrail-planner/methodology/
 - Synthetic example: https://dan-beranek.github.io/agentic-entity-resolution-guardrail-planner/demo/
 - Source repository: https://github.com/dan-beranek/agentic-entity-resolution-guardrail-planner
 - Author: https://danielberanek.cz/

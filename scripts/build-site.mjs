@@ -103,6 +103,8 @@ if (ctaUrlCount !== markerCount) {
 }
 
 await fs.writeFile(path.join(dist, "index.html"), html, "utf8");
+await fs.mkdir(path.join(dist, "methodology"), { recursive: true });
+await fs.copyFile(path.join(root, "methodology/index.html"), path.join(dist, "methodology/index.html"));
 await fs.cp(path.join(root, "assets"), path.join(dist, "assets"), { recursive: true });
 await fs.cp(path.join(root, "demo-for-agensi"), path.join(dist, "demo-for-agensi"), { recursive: true });
 await fs.mkdir(path.join(dist, "demo"), { recursive: true });
@@ -114,6 +116,7 @@ for (const filename of ["robots.txt", "sitemap.xml", "llms.txt"]) {
 
 const requiredOutputs = [
   "index.html",
+  "methodology/index.html",
   "demo/index.html",
   "assets/site.css",
   "assets/site.js",

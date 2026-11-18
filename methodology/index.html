@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <meta name="theme-color" content="#080b12">
+  <title>Methodology and DIO/ODI Research | Agentic Entity Resolution Guardrail Planner</title>
+  <meta name="description" content="The DIO/ODI research and design framework behind Agentic Entity Resolution Guardrail Planner, its identity-evidence distinction, commit-boundary reasoning and optional read-only reference service.">
+  <meta name="author" content="Daniel Beránek">
+  <meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1">
+  <link rel="canonical" href="https://dan-beranek.github.io/agentic-entity-resolution-guardrail-planner/methodology/">
+  <link rel="icon" href="../assets/branding/agentic-entity-resolution-guardrail-planner-logo.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../assets/site.css">
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="Agentic Entity Resolution Guardrail Planner">
+  <meta property="og:title" content="Methodology: created by the author of DIO/ODI">
+  <meta property="og:description" content="The research and design framework behind the Agentic Entity Resolution Guardrail Planner.">
+  <meta property="og:url" content="https://dan-beranek.github.io/agentic-entity-resolution-guardrail-planner/methodology/">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Methodology and DIO/ODI Research">
+  <meta name="twitter:description" content="The research and design framework behind Agentic Entity Resolution Guardrail Planner.">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebPage",
+        "@id": "https://dan-beranek.github.io/agentic-entity-resolution-guardrail-planner/methodology/#webpage",
+        "url": "https://dan-beranek.github.io/agentic-entity-resolution-guardrail-planner/methodology/",
+        "name": "Methodology and DIO/ODI Research",
+        "description": "The research and design framework behind Agentic Entity Resolution Guardrail Planner.",
+        "isPartOf": { "@id": "https://dan-beranek.github.io/agentic-entity-resolution-guardrail-planner/#website" },
+        "about": { "@id": "https://dan-beranek.github.io/agentic-entity-resolution-guardrail-planner/#product" },
+        "inLanguage": "en",
+        "author": { "@id": "https://danielberanek.cz/#person" }
+      },
+      {
+        "@type": "Person",
+        "@id": "https://danielberanek.cz/#person",
+        "name": "Daniel Beránek",
+        "url": "https://danielberanek.cz/",
+        "sameAs": ["https://orcid.org/0009-0004-0050-0264"]
+      }
+    ]
+  }
+  </script>
+</head>
+<body class="methodology-page">
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="site-header">
+    <div class="shell header-inner">
+      <a class="brand" href="../" aria-label="Agentic Entity Resolution Guardrail Planner home">
+        <img src="../assets/branding/agentic-entity-resolution-guardrail-planner-logo.svg" alt="" width="42" height="42">
+        <span class="brand-copy"><strong>Agentic Entity Resolution</strong><span>Guardrail Planner</span></span>
+      </a>
+      <a class="text-link" href="../">Back to the product overview <span aria-hidden="true">↗</span></a>
+    </div>
+  </header>
+  <main id="main">
+    <section class="method-hero section-dark">
+      <div class="shell">
+        <p class="eyebrow">Methodology and research background</p>
+        <h1>Created by the author of <span>DIO/ODI.</span></h1>
+        <p class="method-lead"><strong>Agentic Entity Resolution Guardrail Planner</strong> was created by Daniel Beránek, author of <strong>Digital Identity Optimization (DIO)</strong> and the <strong>Ontology of Digital Identity (ODI)</strong>.</p>
+        <p class="method-intro">The Skill is not a generic prompt template. It operationalizes an evolving research and design framework for reasoning about digital identity, evidence, authorization and identity-changing operations.</p>
+        <p class="method-intro">Its planning logic is designed around a central distinction: an AI agent's proposed entity match is not, by itself, the evidence and set of engineering controls required before a persistent identity-changing operation can be committed.</p>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="shell">
+        <div class="section-heading">
+          <div><p class="eyebrow">The conceptual foundation</p><h2>Two connected layers. Distinct roles.</h2></div>
+          <p>DIO and ODI are related, but they are not interchangeable labels. Together they provide the research context from which the Planner's approach to identity, representation, evidence and reconstruction has been developed.</p>
+        </div>
+        <div class="comparison-grid">
+          <article class="comparison-card">
+            <p class="card-kicker">Applied framework</p>
+            <h3>Digital Identity Optimization (DIO)</h3>
+            <p>DIO is concerned with the conditions under which an entity's digital identity can be consistently reconstructed from its distributed representations across digital systems and observers.</p>
+          </article>
+          <article class="comparison-card">
+            <p class="card-kicker">Theoretical and research layer</p>
+            <h3>Ontology of Digital Identity (ODI)</h3>
+            <p>ODI provides the conceptual and ontological layer for examining digital identity, its persistence and variation, and the conditions under which it is interpreted or reconstructed.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section-muted">
+      <div class="shell">
+        <div class="section-heading">
+          <div><p class="eyebrow">From research to planning logic</p><h2>Separate a plausible match from a permitted change.</h2></div>
+          <p>The Planner translates that distinction into an engineering-oriented workflow for proposed MERGE, SPLIT, UNMERGE and supported identity-changing operations.</p>
+        </div>
+        <div class="workflow method-workflow">
+          <article class="workflow-step"><span class="workflow-number">01 / IDENTITY</span><h3>Establish what is being resolved</h3><p>Define the entity context, scope, claims and identity-bearing relationships involved in the proposed operation.</p></article>
+          <article class="workflow-step"><span class="workflow-number">02 / EVIDENCE</span><h3>Trace support and conflict</h3><p>Examine provenance, source quality, temporal applicability, conflicting attributes and unresolved identity propositions.</p></article>
+          <article class="workflow-step"><span class="workflow-number">03 / AUTHORITY</span><h3>Specify what can authorize</h3><p>Keep agent confidence and provisional evidence distinct from authorization-eligible evidence, approval conditions and customer policy.</p></article>
+          <article class="workflow-step"><span class="workflow-number">04 / COMMIT</span><h3>Design the persistent-change boundary</h3><p>Connect the proposed operation to write-set scope, commit conditions, failure handling, recovery paths and validation requirements.</p></article>
+        </div>
+        <div class="decision-band">
+          <div><p class="eyebrow">The governing distinction</p><h3>A recommendation is not an authorization.</h3></div>
+          <p>The Skill can prepare a reviewable plan and identify conditions that require HOLD, deferral or human review. It does not execute mutations, authorize live writes, or deploy a runtime guard.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="shell reference-grid">
+        <div><p class="eyebrow">Optional reference-backed mode</p><h2>A reference service designed to work alongside the Skill.</h2></div>
+        <div>
+          <p class="lead">The author also maintains the public DIO/ODI Reference MCP, which can be used in the Planner's optional reference-backed mode.</p>
+          <p>The buyer connects the MCP endpoint separately in a compatible agent or client. It exposes read-only reference material; it does not connect to the buyer's CRM, receive customer records, inspect customer application state or authorize customer writes.</p>
+          <p>The Skill, its output contracts and the reference service are designed to form a coherent planning workflow. The MCP is optional: buyers can use the Skill without prior DIO/ODI knowledge or this separate reference connection.</p>
+          <div class="reference-links">
+            <a href="https://mcp.danielberanek.cz/mcp" target="_blank" rel="noopener noreferrer">DIO/ODI Reference MCP endpoint <span aria-hidden="true">↗</span></a>
+            <a href="https://vocab.danielberanek.cz/" target="_blank" rel="noopener noreferrer">DIO/ODI Reference Model overview <span aria-hidden="true">↗</span></a>
+            <a href="https://vocab.danielberanek.cz/dio-odi/" target="_blank" rel="noopener noreferrer">DIO/ODI Reference Vocabulary <span aria-hidden="true">↗</span></a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section-dark">
+      <div class="shell">
+        <div class="section-heading">
+          <div><p class="eyebrow">Related DIO/ODI work</p><h2>Research and reference publications.</h2></div>
+          <p>The following works provide the conceptual, diagnostic and architectural context for the Planner. They are supporting research sources, not prerequisites for using the Skill.</p>
+        </div>
+        <div class="method-publications">
+          <article class="method-publication"><span>Agentic Entity Resolution · Conceptual architecture</span><h3>Constraining the Commit Boundary: A DIO/ODI-Informed Authorization Guardrail for Agentic Entity Resolution</h3><a href="https://arxiv.org/abs/2610.37407" target="_blank" rel="noopener noreferrer">Read the arXiv paper <span aria-hidden="true">↗</span></a></article>
+          <article class="method-publication"><span>Machine-readable reference layer</span><h3>DIO/ODI Reference Model</h3><a href="https://doi.org/10.5281/zenodo.23272897" target="_blank" rel="noopener noreferrer">Concept DOI — all versions <span aria-hidden="true">↗</span></a><br><a href="https://doi.org/10.5281/zenodo.24085589" target="_blank" rel="noopener noreferrer">Archived release v0.9.0 <span aria-hidden="true">↗</span></a></article>
+          <article class="method-publication"><span>Entity resolution · Diagnostic context</span><h3>The Crisis of Entity Resolution in Heterogeneous AI Environments: Data, Financial, and Semantic Dimensions</h3><a href="https://doi.org/10.5281/zenodo.22416026" target="_blank" rel="noopener noreferrer">Read the paper on Zenodo <span aria-hidden="true">↗</span></a></article>
+          <article class="method-publication"><span>Digital Identity Optimization · Minimal analytical model</span><h3>Minimum Viable Digital Identity Optimization (DIO): From Adversarial Reduction to the Semantic Field Dynamics of Digital Identity</h3><a href="https://doi.org/10.5281/zenodo.23226205" target="_blank" rel="noopener noreferrer">Read the paper on Zenodo <span aria-hidden="true">↗</span></a></article>
+          <article class="method-publication"><span>Entity resolution · Taxonomy</span><h3>From Entity Resolution Anomalies to Reconstruction Failure Modes: A Taxonomic Note Following Minimum Viable DIO</h3><a href="https://doi.org/10.5281/zenodo.23269323" target="_blank" rel="noopener noreferrer">Read the taxonomic note on Zenodo <span aria-hidden="true">↗</span></a></article>
+          <article class="method-publication"><span>Project-level research hub</span><h3>DIO/ODI research and publications</h3><a href="https://zenodo.org/communities/digital-identity-optimization-dio/" target="_blank" rel="noopener noreferrer">Explore the DIO/ODI Zenodo community <span aria-hidden="true">↗</span></a><br><a href="https://danielberanek.cz/manifest-dio/" target="_blank" rel="noopener noreferrer">Open the DIO/ODI Hub <span aria-hidden="true">↗</span></a></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section-muted">
+      <div class="shell">
+        <div class="section-heading">
+          <div><p class="eyebrow">Product boundary</p><h2>Research-informed planning, not runtime enforcement.</h2></div>
+          <p>The Planner's relationship to DIO/ODI does not change its product scope.</p>
+        </div>
+        <div class="boundary-grid">
+          <article class="boundary-card"><h3>What the methodology informs</h3><ul><li>How identity and entity context are framed.</li><li>How evidence, provenance and contradictions are examined.</li><li>Why agent reasoning must be distinguished from authorization.</li><li>How commit boundaries, failure paths and recovery requirements are considered.</li></ul></article>
+          <article class="boundary-card boundary-out"><h3>What the Skill does not claim</h3><ul><li>It does not decide legal identity or guarantee a correct match.</li><li>It does not execute customer mutations or authorize production writes.</li><li>It does not inspect customer systems unless context is supplied or separately connected.</li><li>It does not provide runtime security enforcement or guarantee production safety.</li></ul></article>
+        </div>
+        <div class="method-return"><a class="text-link" href="../">Return to the Agentic Entity Resolution Guardrail Planner <span aria-hidden="true">↗</span></a></div>
+      </div>
+    </section>
+  </main>
+  <footer class="site-footer">
+    <div class="shell footer-main">
+      <div><a class="footer-brand" href="../"><img src="../assets/branding/agentic-entity-resolution-guardrail-planner-logo.svg" alt="" width="36" height="36"><span>Agentic Entity Resolution<br><strong>Guardrail Planner</strong></span></a><p>A design-time Agent Skill for investigating and planning agent-proposed identity-changing operations.</p></div>
+      <div><p class="footer-label">Product</p><ul class="footer-links"><li><a href="../">Product overview</a></li><li><a href="../demo/">Synthetic CRM example</a></li><li><a href="../#boundaries">Scope and limitations</a></li></ul></div>
+      <div><p class="footer-label">Research</p><ul class="footer-links"><li><a href="https://arxiv.org/abs/2610.37407" target="_blank" rel="noopener noreferrer">Conceptual paper</a></li><li><a href="https://vocab.danielberanek.cz/" target="_blank" rel="noopener noreferrer">DIO/ODI Reference Model</a></li><li><a href="https://danielberanek.cz/manifest-dio/" target="_blank" rel="noopener noreferrer">DIO/ODI Hub</a></li></ul></div>
+    </div>
+    <div class="shell footer-bottom"><span>© <span data-current-year>2026</span> Daniel Beránek</span><span>Independent product · Design-time planning only</span></div>
+  </footer>
+</body>
+</html>
