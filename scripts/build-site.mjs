@@ -1,11 +1,13 @@
 import fs from "node:fs/promises";
+import { createHash } from "node:crypto";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const dist = path.join(root, "dist");
 const configPath = path.join(root, "assets/data/distribution-platforms.json");
-const keywordProjectionPath = path.join(root, "assets/data/dio-odi-keyword-projection.json");
+const artifactMetadataPath = path.join(root, "assets/data/artifact-metadata.json");
+const resolvedArtifactMetadataPath = path.join(dist, "assets/data/resolved-artifact-metadata.json");
 const socialPreviewRelativePath = "assets/branding/social-preview.png";
 const socialPreviewUrl = "https://dan-beranek.github.io/agentic-entity-resolution-guardrail-planner/" + socialPreviewRelativePath;
 
@@ -27,11 +29,107 @@ async function exists(filePath) {
 }
 
 const config = JSON.parse(await fs.readFile(configPath, "utf8"));
-const keywordProjection = JSON.parse(await fs.readFile(keywordProjectionPath, "utf8"));
-if (keywordProjection.source?.registry_version !== "2.6.0" || keywordProjection.source?.registry_status !== "canonical-approved" || keywordProjection.profile?.id !== "commit-boundary-paper" || !Array.isArray(keywordProjection.resolved_keywords) || keywordProjection.resolved_keywords.length !== 34) {
-  throw new Error("DIO/ODI keyword projection must use the approved 2.6.0 commit-boundary-paper profile with all 34 resolved terms.");
+const artifactMetadata = JSON.parse(await fs.readFile(artifactMetadataPath, "utf8"));
+const registrySource = artifactMetadata.registry_source;
+const registryUrl = `https://raw.githubusercontent.com/${registrySource.repository}/${registrySource.ref}/${registrySource.file}`;
+
+let registryText;
+let registryOrigin = registryUrl;
+try {
+  const response = await fetch(registryUrl, { headers: { accept: "application/json" } });
+  if (!response.ok) throw new Error(`HTTP ${response.status}`);
+  registryText = await response.text();
+} catch (error) {
+  const snapshotPath = path.join(root, registrySource.snapshot_path);
+  if (!(await exists(snapshotPath))) throw new Error(`Unable to fetch the canonical keyword registry and no snapshot fallback exists: ${error.message}`);
+  registryText = await fs.readFile(snapshotPath, "utf8");
+  registryOrigin = registrySource.snapshot_path;
 }
-const expectedKeywordContent = keywordProjection.resolved_keywords.join(", ");
+const keywordRegistrySha256 = createHash("sha256").update(registryText).digest("hex");
+const keywordRegistry = JSON.parse(registryText);
+if (keywordRegistry.status !== registrySource.status_required || keywordRegistry.registry_version !== registrySource.minimum_registry_version) {
+  throw new Error(`Expected canonical-approved keyword registry ${registrySource.minimum_registry_version}; received ${keywordRegistry.registry_version} (${keywordRegistry.status}).`);
+}
+if (!Array.isArray(artifactMetadata.artifacts) || artifactMetadata.artifacts.length !== 3) {
+  throw new Error("Expected exactly three registered public artefacts.");
+}
+
+const keywordOrder = keywordRegistry.export_policy?.chunk_order;
+if (!Array.isArray(keywordOrder) || keywordOrder.length !== 7) throw new Error("Canonical keyword chunk order is missing or incomplete.");
+
+function resolveKeywordProfile(profileId) {
+  const profile = keywordRegistry.surface_profiles?.[profileId];
+  if (!profile || profile.status !== "canonical-approved") throw new Error(`Missing or unapproved keyword surface profile: ${profileId}`);
+  const selections = profile.chunks ?? {};
+  if (selections.C0_identity_invariant !== "all") throw new Error(`${profileId}: C0 must be exported in full.`);
+  const c1 = selections.C1_reconstruction_environments;
+  const c1Source = keywordRegistry.chunks.C1_reconstruction_environments.terms;
+  if (!Array.isArray(c1)) throw new Error(`${profileId}: C1 must be an explicit ordered subset, never 'all'.`);
+  const rationale = profile.term_rationales ?? {};
+  const resolved = [];
+  const byChunk = {};
+  const seen = new Set();
+
+  for (const chunkName of keywordOrder) {
+    const sourceTerms = keywordRegistry.chunks?.[chunkName]?.terms;
+    if (!Array.isArray(sourceTerms)) throw new Error(`Canonical chunk ${chunkName} has no term list.`);
+    const selected = selections[chunkName];
+    let terms;
+    if (selected === "all") {
+      terms = sourceTerms;
+    } else if (selected === "none" || selected === undefined) {
+      terms = [];
+    } else if (Array.isArray(selected)) {
+      terms = selected;
+      if (chunkName !== "C2_work_positioning") {
+        const positions = terms.map((term) => sourceTerms.indexOf(term));
+        if (positions.some((position) => position < 0) ||
+            positions.some((position, index) => index > 0 && positions[index - 1] >= position)) {
+          throw new Error(`${profileId}: ${chunkName} must be a unique subsequence of the canonical chunk order.`);
+        }
+      } else if (new Set(terms.map((term) => term.toLowerCase())).size !== terms.length) {
+        throw new Error(`${profileId}: duplicate C2 terms are not permitted.`);
+      }
+    } else {
+      throw new Error(`${profileId}: invalid selector for ${chunkName}.`);
+    }
+
+    byChunk[chunkName] = terms;
+    for (const term of terms) {
+      const folded = term.toLowerCase();
+      if (!seen.has(folded)) {
+        seen.add(folded);
+        resolved.push(term);
+      }
+    }
+  }
+
+  const c0 = new Set(keywordRegistry.chunks.C0_identity_invariant.terms);
+  const expectedRationales = new Set(resolved.filter((term) => !c0.has(term)));
+  if (Object.keys(rationale).length !== expectedRationales.size ||
+      [...expectedRationales].some((term) => !rationale[term]?.trim())) {
+    throw new Error(`${profileId}: every selected non-C0 keyword must have an explicit, non-empty object-level rationale.`);
+  }
+  if (Object.keys(rationale).some((term) => !expectedRationales.has(term))) {
+    throw new Error(`${profileId}: rationale exists for a term that is not selected.`);
+  }
+  if (selections.C4_k6 !== "all" && selections.C4_k6 !== "none") {
+    throw new Error(`${profileId}: K6 must be complete or absent.`);
+  }
+  return { profile, keywords: resolved, chunks: byChunk };
+}
+
+const resolvedArtifacts = artifactMetadata.artifacts.map((artifact) => {
+  if (!artifact.id || !artifact.page || !artifact.url || !artifact.schema_type || !artifact.keyword_profile_id) {
+    throw new Error("Each artefact needs id, page, URL, schema type and keyword profile ID.");
+  }
+  const projection = resolveKeywordProfile(artifact.keyword_profile_id);
+  return { ...artifact, keyword_chunks: projection.chunks, keywords: projection.keywords, keyword_rationales: projection.profile.term_rationales };
+});
+const pages = resolvedArtifacts.map((artifact) => artifact.page);
+if (new Set(pages).size !== pages.length || pages.slice().sort().join("|") !== ["demo/index.html","index.html","methodology/index.html"].sort().join("|")) {
+  throw new Error("Artifact metadata must cover each public page exactly once.");
+}
 if (!Array.isArray(config.platforms) || config.platforms.length === 0) {
   throw new Error("Add at least one platform to assets/data/distribution-platforms.json.");
 }
@@ -129,7 +227,9 @@ const requiredOutputs = [
   "assets/site.css",
   "assets/site.js",
   "assets/data/distribution-platforms.json",
-  "assets/data/dio-odi-keyword-projection.json",
+  "assets/data/artifact-metadata.json",
+  "assets/data/keyword-registry.snapshot.json",
+  "assets/data/resolved-artifact-metadata.json",
   "assets/branding/agentic-entity-resolution-guardrail-planner-logo.svg",
   "assets/branding/social-preview.png",
   "assets/diagrams/investigation-workflow.svg",
@@ -157,20 +257,175 @@ const pngSignature = Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]);
 if (!socialImage.subarray(0, 8).equals(pngSignature) || socialImage.readUInt32BE(16) !== 1200 || socialImage.readUInt32BE(20) !== 630) {
   throw new Error("Social preview must be a valid 1200x630 PNG.");
 }
-for (const page of ["index.html", "methodology/index.html", "demo/index.html"]) {
-  const pageHtml = await fs.readFile(path.join(dist, page), "utf8");
+await fs.mkdir(path.dirname(resolvedArtifactMetadataPath), { recursive: true });
+const resolvedMetadata = {
+  schema_version: "1.0.0",
+  registry_source: {
+    repository: registrySource.repository,
+    file: registrySource.file,
+    fetched_from: registryOrigin,
+    registry_version: keywordRegistry.registry_version,
+    registry_status: keywordRegistry.status,
+    sha256: keywordRegistrySha256,
+    chunk_order: keywordOrder
+  },
+  artifacts: resolvedArtifacts
+};
+await fs.writeFile(resolvedArtifactMetadataPath, JSON.stringify(resolvedMetadata, null, 2) + "\\n", "utf8");
+
+const websiteNode = {
+  "@type": "WebSite",
+  "@id": artifactMetadata.site.id,
+  url: artifactMetadata.site.url,
+  name: artifactMetadata.site.name,
+  inLanguage: artifactMetadata.site.in_language,
+  creator: { "@id": artifactMetadata.author.id }
+};
+const authorNode = {
+  "@type": "Person",
+  "@id": artifactMetadata.author.id,
+  name: artifactMetadata.author.name,
+  url: artifactMetadata.author.url,
+  sameAs: artifactMetadata.author.same_as
+};
+const productArtifact = resolvedArtifacts.find((artifact) => artifact.id === "planner-product");
+const productNode = {
+  "@type": "SoftwareApplication",
+  "@id": productArtifact.url + "#product",
+  name: productArtifact.name,
+  description: productArtifact.description,
+  url: productArtifact.url,
+  applicationCategory: "DeveloperApplication",
+  applicationSubCategory: "Agent Skill — design-time entity-resolution planning",
+  operatingSystem: "Compatible AI agent environment",
+  softwareVersion: productArtifact.version,
+  softwareRequirements: "A compatible AI agent environment that supports Agent Skills. The DIO/ODI Reference MCP connection is optional.",
+  isAccessibleForFree: false,
+  installUrl: productArtifact.distribution[0].url,
+  featureList: productArtifact.features,
+  creator: { "@id": artifactMetadata.author.id },
+  about: productArtifact.about_concepts.map((id) => ({ "@id": id })),
+  isBasedOn: productArtifact.based_on.map((item) => ({ "@id": item.id })),
+  citation: productArtifact.citations.map((item) => ({ "@id": item.id })),
+  additionalProperty: [
+    { "@type": "PropertyValue", propertyID: "artifactRole", name: "Artifact role", value: productArtifact.artifact_role },
+    { "@type": "PropertyValue", propertyID: "lifecycleStatus", name: "Lifecycle status", value: productArtifact.lifecycle_status },
+    { "@type": "PropertyValue", propertyID: "deliveryFormat", name: "Core delivery format", value: productArtifact.technologies.find((item) => item.name === "Agent Skill").name },
+    { "@type": "PropertyValue", propertyID: "optionalIntegration", name: "Optional integration", value: "Model Context Protocol (MCP); public read-only DIO/ODI Reference MCP over Streamable HTTP" },
+    { "@type": "PropertyValue", propertyID: "outputFormats", name: "Output formats", value: productArtifact.output_formats.join(", ") },
+    { "@type": "PropertyValue", propertyID: "executionBoundary", name: "Execution boundary", value: productArtifact.limitations.join("; ") },
+    { "@type": "PropertyValue", propertyID: "keywordProfile", name: "DIO/ODI keyword profile", value: productArtifact.keyword_profile_id }
+  ]
+};
+const referenceNodes = new Map();
+for (const artifact of resolvedArtifacts) {
+  for (const item of [...(artifact.citations ?? []), ...(artifact.based_on ?? [])]) {
+    if (!referenceNodes.has(item.id)) {
+      referenceNodes.set(item.id, {
+        "@id": item.id,
+        "@type": item.type || "CreativeWork",
+        name: item.name,
+        url: item.id
+      });
+    }
+  }
+}
+const graphFor = (artifact) => {
+  const pageId = artifact.url + "#webpage";
+  const isDemo = artifact.id === "planner-demo";
+  const isProduct = artifact.id === "planner-product";
+  const pageNode = {
+    "@type": isDemo ? ["WebPage", "TechArticle"] : "WebPage",
+    "@id": pageId,
+    url: artifact.url,
+    name: artifact.name,
+    description: artifact.description,
+    inLanguage: "en",
+    isPartOf: { "@id": artifactMetadata.site.id },
+    creator: { "@id": artifactMetadata.author.id },
+    keywords: artifact.keywords,
+    about: artifact.about_concepts.map((id) => ({ "@id": id })),
+    citation: (artifact.citations ?? []).map((item) => ({ "@id": item.id })),
+    additionalProperty: [
+      { "@type": "PropertyValue", propertyID: "artifactRole", name: "Artifact role", value: artifact.artifact_role },
+      { "@type": "PropertyValue", propertyID: "lifecycleStatus", name: "Lifecycle status", value: artifact.lifecycle_status },
+      { "@type": "PropertyValue", propertyID: "keywordProfile", name: "DIO/ODI keyword profile", value: artifact.keyword_profile_id },
+      { "@type": "PropertyValue", propertyID: "keywordRegistryVersion", name: "Keyword registry version", value: keywordRegistry.registry_version },
+      { "@type": "PropertyValue", propertyID: "keywordRegistrySha256", name: "Keyword registry SHA-256", value: keywordRegistrySha256 }
+    ]
+  };
+  if (isProduct) pageNode.mainEntity = { "@id": productArtifact.url + "#product" };
+  else if (isDemo) pageNode.mainEntity = { "@id": artifact.url + "#case-study" };
+  else pageNode.mainEntity = { "@id": productArtifact.url + "#product" };
+
+  const extraNodes = [];
+  if (isDemo) {
+    extraNodes.push({
+      "@type": "TechArticle",
+      "@id": artifact.url + "#case-study",
+      name: artifact.name,
+      description: artifact.description,
+      url: artifact.url,
+      version: artifact.generated_with.version,
+      isBasedOn: artifact.based_on.map((item) => ({ "@id": item.id })),
+      about: artifact.about_concepts.map((id) => ({ "@id": id })),
+      encodingFormat: artifact.output_formats,
+      hasPart: artifact.deliverables.map((item) => ({
+        "@type": "CreativeWork",
+        "@id": artifact.url + "#" + item.id,
+        name: item.name,
+        url: base + "/" + item.path,
+        encodingFormat: item.format
+      })),
+      additionalProperty: [
+        { "@type": "PropertyValue", propertyID: "generatedWith", name: "Generating Skill version", value: artifact.generated_with.version },
+        { "@type": "PropertyValue", propertyID: "referenceMode", name: "Reference mode", value: artifact.reference_run.mode },
+        { "@type": "PropertyValue", propertyID: "referenceStack", name: "Reference stack", value: "DIO/ODI MCP " + artifact.reference_run.mcp_server + "; Reference Model " + artifact.reference_run.reference_model_version + "; Reference Vocabulary " + artifact.reference_run.reference_vocabulary_version + "; Agentic ER mapping " + artifact.reference_run.agentic_er_mapping_version },
+        { "@type": "PropertyValue", propertyID: "implementationReady", name: "Implementation readiness", value: String(artifact.validation.implementation_ready) },
+        { "@type": "PropertyValue", propertyID: "proposedTests", name: "Proposed test scenarios (not executed)", value: String(artifact.validation.proposed_test_scenarios) },
+        { "@type": "PropertyValue", propertyID: "blockingCustomerDecisions", name: "Blocking customer decisions", value: String(artifact.validation.customer_decisions_blocking) }
+      ]
+    });
+  }
+  return {
+    "@context": "https://schema.org",
+    "@graph": [websiteNode, authorNode, productNode, pageNode, ...extraNodes, ...referenceNodes.values()]
+  };
+};
+
+for (const artifact of resolvedArtifacts) {
+  const target = path.join(dist, artifact.page);
+  let pageHtml = await fs.readFile(target, "utf8");
+  const keywordMarker = "<!-- DIO_KEYWORD_METADATA -->";
+  const structuredMarker = "<!-- ARTIFACT_STRUCTURED_DATA -->";
+  if (pageHtml.split(keywordMarker).length - 1 !== 1) throw new Error("Expected exactly one DIO keyword metadata marker in " + artifact.page);
+  if (pageHtml.split(structuredMarker).length - 1 !== 1) throw new Error("Expected exactly one structured-data marker in " + artifact.page);
+  const keywordMarkup = [
+    "<!-- Generated from the canonical DIO/ODI keyword registry; do not edit manually. -->",
+    '<meta name="keywords" content="' + escapeHtml(artifact.keywords.join(", ")) + '">',
+    '<meta name="dio-odi-keyword-profile" content="' + escapeHtml(artifact.keyword_profile_id) + '">',
+    '<meta name="dio-odi-keyword-registry-version" content="' + escapeHtml(keywordRegistry.registry_version) + '">',
+    '<meta name="dio-odi-keyword-registry-sha256" content="' + keywordRegistrySha256 + '">'
+  ].join("\\n  ");
+  const jsonLd = "<script type=\\"application/ld+json\\">\\n" +
+    JSON.stringify(graphFor(artifact), null, 2).replaceAll("<", "\\\\u003c") +
+    "\\n</script>";
+  pageHtml = pageHtml.replace(keywordMarker, keywordMarkup).replace(structuredMarker, jsonLd);
+  const expectedKeywords = artifact.keywords.join(", ");
   const keywordMatch = pageHtml.match(/<meta name="keywords" content="([^"]*)">/);
-  if (!keywordMatch || keywordMatch[1] !== expectedKeywordContent) throw new Error("DIO/ODI Keywords metadata does not match the complete ordered registry projection in " + page + ".");
+  if (!keywordMatch || keywordMatch[1] !== expectedKeywords) throw new Error("Generated keyword sequence mismatch in " + artifact.page);
+  if (!pageHtml.includes('<meta name="dio-odi-keyword-profile" content="' + artifact.keyword_profile_id + '">')) throw new Error("Missing object-specific keyword profile in " + artifact.page);
+  if (!pageHtml.includes('application/ld+json')) throw new Error("Missing JSON-LD output in " + artifact.page);
   for (const marker of [
-    '<meta name="dio-odi-keyword-profile" content="commit-boundary-paper">',
-    '<meta name="dio-odi-keyword-registry-version" content="2.6.0">',
     '<meta property="og:image" content="' + socialPreviewUrl + '">',
     '<meta name="twitter:image" content="' + socialPreviewUrl + '">',
     '<meta name="twitter:card" content="summary_large_image">',
     '<meta property="og:image:width" content="1200">',
     '<meta property="og:image:height" content="630">'
-  ]) if (!pageHtml.includes(marker)) throw new Error("Missing required social/semantic metadata marker in " + page + ": " + marker);
+  ]) if (!pageHtml.includes(marker)) throw new Error("Missing required social metadata marker in " + artifact.page + ": " + marker);
+  await fs.writeFile(target, pageHtml, "utf8");
 }
 console.log("Social preview: 1200x630 PNG, referenced by Open Graph and Twitter metadata on all pages.");
-console.log("DIO/ODI Keywords: " + keywordProjection.resolved_keywords.length + " ordered terms from " + keywordProjection.profile.id + " (registry " + keywordProjection.source.registry_version + ").");
+console.log("DIO/ODI Keywords: " + resolvedArtifacts.map((artifact) => artifact.keyword_profile_id + "=" + artifact.keywords.length).join("; ") + " (registry " + keywordRegistry.registry_version + ").");
+console.log("Machine-readable artifact metadata: assets/data/resolved-artifact-metadata.json.");
 console.log("Output directory: " + dist);
