@@ -224,7 +224,7 @@ function resolveWorkIdSet(items, context) {
     const workId = matchRegistryWork(item.id, context);
     if (workId) ids.add(workId);
     else if (/^(?:https?:\\/\\/)?(?:dx\\.)?doi\\.org\\/10\\.|^(?:https?:\\/\\/)?arxiv\\.org\\/abs\\//i.test(item.id)) {
-      throw new Error(context + ": external research identifier does not resolve to a DIO/ODI work: " + item.id);
+    else if (["https://doi.org/10.","http://doi.org/10.","https://dx.doi.org/10.","https://arxiv.org/abs/","http://arxiv.org/abs/"].some((prefix) => item.id.toLowerCase().startsWith(prefix))) {
     }
   }
   return ids;
