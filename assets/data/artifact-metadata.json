@@ -3,7 +3,7 @@
   "registry_source": {
     "repository": "dan-beranek/dio-odi-reference-model",
     "file": "metadata/keywords.json",
-    "ref": "metadata/per-artifact-keyword-profiles",
+    "ref": "main",
     "minimum_registry_version": "2.7.0",
     "status_required": "canonical-approved",
     "snapshot_path": "assets/data/keyword-registry.snapshot.json",
