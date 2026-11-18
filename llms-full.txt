@@ -134,7 +134,11 @@ The product website is an information and discovery layer; it does not display a
 
 The website's distribution configuration is centralized in assets/data/distribution-platforms.json. Additional platforms can be added there; available platform CTAs are generated from the configuration. Available purchase links must use the appropriate affiliate route when one is configured.
 
-## 11. Public website resources
+## 11. Machine-readable artifact metadata
+
+The site publishes [resolved-artifact-metadata.json](https://dan-beranek.github.io/agentic-entity-resolution-guardrail-planner/assets/data/resolved-artifact-metadata.json), a generated registry for the product, methodology page and synthetic CRM example. It contains each object's canonical URL, role, publication status, version or versioning status, technology/integration information, related research and typed lineage, together with the complete ordered keyword projection resolved from that object's approved DIO/ODI profile. The build records the exact keyword-registry version and SHA-256 used for the projection. C0 remains invariant; C1 is selected per object from the global reconstruction-environment vocabulary. The public pages also expose the shared JSON file through an alternate JSON link and use page-specific JSON-LD.
+
+## 12. Public website resources
 
 - Product overview: https://dan-beranek.github.io/agentic-entity-resolution-guardrail-planner/
 - Methodology and DIO/ODI research: https://dan-beranek.github.io/agentic-entity-resolution-guardrail-planner/methodology/
