@@ -55,6 +55,10 @@ The central planning distinction is between an agent's proposed entity match and
 - DIO/ODI Reference MCP: https://mcp.danielberanek.cz/mcp
 - DIO/ODI Reference Model: https://vocab.danielberanek.cz/
 
+## Machine-readable artifact metadata
+
+The public page objects, their page-specific ordered DIO/ODI keyword sequences, object roles, versions, technology references and lineage relations are available in [resolved-artifact-metadata.json](https://dan-beranek.github.io/agentic-entity-resolution-guardrail-planner/assets/data/resolved-artifact-metadata.json). Each page exposes the same resource through an alternate JSON link. The canonical keyword source is the DIO/ODI Reference Model registry; C0 is invariant and C1 environments are selected per artifact.
+
 ## Public resources
 
 - Product overview: https://dan-beranek.github.io/agentic-entity-resolution-guardrail-planner/
