@@ -172,13 +172,14 @@
       "technologies": [
         {
           "name": "DIO/ODI Reference Vocabulary",
-          "role": "Linked canonical conceptual vocabulary",
+          "role": "Canonical DIO/ODI SKOS ConceptScheme and vocabulary URI; serialized as SKOS/RDF and JSON-LD.",
           "formats": [
             "SKOS",
             "RDF",
             "JSON-LD"
           ],
-          "status": "referenced"
+          "status": "referenced",
+          "url": "https://vocab.danielberanek.cz/dio-odi/"
         },
         {
           "name": "Model Context Protocol (MCP)",
