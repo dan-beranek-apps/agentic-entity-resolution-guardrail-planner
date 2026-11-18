@@ -32,22 +32,31 @@ async function exists(filePath) {
 const config = JSON.parse(await fs.readFile(configPath, "utf8"));
 const artifactMetadata = JSON.parse(await fs.readFile(artifactMetadataPath, "utf8"));
 const registrySource = artifactMetadata.registry_source;
-const registryUrl = `https://raw.githubusercontent.com/${registrySource.repository}/${registrySource.ref}/${registrySource.file}`;
-
-let registryText;
-let registryOrigin = registryUrl;
-try {
-  const response = await fetch(registryUrl, { headers: { accept: "application/json" } });
-  if (!response.ok) throw new Error(`HTTP ${response.status}`);
-  registryText = await response.text();
-} catch (error) {
-  const snapshotPath = path.join(root, registrySource.snapshot_path);
-  if (!(await exists(snapshotPath))) throw new Error(`Unable to fetch the canonical keyword registry and no snapshot fallback exists: ${error.message}`);
-  registryText = await fs.readFile(snapshotPath, "utf8");
-  registryOrigin = registrySource.snapshot_path;
+async function loadRegistryResource(filePath, snapshotPath) {
+  const url = `https://raw.githubusercontent.com/${registrySource.repository}/${registrySource.ref}/${filePath}`;
+  try {
+    const response = await fetch(url, { headers: { accept: "application/json" } });
+    if (!response.ok) throw new Error("HTTP " + response.status);
+    return { text: await response.text(), fetched_from: url, url };
+  } catch (error) {
+    const localPath = path.join(root, snapshotPath);
+    if (!(await exists(localPath))) throw new Error("Unable to fetch registry " + filePath + " and no snapshot fallback exists: " + error.message);
+    return { text: await fs.readFile(localPath, "utf8"), fetched_from: snapshotPath, url };
+  }
 }
+
+const keywordResource = await loadRegistryResource(registrySource.file, registrySource.snapshot_path);
+const worksResource = await loadRegistryResource(registrySource.works_file, registrySource.works_snapshot_path);
+const relationsResource = await loadRegistryResource(registrySource.relations_file, registrySource.relations_snapshot_path);
+const registryText = keywordResource.text;
 const keywordRegistrySha256 = createHash("sha256").update(registryText).digest("hex");
 const keywordRegistry = JSON.parse(registryText);
+const worksRegistry = JSON.parse(worksResource.text);
+const relationsRegistry = JSON.parse(relationsResource.text);
+const worksRegistrySha256 = createHash("sha256").update(worksResource.text).digest("hex");
+const relationsRegistrySha256 = createHash("sha256").update(relationsResource.text).digest("hex");
+if (!Array.isArray(worksRegistry.works) || !worksRegistry.registry_version) throw new Error("The DIO/ODI works registry is malformed.");
+if (!Array.isArray(relationsRegistry.relations) || !relationsRegistry.registry_version) throw new Error("The DIO/ODI relations registry is malformed.");
 function parseVersion(value) {
   const match = /^(\d+)\.(\d+)\.(\d+)$/.exec(value ?? "");
   if (!match) throw new Error("Invalid semantic version in keyword registry: " + value);
@@ -71,14 +80,12 @@ if (!Array.isArray(artifactMetadata.artifacts) || artifactMetadata.artifacts.len
 const keywordOrder = keywordRegistry.export_policy?.chunk_order;
 if (!Array.isArray(keywordOrder) || keywordOrder.length !== 7) throw new Error("Canonical keyword chunk order is missing or incomplete.");
 
-function resolveKeywordProfile(profileId) {
-  const profile = keywordRegistry.surface_profiles?.[profileId];
-  if (!profile || profile.status !== "canonical-approved") throw new Error(`Missing or unapproved keyword surface profile: ${profileId}`);
+function resolveCanonicalProfile(profileId, profile, requireAllRationales) {
+  if (!profile) throw new Error("Missing keyword profile: " + profileId);
   const selections = profile.chunks ?? {};
-  if (selections.C0_identity_invariant !== "all") throw new Error(`${profileId}: C0 must be exported in full.`);
+  if (selections.C0_identity_invariant !== "all") throw new Error(profileId + ": C0 must be exported in full.");
   const c1 = selections.C1_reconstruction_environments;
-  const c1Source = keywordRegistry.chunks.C1_reconstruction_environments.terms;
-  if (!Array.isArray(c1)) throw new Error(`${profileId}: C1 must be an explicit ordered subset, never 'all'.`);
+  if (!Array.isArray(c1)) throw new Error(profileId + ": C1 must be an explicit ordered subset, never 'all'.");
   const rationale = profile.term_rationales ?? {};
   const resolved = [];
   const byChunk = {};
@@ -86,7 +93,7 @@ function resolveKeywordProfile(profileId) {
 
   for (const chunkName of keywordOrder) {
     const sourceTerms = keywordRegistry.chunks?.[chunkName]?.terms;
-    if (!Array.isArray(sourceTerms)) throw new Error(`Canonical chunk ${chunkName} has no term list.`);
+    if (!Array.isArray(sourceTerms)) throw new Error("Canonical chunk " + chunkName + " has no term list.");
     const selected = selections[chunkName];
     let terms;
     if (selected === "all") {
@@ -97,40 +104,47 @@ function resolveKeywordProfile(profileId) {
       terms = selected;
       if (chunkName !== "C2_work_positioning") {
         const positions = terms.map((term) => sourceTerms.indexOf(term));
-        if (positions.some((position) => position < 0) ||
-            positions.some((position, index) => index > 0 && positions[index - 1] >= position)) {
-          throw new Error(`${profileId}: ${chunkName} must be a unique subsequence of the canonical chunk order.`);
+        if (positions.some((position) => position < 0) || positions.some((position, index) => index > 0 && positions[index - 1] >= position)) {
+          throw new Error(profileId + ": " + chunkName + " must be a unique subsequence of the canonical chunk order.");
         }
       } else if (new Set(terms.map((term) => term.toLowerCase())).size !== terms.length) {
-        throw new Error(`${profileId}: duplicate C2 terms are not permitted.`);
+        throw new Error(profileId + ": duplicate C2 terms are not permitted.");
       }
     } else {
-      throw new Error(`${profileId}: invalid selector for ${chunkName}.`);
+      throw new Error(profileId + ": invalid selector for " + chunkName + ".");
     }
-
     byChunk[chunkName] = terms;
     for (const term of terms) {
       const folded = term.toLowerCase();
-      if (!seen.has(folded)) {
-        seen.add(folded);
-        resolved.push(term);
-      }
+      if (!seen.has(folded)) { seen.add(folded); resolved.push(term); }
     }
   }
 
+  if (!Array.isArray(profile.resolved_keywords) || profile.resolved_keywords.join("\\u0000") !== resolved.join("\\u0000")) {
+    throw new Error(profileId + ": resolved_keywords does not match the ordered canonical chunk projection.");
+  }
   const c0 = new Set(keywordRegistry.chunks.C0_identity_invariant.terms);
-  const expectedRationales = new Set(resolved.filter((term) => !c0.has(term)));
-  if (Object.keys(rationale).length !== expectedRationales.size ||
-      [...expectedRationales].some((term) => !rationale[term]?.trim())) {
-    throw new Error(`${profileId}: every selected non-C0 keyword must have an explicit, non-empty object-level rationale.`);
+  const requiredRationales = requireAllRationales ? new Set(resolved.filter((term) => !c0.has(term))) : new Set(c1);
+  if (Object.keys(rationale).length !== requiredRationales.size || [...requiredRationales].some((term) => !rationale[term]?.trim())) {
+    throw new Error(profileId + ": selected keyword rationale coverage is incomplete.");
   }
-  if (Object.keys(rationale).some((term) => !expectedRationales.has(term))) {
-    throw new Error(`${profileId}: rationale exists for a term that is not selected.`);
-  }
-  if (selections.C4_k6 !== "all" && selections.C4_k6 !== "none") {
-    throw new Error(`${profileId}: K6 must be complete or absent.`);
-  }
+  if (Object.keys(rationale).some((term) => !requiredRationales.has(term))) throw new Error(profileId + ": rationale exists for an unselected keyword.");
+  if (selections.C4_k6 !== "all" && selections.C4_k6 !== "none") throw new Error(profileId + ": K6 must be complete or absent.");
   return { profile, keywords: resolved, chunks: byChunk };
+}
+
+function resolveKeywordProfile(profileId) {
+  const profile = keywordRegistry.surface_profiles?.[profileId];
+  if (!profile || profile.status !== "canonical-approved") throw new Error("Missing or unapproved keyword surface profile: " + profileId);
+  return resolveCanonicalProfile(profileId, profile, true);
+}
+
+function resolveWorkKeywordProfile(workId, work) {
+  if (work.keyword_profile_status !== "canonical-approved") throw new Error(workId + ": work keyword profile is not canonical-approved.");
+  const profileId = work.keyword_profile;
+  const profile = keywordRegistry.work_profiles?.[profileId];
+  if (!profile) throw new Error(workId + ": missing canonical work keyword profile " + profileId);
+  return resolveCanonicalProfile(profileId, profile, false);
 }
 
 const resolvedArtifacts = artifactMetadata.artifacts.map((artifact) => {
