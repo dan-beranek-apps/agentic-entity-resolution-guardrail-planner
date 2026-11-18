@@ -1,0 +1,292 @@
+{
+  "registry_version": "1.8.18",
+  "status": "operational-metadata-registry",
+  "scope": "DIO/ODI corpus and DIO/ODI Reference Model publication metadata",
+  "authority_note": "This registry is an operational source of truth for publication metadata and inter-work relations. It does not modify the canonical DIO/ODI Reference Vocabulary.",
+  "author": {
+    "name": "Daniel Beránek",
+    "person_uri": "https://danielberanek.cz/#person",
+    "orcid": "0009-0004-0050-0264",
+    "affiliation": "Independent Researcher, Brno, Czech Republic",
+    "email": "dan@danielberanek.cz",
+    "given_names": "Daniel",
+    "family_names": "Beránek"
+  },
+  "hub": "https://danielberanek.cz/manifest-dio/",
+  "works": [
+    {
+      "id": "manifest-v1",
+      "title": "Manifest of Digital Identity Optimization (DIO) and Ontology of Digital Identity (ODI): Canonical Multilingual Edition",
+      "type": "dataset",
+      "version": "1.0.0",
+      "version_doi": "10.5281/zenodo.21610934",
+      "publication_date": "2026-07-27",
+      "canonical_hub": "https://danielberanek.cz/manifest-dio/",
+      "license": "CC-BY-4.0",
+      "note": "Canonical multilingual Zenodo edition.",
+      "keyword_profile": "manifest-v1",
+      "keyword_profile_status": "canonical-approved",
+      "keyword_grammar_version": "2.0.0"
+    },
+    {
+      "id": "manifest-v2-web",
+      "title": "Manifesto of Digital Identity Optimization (DIO) and the Ontology of Digital Identity (ODI)",
+      "type": "web-publication",
+      "canonical_url": "https://danielberanek.cz/manifesto-of-digital-identity-optimization-dio-and-ontology-of-digital-identity-odi/",
+      "status": "living-web-edition",
+      "license": "CC-BY-4.0",
+      "note": "Living v2 web edition; not a Zenodo record.",
+      "keyword_profile": "manifest-v2-web",
+      "keyword_profile_status": "canonical-approved",
+      "keyword_grammar_version": "2.0.0"
+    },
+    {
+      "id": "dio-conceptual-framework",
+      "title": "Digital Identity Optimization (DIO): A Conceptual Framework for Entity-Based Visibility in the Age of AI-Mediated Search",
+      "type": "publication-preprint",
+      "publication_date": "2026-08-07",
+      "license": "CC-BY-4.0",
+      "keyword_profile": "dio-conceptual-framework",
+      "keyword_profile_status": "canonical-approved",
+      "keyword_grammar_version": "2.0.0",
+      "versions": [
+        {
+          "version": "v1",
+          "doi": "10.5281/zenodo.21839423",
+          "publication_date": "2026-08-07"
+        },
+        {
+          "version": "1.1.0",
+          "doi": "10.5281/zenodo.23305929",
+          "publication_date": "2026-10-11"
+        }
+      ],
+      "current_version": "1.1.0",
+      "current_version_doi": "10.5281/zenodo.23305929",
+      "preferred_relation_identifier": "10.5281/zenodo.23305929",
+      "note": "Current canonical Zenodo version is v1.1.0. The earlier v1 record remains part of the archived version history."
+    },
+    {
+      "id": "crisis-entity-resolution",
+      "title": "The Crisis of Entity Resolution in Heterogeneous AI Environments: Data, Financial, and Semantic Dimensions",
+      "type": "publication-preprint",
+      "concept_doi": "10.5281/zenodo.22257503",
+      "preferred_relation_identifier": "10.5281/zenodo.22257503",
+      "license": "CC-BY-4.0",
+      "versions": [
+        {
+          "version": "1.0.0",
+          "doi": "10.5281/zenodo.22257504",
+          "publication_date": "2026-09-02"
+        },
+        {
+          "version": "1.1.0",
+          "doi": "10.5281/zenodo.22416026"
+        }
+      ],
+      "current_version_doi": "10.5281/zenodo.22416026",
+      "keyword_profile": "crisis-entity-resolution",
+      "keyword_profile_status": "canonical-approved",
+      "keyword_grammar_version": "2.0.0"
+    },
+    {
+      "id": "mvdio",
+      "title": "Minimum Viable Digital Identity Optimization (DIO): From Adversarial Reduction to the Semantic Field Dynamics of Digital Identity",
+      "type": "publication-preprint",
+      "version": "1.0.0",
+      "version_doi": "10.5281/zenodo.23226205",
+      "publication_date": "2026-10-08",
+      "license": "CC-BY-4.0",
+      "keyword_profile": "mvdio",
+      "keyword_profile_status": "canonical-approved",
+      "keyword_grammar_version": "2.0.0"
+    },
+    {
+      "id": "taxonomic-note",
+      "title": "From Entity Resolution Anomalies to Reconstruction Failure Modes: A Taxonomic Note Following Minimum Viable DIO",
+      "type": "publication-preprint",
+      "version_doi": "10.5281/zenodo.23269323",
+      "publication_date": "2026-10-09",
+      "license": "CC-BY-4.0",
+      "keyword_profile": "taxonomic-note",
+      "keyword_profile_status": "canonical-approved",
+      "keyword_grammar_version": "2.0.0"
+    },
+    {
+      "id": "commit-boundary-paper",
+      "title": "Constraining the Commit Boundary: A DIO/ODI-Informed Authorization Guardrail for Agentic Entity Resolution",
+      "type": "publication-preprint",
+      "version_doi": "10.5281/zenodo.23580733",
+      "publication_date": "2026-10-22",
+      "note": "Defines a commit-time authorization guardrail for persistent identity-changing mutations in Agentic Entity Resolution and explicitly leaves broader control of hypothesis-conditioned evidence acquisition and feedback as a separate research direction.",
+      "keyword_profile": "commit-boundary-paper",
+      "keyword_profile_status": "canonical-approved",
+      "keyword_grammar_version": "2.0.0",
+      "arxiv": {
+        "id": "2610.37407",
+        "current_version": "v2",
+        "concept_url": "https://arxiv.org/abs/2610.37407",
+        "version_url": "https://arxiv.org/abs/2610.37407v2",
+        "pdf_url": "https://arxiv.org/pdf/2610.37407v2",
+        "html_url": "https://arxiv.org/html/2610.37407v2",
+        "version_date": "2026-11-05",
+        "version_history_timestamp_utc": "2026-11-05T00:52:52Z",
+        "subjects": [
+          "cs.AI",
+          "cs.CR",
+          "cs.DB"
+        ],
+        "metadata_author_name": "Daniel Beranek",
+        "pdf_titlepage_author_name": "Daniel Beránek",
+        "comments": "32 pages, 2 figures, 3 tables. Version 2, its non-normative relational architecture mapping and machine-readable serializations form one coordinated research artefact: the paper specifies the architecture; the mapping formalizes its relations. Mapping v0.3.1: https://vocab.danielberanek.cz/mappings/agentic-er-architecture/ ; archived Reference Model v0.7.0: https://doi.org/10.5281/zenodo.24020300; earlier mapping v0.3.0 is included in archived v0.6.0: https://doi.org/10.5281/zenodo.23966487"
+      }
+    },
+    {
+      "id": "reference-model",
+      "title": "DIO/ODI Reference Model",
+      "type": "software",
+      "repository": "https://github.com/dan-beranek/dio-odi-reference-model",
+      "canonical_namespace": "https://vocab.danielberanek.cz/dio-odi/#",
+      "namespace_document": "https://vocab.danielberanek.cz/dio-odi/",
+      "reference_vocabulary_version": "0.2.2",
+      "publication_date": "2026-10-11",
+      "license": "CC-BY-4.0",
+      "current_release": {
+        "version": "0.9.0",
+        "doi": "10.5281/zenodo.24085589",
+        "publication_date": "2026-11-09",
+        "reference_vocabulary_version": "0.2.2",
+        "semantic_change_feed_version": "0.1.1",
+        "semantic_change_feed_schema_version": "0.2.0",
+        "semantic_change_feed_event_count": 45,
+        "status": "archived",
+        "semantic_change_feed_coverage_through": "2026-11-09"
+      },
+      "releases": [
+        {
+          "version": "0.9.0",
+          "doi": "10.5281/zenodo.24085589",
+          "publication_date": "2026-11-09",
+          "reference_vocabulary_version": "0.2.2",
+          "semantic_change_feed_version": "0.1.1",
+          "semantic_change_feed_schema_version": "0.2.0",
+          "semantic_change_feed_event_count": 45,
+          "semantic_change_feed_coverage_through": "2026-11-09"
+        },
+        {
+          "version": "0.8.0",
+          "doi": "10.5281/zenodo.24056601",
+          "publication_date": "2026-11-08",
+          "reference_vocabulary_version": "0.2.1",
+          "semantic_change_feed_version": "0.1.0",
+          "semantic_change_feed_schema_version": "0.2.0",
+          "semantic_change_feed_event_count": 44,
+          "semantic_change_feed_coverage_through": "2026-11-08"
+        },
+        {
+          "version": "0.7.0",
+          "doi": "10.5281/zenodo.24020300",
+          "publication_date": "2026-11-06",
+          "reference_vocabulary_version": "0.2.1"
+        },
+        {
+          "version": "0.6.0",
+          "doi": "10.5281/zenodo.23966487",
+          "publication_date": "2026-11-05",
+          "reference_vocabulary_version": "0.2.0"
+        },
+        {
+          "version": "0.5.0",
+          "doi": "10.5281/zenodo.23643845",
+          "publication_date": "2026-10-25",
+          "reference_vocabulary_version": "0.2.0"
+        },
+        {
+          "version": "0.4.0",
+          "doi": "10.5281/zenodo.23632619",
+          "publication_date": "2026-10-25"
+        },
+        {
+          "version": "0.3.2",
+          "doi": "10.5281/zenodo.23300703",
+          "publication_date": "2026-10-11"
+        },
+        {
+          "version": "0.3.1",
+          "doi": "10.5281/zenodo.23290683"
+        },
+        {
+          "version": "0.3.0",
+          "doi": "10.5281/zenodo.23289615"
+        },
+        {
+          "version": "0.2.0",
+          "doi": "10.5281/zenodo.23282752",
+          "publication_date": "2026-10-10",
+          "reference_vocabulary_version": "0.2.0"
+        },
+        {
+          "version": "0.1.0",
+          "doi": "10.5281/zenodo.23272898",
+          "publication_date": "2026-10-10",
+          "reference_vocabulary_version": "0.1.0"
+        }
+      ],
+      "keyword_profile": "reference-model",
+      "keyword_profile_status": "canonical-approved",
+      "keyword_grammar_version": "2.0.0",
+      "previous_archived_release": {
+        "version": "0.8.0",
+        "doi": "10.5281/zenodo.24056601"
+      },
+      "reference_model_concept_doi": "10.5281/zenodo.23272897",
+      "reference_model_concept_doi_url": "https://doi.org/10.5281/zenodo.23272897",
+      "reference_vocabulary_uri": "https://vocab.danielberanek.cz/dio-odi/#ReferenceVocabulary",
+      "reference_vocabulary_inclusion_history": [
+        {
+          "vocabulary_version": "0.1.0",
+          "reference_model_release_version": "0.1.0",
+          "reference_model_release_doi": "10.5281/zenodo.23272898"
+        },
+        {
+          "vocabulary_version": "0.2.0",
+          "reference_model_release_version": "0.2.0",
+          "reference_model_release_doi": "10.5281/zenodo.23282752"
+        },
+        {
+          "vocabulary_version": "0.2.1",
+          "reference_model_release_version": "0.7.0",
+          "reference_model_release_doi": "10.5281/zenodo.24020300"
+        },
+        {
+          "vocabulary_version": "0.2.2",
+          "reference_model_release_version": "0.9.0",
+          "reference_model_release_doi": "10.5281/zenodo.24085589"
+        }
+      ],
+      "site_homepage": "https://vocab.danielberanek.cz/",
+      "citation_abstract": "Version 0.9.0 of the DIO/ODI Reference Model is a machine-readable SKOS-first reference layer for Digital Identity Optimization (DIO) and the Ontology of Digital Identity (ODI), with stable concept URIs, Turtle/RDF and JSON-LD serializations, provenance metadata, and explicitly separated non-normative application mappings. It carries forward Reference Vocabulary v0.2.2 with the disambiguated preferred compact prefix dio-odi, preserving the canonical namespace URI and all 40 concept URIs, together with the RAG, HEM, Commit-Boundary × Policy-as-Code, and Agentic ER mappings. This release updates the integrated Semantic Change Feed (SCF) to v0.1.1 with 45 documented events, a human-readable frontend, and JSON Schema v0.2.0. The SCF strengthens temporal and change provenance while remaining separate from the canonical vocabulary and derived mappings; it is not a Git commit log or a separate standalone publication. The Reference Model remains SKOS-first and makes no claim of implementation or empirical validation for its analytical mappings.",
+      "reference_vocabulary_status_note": "A metadata-only namespace-prefix alignment to v0.2.1; the concept model is unchanged."
+    },
+    {
+      "id": "mcp-server",
+      "title": "DIO/ODI MCP: A Read-only Model Context Protocol Server for the DIO/ODI Reference Model and Agentic Entity Resolution Guardrail Mappings",
+      "type": "software",
+      "version": "0.1.1",
+      "version_doi": "10.5281/zenodo.24123229",
+      "concept_doi": "10.5281/zenodo.24123228",
+      "preferred_relation_identifier": "10.5281/zenodo.24123229",
+      "repository": "https://github.com/dan-beranek/dio-odi-mcp",
+      "endpoint": "https://mcp.danielberanek.cz/mcp",
+      "health_endpoint": "https://mcp.danielberanek.cz/healthz",
+      "license": "MIT",
+      "embedded_content_license": "CC-BY-4.0",
+      "note": "Public, stateless, read-only MCP distribution exposing a bounded snapshot of the DIO/ODI Reference Model and selected derived Agentic ER and Policy-as-Code mappings. It is not an MVDIO Supervisor or authorization service and does not execute application-side authorization or mutate application state.",
+      "keyword_profile": "mcp-server",
+      "keyword_profile_status": "canonical-approved",
+      "keyword_grammar_version": "2.0.0",
+      "access": "public-read-only",
+      "relation": "derived-read-only-distribution"
+    }
+  ]
+}

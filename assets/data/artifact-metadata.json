@@ -9,13 +9,40 @@
     "snapshot_path": "assets/data/keyword-registry.snapshot.json",
     "description": "The canonical ordered DIO/ODI keyword grammar and approved object-specific keyword profiles. The live source is fetched during the build; the committed snapshot is an offline fallback.",
     "compatible_major": 2,
-    "compatibility_policy": "Accept canonical-approved releases at or above minimum_registry_version within compatible_major; stop the build when the major version changes."
+    "compatibility_policy": "Accept canonical-approved releases at or above minimum_registry_version within compatible_major; stop the build when the major version changes.",
+    "works_file": "metadata/works.json",
+    "works_snapshot_path": "assets/data/works-registry.snapshot.json",
+    "relations_file": "metadata/relations.json",
+    "relations_snapshot_path": "assets/data/relations-registry.snapshot.json",
+    "registry_discovery": "https://vocab.danielberanek.cz/metadata/README.md"
   },
   "site": {
     "id": "https://dan-beranek.github.io/agentic-entity-resolution-guardrail-planner/#website",
     "url": "https://dan-beranek.github.io/agentic-entity-resolution-guardrail-planner/",
     "name": "Agentic Entity Resolution Guardrail Planner",
-    "in_language": "en"
+    "in_language": "en",
+    "artifact_type": "static-website",
+    "artifact_role": "Public product discovery, methodology and demonstration website; the website is a distinct artifact from the paid Agent Skill itself.",
+    "lifecycle_status": "published",
+    "implementation": {
+      "source_repository": "https://github.com/dan-beranek/agentic-entity-resolution-guardrail-planner",
+      "source_entrypoint": "index.html",
+      "source_formats": [
+        "HTML",
+        "CSS",
+        "JavaScript",
+        "JSON",
+        "JSON-LD",
+        "SVG"
+      ],
+      "build_entrypoint": "scripts/build-site.mjs",
+      "build_runtime": "Node.js 22 or later",
+      "build_dependencies": "Node.js built-in modules only; no external build packages",
+      "hosting": "GitHub Pages",
+      "ci_cd": "GitHub Actions",
+      "rendering": "Static site generation",
+      "generated_metadata": "assets/data/resolved-artifact-metadata.json"
+    }
   },
   "author": {
     "id": "https://danielberanek.cz/#person",
@@ -117,6 +144,11 @@
           "https://dan-beranek.github.io/agentic-entity-resolution-guardrail-planner/methodology/",
           "https://dan-beranek.github.io/agentic-entity-resolution-guardrail-planner/demo/"
         ]
+      },
+      "keyword_policy": {
+        "inheritance": "none",
+        "rationale": "Cited and supporting works are represented as separate referenced_work_profiles with their own canonical keyword sequences; their keywords are never copied into this page's profile.",
+        "allow_reconstruction_taxonomy": false
       }
     },
     {
@@ -167,13 +199,14 @@
       "technologies": [
         {
           "name": "DIO/ODI Reference Vocabulary",
-          "role": "Linked canonical conceptual vocabulary",
+          "role": "Canonical DIO/ODI SKOS ConceptScheme and vocabulary URI; serialized as SKOS/RDF and JSON-LD.",
           "formats": [
             "SKOS",
             "RDF",
             "JSON-LD"
           ],
-          "status": "referenced"
+          "status": "referenced",
+          "url": "https://vocab.danielberanek.cz/dio-odi/"
         },
         {
           "name": "Model Context Protocol (MCP)",
@@ -207,6 +240,11 @@
           "https://doi.org/10.5281/zenodo.23269323",
           "https://doi.org/10.5281/zenodo.23272897"
         ]
+      },
+      "keyword_policy": {
+        "inheritance": "none",
+        "rationale": "Cited and supporting works are represented as separate referenced_work_profiles with their own canonical keyword sequences; their keywords are never copied into this page's profile.",
+        "allow_reconstruction_taxonomy": false
       }
     },
     {
@@ -356,6 +394,11 @@
         "derivedFrom": [
           "https://arxiv.org/abs/2610.37407"
         ]
+      },
+      "keyword_policy": {
+        "inheritance": "none",
+        "rationale": "Cited and supporting works are represented as separate referenced_work_profiles with their own canonical keyword sequences; their keywords are never copied into this page's profile.",
+        "allow_reconstruction_taxonomy": false
       }
     }
   ]

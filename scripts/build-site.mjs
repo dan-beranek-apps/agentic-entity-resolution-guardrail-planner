@@ -32,22 +32,31 @@ async function exists(filePath) {
 const config = JSON.parse(await fs.readFile(configPath, "utf8"));
 const artifactMetadata = JSON.parse(await fs.readFile(artifactMetadataPath, "utf8"));
 const registrySource = artifactMetadata.registry_source;
-const registryUrl = `https://raw.githubusercontent.com/${registrySource.repository}/${registrySource.ref}/${registrySource.file}`;
-
-let registryText;
-let registryOrigin = registryUrl;
-try {
-  const response = await fetch(registryUrl, { headers: { accept: "application/json" } });
-  if (!response.ok) throw new Error(`HTTP ${response.status}`);
-  registryText = await response.text();
-} catch (error) {
-  const snapshotPath = path.join(root, registrySource.snapshot_path);
-  if (!(await exists(snapshotPath))) throw new Error(`Unable to fetch the canonical keyword registry and no snapshot fallback exists: ${error.message}`);
-  registryText = await fs.readFile(snapshotPath, "utf8");
-  registryOrigin = registrySource.snapshot_path;
+async function loadRegistryResource(filePath, snapshotPath) {
+  const url = `https://raw.githubusercontent.com/${registrySource.repository}/${registrySource.ref}/${filePath}`;
+  try {
+    const response = await fetch(url, { headers: { accept: "application/json" } });
+    if (!response.ok) throw new Error("HTTP " + response.status);
+    return { text: await response.text(), fetched_from: url, url };
+  } catch (error) {
+    const localPath = path.join(root, snapshotPath);
+    if (!(await exists(localPath))) throw new Error("Unable to fetch registry " + filePath + " and no snapshot fallback exists: " + error.message);
+    return { text: await fs.readFile(localPath, "utf8"), fetched_from: snapshotPath, url };
+  }
 }
+
+const keywordResource = await loadRegistryResource(registrySource.file, registrySource.snapshot_path);
+const worksResource = await loadRegistryResource(registrySource.works_file, registrySource.works_snapshot_path);
+const relationsResource = await loadRegistryResource(registrySource.relations_file, registrySource.relations_snapshot_path);
+const registryText = keywordResource.text;
 const keywordRegistrySha256 = createHash("sha256").update(registryText).digest("hex");
 const keywordRegistry = JSON.parse(registryText);
+const worksRegistry = JSON.parse(worksResource.text);
+const relationsRegistry = JSON.parse(relationsResource.text);
+const worksRegistrySha256 = createHash("sha256").update(worksResource.text).digest("hex");
+const relationsRegistrySha256 = createHash("sha256").update(relationsResource.text).digest("hex");
+if (!Array.isArray(worksRegistry.works) || !worksRegistry.registry_version) throw new Error("The DIO/ODI works registry is malformed.");
+if (!Array.isArray(relationsRegistry.relations) || !relationsRegistry.registry_version) throw new Error("The DIO/ODI relations registry is malformed.");
 function parseVersion(value) {
   const match = /^(\d+)\.(\d+)\.(\d+)$/.exec(value ?? "");
   if (!match) throw new Error("Invalid semantic version in keyword registry: " + value);
@@ -71,14 +80,12 @@ if (!Array.isArray(artifactMetadata.artifacts) || artifactMetadata.artifacts.len
 const keywordOrder = keywordRegistry.export_policy?.chunk_order;
 if (!Array.isArray(keywordOrder) || keywordOrder.length !== 7) throw new Error("Canonical keyword chunk order is missing or incomplete.");
 
-function resolveKeywordProfile(profileId) {
-  const profile = keywordRegistry.surface_profiles?.[profileId];
-  if (!profile || profile.status !== "canonical-approved") throw new Error(`Missing or unapproved keyword surface profile: ${profileId}`);
+function resolveCanonicalProfile(profileId, profile, requireAllRationales) {
+  if (!profile) throw new Error("Missing keyword profile: " + profileId);
   const selections = profile.chunks ?? {};
-  if (selections.C0_identity_invariant !== "all") throw new Error(`${profileId}: C0 must be exported in full.`);
+  if (selections.C0_identity_invariant !== "all") throw new Error(profileId + ": C0 must be exported in full.");
   const c1 = selections.C1_reconstruction_environments;
-  const c1Source = keywordRegistry.chunks.C1_reconstruction_environments.terms;
-  if (!Array.isArray(c1)) throw new Error(`${profileId}: C1 must be an explicit ordered subset, never 'all'.`);
+  if (!Array.isArray(c1)) throw new Error(profileId + ": C1 must be an explicit ordered subset, never 'all'.");
   const rationale = profile.term_rationales ?? {};
   const resolved = [];
   const byChunk = {};
@@ -86,7 +93,7 @@ function resolveKeywordProfile(profileId) {
 
   for (const chunkName of keywordOrder) {
     const sourceTerms = keywordRegistry.chunks?.[chunkName]?.terms;
-    if (!Array.isArray(sourceTerms)) throw new Error(`Canonical chunk ${chunkName} has no term list.`);
+    if (!Array.isArray(sourceTerms)) throw new Error("Canonical chunk " + chunkName + " has no term list.");
     const selected = selections[chunkName];
     let terms;
     if (selected === "all") {
@@ -97,40 +104,53 @@ function resolveKeywordProfile(profileId) {
       terms = selected;
       if (chunkName !== "C2_work_positioning") {
         const positions = terms.map((term) => sourceTerms.indexOf(term));
-        if (positions.some((position) => position < 0) ||
-            positions.some((position, index) => index > 0 && positions[index - 1] >= position)) {
-          throw new Error(`${profileId}: ${chunkName} must be a unique subsequence of the canonical chunk order.`);
+        if (positions.some((position) => position < 0) || positions.some((position, index) => index > 0 && positions[index - 1] >= position)) {
+          throw new Error(profileId + ": " + chunkName + " must be a unique subsequence of the canonical chunk order.");
         }
       } else if (new Set(terms.map((term) => term.toLowerCase())).size !== terms.length) {
-        throw new Error(`${profileId}: duplicate C2 terms are not permitted.`);
+        throw new Error(profileId + ": duplicate C2 terms are not permitted.");
       }
     } else {
-      throw new Error(`${profileId}: invalid selector for ${chunkName}.`);
+      throw new Error(profileId + ": invalid selector for " + chunkName + ".");
     }
-
     byChunk[chunkName] = terms;
     for (const term of terms) {
       const folded = term.toLowerCase();
-      if (!seen.has(folded)) {
-        seen.add(folded);
-        resolved.push(term);
-      }
+      if (!seen.has(folded)) { seen.add(folded); resolved.push(term); }
     }
   }
 
+  if (Array.isArray(profile.resolved_keywords) && profile.resolved_keywords.join("\\u0000") !== resolved.join("\\u0000")) {
+    throw new Error(profileId + ": resolved_keywords does not match the ordered canonical chunk projection.");
+  }
+  if (requireAllRationales && profile.resolved_keywords !== undefined) {
+    throw new Error(profileId + ": derived surface profiles must generate their keyword sequence from selectors, not store a duplicate resolved list.");
+  }
+  if (!requireAllRationales && !Array.isArray(profile.resolved_keywords)) {
+    throw new Error(profileId + ": canonical work profiles must include a resolved_keywords sequence.");
+  }
   const c0 = new Set(keywordRegistry.chunks.C0_identity_invariant.terms);
-  const expectedRationales = new Set(resolved.filter((term) => !c0.has(term)));
-  if (Object.keys(rationale).length !== expectedRationales.size ||
-      [...expectedRationales].some((term) => !rationale[term]?.trim())) {
-    throw new Error(`${profileId}: every selected non-C0 keyword must have an explicit, non-empty object-level rationale.`);
+  const requiredRationales = requireAllRationales ? new Set(resolved.filter((term) => !c0.has(term))) : new Set(c1);
+  if (Object.keys(rationale).length !== requiredRationales.size || [...requiredRationales].some((term) => !rationale[term]?.trim())) {
+    throw new Error(profileId + ": selected keyword rationale coverage is incomplete.");
   }
-  if (Object.keys(rationale).some((term) => !expectedRationales.has(term))) {
-    throw new Error(`${profileId}: rationale exists for a term that is not selected.`);
-  }
-  if (selections.C4_k6 !== "all" && selections.C4_k6 !== "none") {
-    throw new Error(`${profileId}: K6 must be complete or absent.`);
-  }
+  if (Object.keys(rationale).some((term) => !requiredRationales.has(term))) throw new Error(profileId + ": rationale exists for an unselected keyword.");
+  if (selections.C4_k6 !== "all" && selections.C4_k6 !== "none") throw new Error(profileId + ": K6 must be complete or absent.");
   return { profile, keywords: resolved, chunks: byChunk };
+}
+
+function resolveKeywordProfile(profileId) {
+  const profile = keywordRegistry.surface_profiles?.[profileId];
+  if (!profile || profile.status !== "canonical-approved") throw new Error("Missing or unapproved keyword surface profile: " + profileId);
+  return resolveCanonicalProfile(profileId, profile, true);
+}
+
+function resolveWorkKeywordProfile(workId, work) {
+  if (work.keyword_profile_status !== "canonical-approved") throw new Error(workId + ": work keyword profile is not canonical-approved.");
+  const profileId = work.keyword_profile;
+  const profile = keywordRegistry.work_profiles?.[profileId];
+  if (!profile) throw new Error(workId + ": missing canonical work keyword profile " + profileId);
+  return resolveCanonicalProfile(profileId, profile, false);
 }
 
 const resolvedArtifacts = artifactMetadata.artifacts.map((artifact) => {
@@ -140,6 +160,176 @@ const resolvedArtifacts = artifactMetadata.artifacts.map((artifact) => {
   const projection = resolveKeywordProfile(artifact.keyword_profile_id);
   return { ...artifact, keyword_chunks: projection.chunks, keywords: projection.keywords, keyword_rationales: projection.profile.term_rationales };
 });
+
+function normalizeWorkIdentifier(value) {
+  if (typeof value !== "string" || !value.trim()) return null;
+  const trimmed = value.trim().replace(/[),.;]+$/, "");
+  const doiMatch = trimmed.match(/^(?:https?:\/\/(?:dx\.)?doi\.org\/)?(10\.\d{4,9}\/[^?#\s]+)$/i);
+  if (doiMatch) return "doi:" + doiMatch[1].replace(/\/+$/, "").toLowerCase();
+  const arxivMatch = trimmed.match(/^(?:https?:\/\/)?arxiv\.org\/abs\/([0-9]+\.[0-9]{4,5}(?:v[0-9]+)?)$/i);
+  if (arxivMatch) return "arxiv:" + arxivMatch[1].toLowerCase();
+  return trimmed.replace(/\/+$/, "").toLowerCase();
+}
+
+function identifiersForWork(work) {
+  const values = [
+    work.version_doi, work.concept_doi, work.current_version_doi, work.preferred_relation_identifier,
+    work.canonical_url, work.endpoint, work.repository, work.reference_vocabulary_uri, work.namespace_document, work.site_homepage,
+    work.reference_model_concept_doi, work.reference_model_concept_doi_url,
+    work.current_release?.doi, work.current_release?.url,
+    work.arxiv?.concept_url, work.arxiv?.version_url, work.arxiv?.pdf_url, work.arxiv?.html_url,
+    work.arxiv?.id ? "https://arxiv.org/abs/" + work.arxiv.id : null,
+    ...(work.versions ?? []).flatMap((version) => [version.doi, version.url, version.concept_url]),
+    ...(work.releases ?? []).flatMap((release) => [release.doi, release.url])
+  ];
+  return [...new Set(values.map(normalizeWorkIdentifier).filter(Boolean))];
+}
+
+const workById = new Map(worksRegistry.works.map((work) => [work.id, work]));
+const workIdsByIdentifier = new Map();
+for (const work of worksRegistry.works) {
+  for (const identifier of identifiersForWork(work)) {
+    const owners = workIdsByIdentifier.get(identifier) ?? [];
+    if (!owners.includes(work.id)) owners.push(work.id);
+    workIdsByIdentifier.set(identifier, owners);
+  }
+}
+
+function matchRegistryWork(identifier, context) {
+  const normalized = normalizeWorkIdentifier(identifier);
+  if (!normalized) return null;
+  const owners = workIdsByIdentifier.get(normalized) ?? [];
+  if (owners.length > 1) throw new Error("Ambiguous DIO/ODI work identifier " + identifier + " in " + context + ": " + owners.join(", "));
+  return owners[0] ?? null;
+}
+
+function expandDerivedLineage(seedIds) {
+  const result = new Set(seedIds);
+  const queue = [...seedIds];
+  while (queue.length) {
+    const current = queue.shift();
+    for (const edge of relationsRegistry.relations) {
+      if (edge.subject === current && edge.relation === "isDerivedFrom" && workById.has(edge.object) && !result.has(edge.object)) {
+        result.add(edge.object);
+        queue.push(edge.object);
+      }
+    }
+  }
+  return [...result];
+}
+
+function resolveWorkIdSet(items, context) {
+  const ids = new Set();
+  for (const item of items ?? []) {
+    const workId = matchRegistryWork(item.id, context);
+    if (workId) ids.add(workId);
+    else if (["https://doi.org/10.","http://doi.org/10.","https://dx.doi.org/10.","https://arxiv.org/abs/","http://arxiv.org/abs/"].some((prefix) => item.id.toLowerCase().startsWith(prefix))) {
+    }
+  }
+  return ids;
+}
+
+const artifactRelations = [];
+for (const artifact of resolvedArtifacts) {
+  const citationIds = resolveWorkIdSet(artifact.citations, artifact.id + " citations");
+  const basedOnIds = resolveWorkIdSet(artifact.based_on, artifact.id + " isBasedOn");
+  const technologyIds = new Set();
+  for (const technology of artifact.technologies ?? []) {
+    const candidate = technology.endpoint ?? technology.url ?? technology.repository;
+    const workId = matchRegistryWork(candidate, artifact.id + " technology " + technology.name);
+    if (workId) technologyIds.add(workId);
+  }
+  const runtimeEndpoint = artifact.reference_run?.endpoint;
+  const runtimeWorkId = matchRegistryWork(runtimeEndpoint, artifact.id + " reference run");
+  if (runtimeWorkId) technologyIds.add(runtimeWorkId);
+  const localBasedOnIds = new Set();
+  for (const item of artifact.based_on ?? []) {
+    const local = resolvedArtifacts.find((candidate) =>
+      item.id === candidate.url || item.id === candidate.url + "#product" || item.id === candidate.url + "#webpage"
+    );
+    if (local) localBasedOnIds.add(local.id);
+  }
+  const directWorkIds = new Set([...citationIds, ...basedOnIds]);
+  const derivedClosure = new Set(expandDerivedLineage([...directWorkIds]));
+  const derivedSourceIds = new Set([...derivedClosure].filter((id) => !directWorkIds.has(id)));
+  const relatedWorkIds = new Set([...directWorkIds, ...derivedSourceIds, ...technologyIds]);
+  artifact.cited_work_ids = [...citationIds];
+  artifact.declared_based_on_work_ids = [...basedOnIds];
+  artifact.upstream_derivation_work_ids = [...derivedSourceIds];
+  artifact.technology_work_ids = [...technologyIds];
+  artifact.referenced_work_ids = [...relatedWorkIds];
+  artifact.local_artifact_based_on_ids = [...localBasedOnIds];
+  artifact.keyword_inheritance = "none";
+  for (const id of citationIds) artifactRelations.push({ subject: artifact.id, subject_uri: artifact.url, predicate: "cites", object: id, object_uri: canonicalWorkUri(workById.get(id)) });
+  for (const id of basedOnIds) artifactRelations.push({ subject: artifact.id, subject_uri: artifact.url, predicate: "isBasedOn", object: id, object_uri: canonicalWorkUri(workById.get(id)) });
+  for (const id of technologyIds) artifactRelations.push({ subject: artifact.id, subject_uri: artifact.url, predicate: "usesTechnology", object: id, object_uri: canonicalWorkUri(workById.get(id)) });
+  for (const id of derivedSourceIds) artifactRelations.push({ subject: artifact.id, subject_uri: artifact.url, predicate: "hasUpstreamSource", object: id, object_uri: canonicalWorkUri(workById.get(id)) });
+  for (const id of localBasedOnIds) {
+    const target = resolvedArtifacts.find((candidate) => candidate.id === id);
+    artifactRelations.push({ subject: artifact.id, subject_uri: artifact.url, predicate: "isBasedOn", object: id, object_uri: target.url });
+  }
+  for (const relation of artifact.related_artifacts ?? []) {
+    const target = resolvedArtifacts.find((candidate) => candidate.id === relation.id);
+    if (!target) throw new Error(artifact.id + ": unknown related artifact " + relation.id);
+    artifactRelations.push({ subject: artifact.id, subject_uri: artifact.url, predicate: relation.relation, object: target.id, object_uri: target.url });
+  }
+}
+
+const allReferencedWorkIds = new Set(resolvedArtifacts.flatMap((artifact) => artifact.referenced_work_ids));
+const directlyReferencedBy = new Map();
+const presentInDerivedLineageOf = new Map();
+const usedAsTechnologyBy = new Map();
+for (const artifact of resolvedArtifacts) {
+  for (const workId of new Set([...(artifact.cited_work_ids ?? []), ...(artifact.declared_based_on_work_ids ?? [])])) {
+    const ids = directlyReferencedBy.get(workId) ?? [];
+    ids.push(artifact.id);
+    directlyReferencedBy.set(workId, ids);
+  }
+  for (const workId of artifact.upstream_derivation_work_ids ?? []) {
+    const ids = presentInDerivedLineageOf.get(workId) ?? [];
+    ids.push(artifact.id);
+    presentInDerivedLineageOf.set(workId, ids);
+  }
+  for (const workId of artifact.technology_work_ids ?? []) {
+    const ids = usedAsTechnologyBy.get(workId) ?? [];
+    ids.push(artifact.id);
+    usedAsTechnologyBy.set(workId, ids);
+  }
+}
+const referencedWorkProfiles = [...allReferencedWorkIds].map((workId) => {
+  const work = workById.get(workId);
+  if (!work) throw new Error("Missing referenced DIO/ODI work: " + workId);
+  const projection = resolveWorkKeywordProfile(workId, work);
+  return {
+    id: workId,
+    title: work.title,
+    artifact_type: work.type,
+    artifact_role: work.artifact_role ?? work.role ?? work.purpose ?? null,
+    lifecycle_status: work.lifecycle_status ?? work.status ?? work.publication_status ?? null,
+    keyword_profile_status: work.keyword_profile_status,
+    keyword_profile_id: work.keyword_profile,
+    directly_referenced_by_artifact_ids: directlyReferencedBy.get(workId) ?? [],
+    present_in_derived_lineage_of_artifact_ids: presentInDerivedLineageOf.get(workId) ?? [],
+    used_as_technology_by_artifact_ids: usedAsTechnologyBy.get(workId) ?? [],
+    keywords: projection.keywords,
+    keyword_chunks: projection.chunks,
+    keyword_rationales: projection.profile.term_rationales ?? {},
+    source_record: work
+  };
+});
+const referenceRelations = relationsRegistry.relations.filter((edge) => allReferencedWorkIds.has(edge.subject) && allReferencedWorkIds.has(edge.object));
+
+const reconstructionTaxonomyTerms = new Set(keywordRegistry.chunks.C5_failures_robustness.terms.filter((term) => term !== "entity resolution"));
+for (const artifact of resolvedArtifacts) {
+  const leakedTerms = artifact.keywords.filter((term) => reconstructionTaxonomyTerms.has(term));
+  if (leakedTerms.length && artifact.keyword_policy?.allow_reconstruction_taxonomy !== true) {
+    throw new Error(artifact.id + ": DIO Reconstruction Failure taxonomy terms require an explicit substantive-coverage exception; found " + leakedTerms.join(", "));
+  }
+}
+if (!referencedWorkProfiles.some((profile) => profile.id === "taxonomic-note" && profile.keywords.includes("Reconstruction Failure Modes"))) {
+  throw new Error("The cited Reconstruction Failure Modes taxonomic note must remain independently discoverable with its own canonical keyword profile.");
+}
+
 const pages = resolvedArtifacts.map((artifact) => artifact.page);
 if (new Set(pages).size !== pages.length || pages.slice().sort().join("|") !== ["demo/index.html","index.html","methodology/index.html"].sort().join("|")) {
   throw new Error("Artifact metadata must cover each public page exactly once.");
@@ -243,6 +433,8 @@ const requiredOutputs = [
   "assets/data/distribution-platforms.json",
   "assets/data/artifact-metadata.json",
   "assets/data/keyword-registry.snapshot.json",
+  "assets/data/works-registry.snapshot.json",
+  "assets/data/relations-registry.snapshot.json",
   "assets/branding/agentic-entity-resolution-guardrail-planner-logo.svg",
   "assets/branding/social-preview.png",
   "assets/diagrams/investigation-workflow.svg",
@@ -272,17 +464,45 @@ if (!socialImage.subarray(0, 8).equals(pngSignature) || socialImage.readUInt32BE
 }
 await fs.mkdir(path.dirname(resolvedArtifactMetadataPath), { recursive: true });
 const resolvedMetadata = {
-  schema_version: "1.0.0",
+  schema_version: "1.2.0",
+  metadata_policy: {
+    C0: "The complete canonical identity-invariant chunk is exported on every approved DIO/ODI object profile.",
+    C1: "C1 is a global DIO reconstruction-environment candidate pool; each object explicitly selects only the environments it substantively covers.",
+    other_chunks: "C2-C6 are selected according to the canonical approved profile for the specific work or derived artefact.",
+    cross_object_keyword_inheritance: "disabled",
+    citations: "Cited works remain separate objects with their own keyword profiles; citation does not transfer the cited work's keywords to the citing page."
+  },
   registry_source: {
     repository: registrySource.repository,
-    file: registrySource.file,
-    fetched_from: registryOrigin,
-    registry_version: keywordRegistry.registry_version,
-    registry_status: keywordRegistry.status,
-    sha256: keywordRegistrySha256,
-    chunk_order: keywordOrder
+    discovery: registrySource.registry_discovery,
+    keyword_registry: {
+      file: registrySource.file,
+      fetched_from: keywordResource.fetched_from,
+      registry_version: keywordRegistry.registry_version,
+      registry_status: keywordRegistry.status,
+      sha256: keywordRegistrySha256,
+      chunk_order: keywordOrder
+    },
+    works_registry: {
+      file: registrySource.works_file,
+      fetched_from: worksResource.fetched_from,
+      registry_version: worksRegistry.registry_version,
+      registry_status: worksRegistry.status,
+      sha256: worksRegistrySha256
+    },
+    relations_registry: {
+      file: registrySource.relations_file,
+      fetched_from: relationsResource.fetched_from,
+      registry_version: relationsRegistry.registry_version,
+      sha256: relationsRegistrySha256
+    }
   },
-  artifacts: resolvedArtifacts
+  site: artifactMetadata.site,
+  author: artifactMetadata.author,
+  artifacts: resolvedArtifacts,
+  referenced_work_profiles: referencedWorkProfiles,
+  artifact_relations: artifactRelations,
+  reference_relations: referenceRelations
 };
 await fs.writeFile(resolvedArtifactMetadataPath, JSON.stringify(resolvedMetadata, null, 2) + "\n", "utf8");
 if (!(await exists(resolvedArtifactMetadataPath))) throw new Error("Resolved artifact metadata JSON was not generated.");
@@ -292,8 +512,16 @@ const websiteNode = {
   "@id": artifactMetadata.site.id,
   url: artifactMetadata.site.url,
   name: artifactMetadata.site.name,
+  description: artifactMetadata.site.artifact_role,
   inLanguage: artifactMetadata.site.in_language,
-  creator: { "@id": artifactMetadata.author.id }
+  creator: { "@id": artifactMetadata.author.id },
+  additionalProperty: [
+    { "@type": "PropertyValue", propertyID: "hosting", name: "Hosting", value: artifactMetadata.site.implementation.hosting },
+    { "@type": "PropertyValue", propertyID: "buildRuntime", name: "Build runtime", value: artifactMetadata.site.implementation.build_runtime },
+    { "@type": "PropertyValue", propertyID: "buildEntrypoint", name: "Build entrypoint", value: artifactMetadata.site.implementation.build_entrypoint },
+    { "@type": "PropertyValue", propertyID: "ciCd", name: "CI/CD", value: artifactMetadata.site.implementation.ci_cd },
+    { "@type": "PropertyValue", propertyID: "sourceRepository", name: "Source repository", value: artifactMetadata.site.implementation.source_repository }
+  ]
 };
 const authorNode = {
   "@type": "Person",
@@ -334,14 +562,66 @@ const productNode = {
   ]
 };
 const referenceNodes = new Map();
+const referencedWorkById = new Map(referencedWorkProfiles.map((profile) => [profile.id, profile]));
+function schemaTypeForWork(work) {
+  if (work.type === "software") return "SoftwareSourceCode";
+  if (work.type === "publication-preprint") return "ScholarlyArticle";
+  if (work.type === "dataset") return "Dataset";
+  if (work.type === "web-publication") return "WebPage";
+  return "CreativeWork";
+}
+for (const profile of referencedWorkProfiles) {
+  const work = workById.get(profile.id);
+  const uri = canonicalWorkUri(work);
+  if (!uri) continue;
+  const parents = referenceRelations.filter((edge) => edge.subject === profile.id && edge.relation === "isDerivedFrom")
+    .map((edge) => canonicalWorkUri(workById.get(edge.object))).filter(Boolean).map((id) => ({ "@id": id }));
+  referenceNodes.set(uri, {
+    "@id": uri,
+    "@type": schemaTypeForWork(work),
+    name: work.title,
+    url: uri,
+    keywords: profile.keywords,
+    isBasedOn: parents,
+    additionalProperty: [
+      { "@type": "PropertyValue", propertyID: "registryWorkId", name: "DIO/ODI registry work ID", value: profile.id },
+      { "@type": "PropertyValue", propertyID: "keywordProfile", name: "DIO/ODI keyword profile", value: profile.keyword_profile_id },
+      { "@type": "PropertyValue", propertyID: "artifactType", name: "Artifact type", value: profile.artifact_type },
+      { "@type": "PropertyValue", propertyID: "registryStatus", name: "Keyword profile status", value: work.keyword_profile_status }
+    ]
+  });
+}
+function canonicalWorkUri(work) {
+  if (!work) return null;
+  const candidate = work.arxiv?.concept_url || work.canonical_url || work.reference_model_concept_doi_url ||
+    work.preferred_relation_identifier || work.current_version_doi || work.version_doi || work.concept_doi;
+  if (!candidate) return null;
+  return /^https?:\/\//i.test(candidate) ? candidate : "https://doi.org/" + candidate;
+}
 for (const artifact of resolvedArtifacts) {
   for (const item of [...(artifact.citations ?? []), ...(artifact.based_on ?? [])]) {
     if (!referenceNodes.has(item.id)) {
+      const workId = matchRegistryWork(item.id, artifact.id + " JSON-LD");
+      const workProfile = workId ? referencedWorkById.get(workId) : null;
+      const work = workId ? workById.get(workId) : null;
+      const parentWorkIds = workId ? referenceRelations
+        .filter((edge) => edge.subject === workId && edge.relation === "isDerivedFrom")
+        .map((edge) => edge.object) : [];
+      const isBasedOn = parentWorkIds.map((id) => canonicalWorkUri(workById.get(id))).filter(Boolean).map((id) => ({ "@id": id }));
       referenceNodes.set(item.id, {
         "@id": item.id,
         "@type": item.type || "CreativeWork",
-        name: item.name,
-        url: item.id
+        name: item.name || work?.title,
+        url: item.id,
+        ...(workProfile ? { keywords: workProfile.keywords } : {}),
+        ...(workId ? {
+          isBasedOn,
+          additionalProperty: [
+            { "@type": "PropertyValue", propertyID: "registryWorkId", name: "DIO/ODI registry work ID", value: workId },
+            { "@type": "PropertyValue", propertyID: "keywordProfile", name: "DIO/ODI keyword profile", value: workProfile.keyword_profile_id },
+            { "@type": "PropertyValue", propertyID: "artifactType", name: "Artifact type", value: workProfile.artifact_type }
+          ]
+        } : {})
       });
     }
   }
@@ -362,12 +642,15 @@ const graphFor = (artifact) => {
     keywords: artifact.keywords,
     about: artifact.about_concepts.map((id) => ({ "@id": id })),
     citation: (artifact.citations ?? []).map((item) => ({ "@id": item.id })),
+    isBasedOn: (artifact.based_on ?? []).map((item) => ({ "@id": item.id })),
+    mentions: (artifact.technology_work_ids ?? []).map((id) => canonicalWorkUri(workById.get(id))).filter(Boolean).map((id) => ({ "@id": id })),
     additionalProperty: [
       { "@type": "PropertyValue", propertyID: "artifactRole", name: "Artifact role", value: artifact.artifact_role },
       { "@type": "PropertyValue", propertyID: "lifecycleStatus", name: "Lifecycle status", value: artifact.lifecycle_status },
       { "@type": "PropertyValue", propertyID: "keywordProfile", name: "DIO/ODI keyword profile", value: artifact.keyword_profile_id },
       { "@type": "PropertyValue", propertyID: "keywordRegistryVersion", name: "Keyword registry version", value: keywordRegistry.registry_version },
       { "@type": "PropertyValue", propertyID: "keywordRegistrySha256", name: "Keyword registry SHA-256", value: keywordRegistrySha256 },
+      { "@type": "PropertyValue", propertyID: "keywordInheritance", name: "Cross-object keyword inheritance", value: artifact.keyword_inheritance },
       ...(artifact.technologies ?? []).map((technology) => ({
         "@type": "PropertyValue",
         propertyID: "technology",
@@ -452,5 +735,6 @@ for (const artifact of resolvedArtifacts) {
 }
 console.log("Social preview: 1200x630 PNG, referenced by Open Graph and Twitter metadata on all pages.");
 console.log("DIO/ODI Keywords: " + resolvedArtifacts.map((artifact) => artifact.keyword_profile_id + "=" + artifact.keywords.length).join("; ") + " (registry " + keywordRegistry.registry_version + ").");
+console.log("Referenced DIO/ODI work profiles: " + referencedWorkProfiles.length + "; artefact relations: " + artifactRelations.length + "; work relations: " + referenceRelations.length + ".");
 console.log("Machine-readable artifact metadata: assets/data/resolved-artifact-metadata.json.");
 console.log("Output directory: " + dist);
