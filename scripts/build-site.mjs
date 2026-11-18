@@ -253,9 +253,9 @@ for (const artifact of resolvedArtifacts) {
   artifact.technology_work_ids = [...technologyIds];
   artifact.referenced_work_ids = [...relatedWorkIds];
   artifact.keyword_inheritance = "none";
-  for (const id of citationIds) artifactRelations.push({ subject: artifact.id, predicate: "cites", object: id });
-  for (const id of basedOnIds) artifactRelations.push({ subject: artifact.id, predicate: "isBasedOn", object: id });
-  for (const id of technologyIds) artifactRelations.push({ subject: artifact.id, predicate: "usesTechnology", object: id });
+  for (const id of citationIds) artifactRelations.push({ subject: artifact.id, subject_uri: artifact.url, predicate: "cites", object: id, object_uri: canonicalWorkUri(workById.get(id)) });
+  for (const id of basedOnIds) artifactRelations.push({ subject: artifact.id, subject_uri: artifact.url, predicate: "isBasedOn", object: id, object_uri: canonicalWorkUri(workById.get(id)) });
+  for (const id of technologyIds) artifactRelations.push({ subject: artifact.id, subject_uri: artifact.url, predicate: "usesTechnology", object: id, object_uri: canonicalWorkUri(workById.get(id)) });
 }
 
 const allReferencedWorkIds = new Set(resolvedArtifacts.flatMap((artifact) => artifact.referenced_work_ids));
@@ -431,7 +431,14 @@ if (!socialImage.subarray(0, 8).equals(pngSignature) || socialImage.readUInt32BE
 }
 await fs.mkdir(path.dirname(resolvedArtifactMetadataPath), { recursive: true });
 const resolvedMetadata = {
-  schema_version: "1.1.0",
+  schema_version: "1.2.0",
+  metadata_policy: {
+    C0: "The complete canonical identity-invariant chunk is exported on every approved DIO/ODI object profile.",
+    C1: "C1 is a global DIO reconstruction-environment candidate pool; each object explicitly selects only the environments it substantively covers.",
+    other_chunks: "C2-C6 are selected according to the canonical approved profile for the specific work or derived artefact.",
+    cross_object_keyword_inheritance: "disabled",
+    citations: "Cited works remain separate objects with their own keyword profiles; citation does not transfer the cited work's keywords to the citing page."
+  },
   registry_source: {
     repository: registrySource.repository,
     discovery: registrySource.registry_discovery,
@@ -542,6 +549,7 @@ for (const profile of referencedWorkProfiles) {
   });
 }
 function canonicalWorkUri(work) {
+  if (!work) return null;
   const candidate = work.arxiv?.concept_url || work.canonical_url || work.reference_model_concept_doi_url ||
     work.preferred_relation_identifier || work.current_version_doi || work.version_doi || work.concept_doi;
   if (!candidate) return null;
@@ -599,6 +607,7 @@ const graphFor = (artifact) => {
       { "@type": "PropertyValue", propertyID: "keywordProfile", name: "DIO/ODI keyword profile", value: artifact.keyword_profile_id },
       { "@type": "PropertyValue", propertyID: "keywordRegistryVersion", name: "Keyword registry version", value: keywordRegistry.registry_version },
       { "@type": "PropertyValue", propertyID: "keywordRegistrySha256", name: "Keyword registry SHA-256", value: keywordRegistrySha256 },
+      { "@type": "PropertyValue", propertyID: "keywordInheritance", name: "Cross-object keyword inheritance", value: artifact.keyword_inheritance },
       ...(artifact.technologies ?? []).map((technology) => ({
         "@type": "PropertyValue",
         propertyID: "technology",
