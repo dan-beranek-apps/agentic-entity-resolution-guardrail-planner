@@ -20,7 +20,29 @@
     "id": "https://dan-beranek.github.io/agentic-entity-resolution-guardrail-planner/#website",
     "url": "https://dan-beranek.github.io/agentic-entity-resolution-guardrail-planner/",
     "name": "Agentic Entity Resolution Guardrail Planner",
-    "in_language": "en"
+    "in_language": "en",
+    "artifact_type": "static-website",
+    "artifact_role": "Public product discovery, methodology and demonstration website; the website is a distinct artifact from the paid Agent Skill itself.",
+    "lifecycle_status": "published",
+    "implementation": {
+      "source_repository": "https://github.com/dan-beranek/agentic-entity-resolution-guardrail-planner",
+      "source_entrypoint": "index.html",
+      "source_formats": [
+        "HTML",
+        "CSS",
+        "JavaScript",
+        "JSON",
+        "JSON-LD",
+        "SVG"
+      ],
+      "build_entrypoint": "scripts/build-site.mjs",
+      "build_runtime": "Node.js 22 or later",
+      "build_dependencies": "Node.js built-in modules only; no external build packages",
+      "hosting": "GitHub Pages",
+      "ci_cd": "GitHub Actions",
+      "rendering": "Static site generation",
+      "generated_metadata": "assets/data/resolved-artifact-metadata.json"
+    }
   },
   "author": {
     "id": "https://danielberanek.cz/#person",
