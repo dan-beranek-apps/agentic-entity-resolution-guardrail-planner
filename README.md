@@ -21,7 +21,7 @@ All purchase CTAs are generated from assets/data/distribution-platforms.json. Th
 
 https://www.agensi.io/r/DANIELBERANEK?to=/skills/agentic-entity-resolution-guardrail-planner
 
-**Never add a direct Agensi Skill URL as a purchase link.** Add another distribution platform by adding an object to the platforms array in assets/data/distribution-platforms.json. Available platform entries are rendered automatically at every purchase CTA placement. An entry can be kept as planned until its final URL and attribution are confirmed, then changed to available. The build script validates the Agensi affiliate route, affiliate link attributes, insertion points and the absence of fixed prices.
+**Never add a direct Agensi Skill URL as a purchase link.** Add another distribution platform by adding an object to the platforms array in assets/data/distribution-platforms.json. Available platform entries are rendered automatically at every purchase CTA placement. The configuration includes an explicit planned placeholder for another platform. Replace its ID, name and URL with that platform's affiliate URL, keep affiliate set to true, and change availability to available. The build script validates the Agensi affiliate route, affiliate link attributes, insertion points and the absence of fixed prices.
 
 ### Build locally
 

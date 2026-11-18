@@ -11,6 +11,16 @@
       "affiliate": true,
       "primary": true,
       "order": 10
+    },
+    {
+      "id": "additional-platform",
+      "name": "Additional platform",
+      "url": "",
+      "button_label": "Get the Agent Skill",
+      "availability": "planned",
+      "affiliate": true,
+      "primary": false,
+      "order": 100
     }
   ]
 }

@@ -38,6 +38,9 @@ for (const platform of config.platforms) {
     throw new Error("Platform availability must be available, planned or disabled.");
   }
   if (platform.availability === "available") {
+    if (platform.affiliate !== true) {
+      throw new Error("Every available distribution platform must use an affiliate link.");
+    }
     const url = new URL(platform.url);
     if (url.protocol !== "https:") {
       throw new Error("Available platform URLs must use HTTPS.");
