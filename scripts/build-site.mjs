@@ -154,6 +154,102 @@ const resolvedArtifacts = artifactMetadata.artifacts.map((artifact) => {
   const projection = resolveKeywordProfile(artifact.keyword_profile_id);
   return { ...artifact, keyword_chunks: projection.chunks, keywords: projection.keywords, keyword_rationales: projection.profile.term_rationales };
 });
+
+function normalizeWorkIdentifier(value) {
+  if (typeof value !== "string" || !value.trim()) return null;
+  const trimmed = value.trim().replace(/[),.;]+$/, "");
+  const doiMatch = trimmed.match(/^(?:https?:\\/\\/(?:dx\\.)?doi\\.org\\/)?(10\\.\\d{4,9}\\/[^?#\\s]+)$/i);
+  if (doiMatch) return "doi:" + doiMatch[1].replace(/\\/+$/, "").toLowerCase();
+  const arxivMatch = trimmed.match(/^(?:https?:\\/\\/)?arxiv\\.org\\/abs\\/([0-9]+\\.[0-9]{4,5}(?:v[0-9]+)?)$/i);
+  if (arxivMatch) return "arxiv:" + arxivMatch[1].toLowerCase();
+  return trimmed.replace(/\\/+$/, "").toLowerCase();
+}
+
+function identifiersForWork(work) {
+  const values = [
+    work.version_doi, work.concept_doi, work.current_version_doi, work.preferred_relation_identifier,
+    work.canonical_url, work.endpoint, work.repository, work.reference_vocabulary_uri, work.namespace_document, work.site_homepage,
+    work.reference_model_concept_doi, work.reference_model_concept_doi_url,
+    work.current_release?.doi, work.current_release?.url,
+    work.arxiv?.concept_url, work.arxiv?.version_url, work.arxiv?.pdf_url, work.arxiv?.html_url,
+    work.arxiv?.id ? "https://arxiv.org/abs/" + work.arxiv.id : null,
+    ...(work.versions ?? []).flatMap((version) => [version.doi, version.url, version.concept_url]),
+    ...(work.releases ?? []).flatMap((release) => [release.doi, release.url])
+  ];
+  return [...new Set(values.map(normalizeWorkIdentifier).filter(Boolean))];
+}
+
+const workById = new Map(worksRegistry.works.map((work) => [work.id, work]));
+const workIdsByIdentifier = new Map();
+for (const work of worksRegistry.works) {
+  for (const identifier of identifiersForWork(work)) {
+    const owners = workIdsByIdentifier.get(identifier) ?? [];
+    if (!owners.includes(work.id)) owners.push(work.id);
+    workIdsByIdentifier.set(identifier, owners);
+  }
+}
+
+function matchRegistryWork(identifier, context) {
+  const normalized = normalizeWorkIdentifier(identifier);
+  if (!normalized) return null;
+  const owners = workIdsByIdentifier.get(normalized) ?? [];
+  if (owners.length > 1) throw new Error("Ambiguous DIO/ODI work identifier " + identifier + " in " + context + ": " + owners.join(", "));
+  return owners[0] ?? null;
+}
+
+function expandDerivedLineage(seedIds) {
+  const result = new Set(seedIds);
+  const queue = [...seedIds];
+  while (queue.length) {
+    const current = queue.shift();
+    for (const edge of relationsRegistry.relations) {
+      if (edge.subject === current && edge.relation === "isDerivedFrom" && workById.has(edge.object) && !result.has(edge.object)) {
+        result.add(edge.object);
+        queue.push(edge.object);
+      }
+    }
+  }
+  return [...result];
+}
+
+for (const artifact of resolvedArtifacts) {
+  const directIds = new Set();
+  const technologyIds = new Set();
+  for (const item of [...(artifact.citations ?? []), ...(artifact.based_on ?? [])]) {
+    const workId = matchRegistryWork(item.id, artifact.id + " citations/based_on");
+    if (workId) directIds.add(workId);
+    else if (/^(?:https?:\\/\\/)?(?:dx\\.)?doi\\.org\\/10\\.|^(?:https?:\\/\\/)?arxiv\\.org\\/abs\\//i.test(item.id)) {
+      throw new Error(artifact.id + ": external citation does not resolve to a DIO/ODI works-registry record: " + item.id);
+    }
+  }
+  for (const technology of artifact.technologies ?? []) {
+    const candidate = technology.endpoint ?? technology.url ?? technology.repository;
+    const workId = matchRegistryWork(candidate, artifact.id + " technology " + technology.name);
+    if (workId) technologyIds.add(workId);
+  }
+  artifact.direct_referenced_work_ids = [...directIds];
+  artifact.technology_work_ids = [...technologyIds];
+  artifact.lineage_work_ids = expandDerivedLineage([...new Set([...directIds, ...technologyIds])]);
+}
+
+const allReferencedWorkIds = new Set(resolvedArtifacts.flatMap((artifact) => artifact.lineage_work_ids));
+const referencedWorkProfiles = [...allReferencedWorkIds].map((workId) => {
+  const work = workById.get(workId);
+  if (!work) throw new Error("Missing referenced DIO/ODI work: " + workId);
+  const projection = resolveWorkKeywordProfile(workId, work);
+  return {
+    id: workId,
+    title: work.title,
+    artifact_type: work.type,
+    lifecycle_status: work.status ?? work.keyword_profile_status,
+    keyword_profile_id: work.keyword_profile,
+    keywords: projection.keywords,
+    keyword_chunks: projection.chunks,
+    keyword_rationales: projection.profile.term_rationales ?? {},
+    source_record: work
+  };
+});
+const referenceRelations = relationsRegistry.relations.filter((edge) => allReferencedWorkIds.has(edge.subject) && allReferencedWorkIds.has(edge.object));
 const pages = resolvedArtifacts.map((artifact) => artifact.page);
 if (new Set(pages).size !== pages.length || pages.slice().sort().join("|") !== ["demo/index.html","index.html","methodology/index.html"].sort().join("|")) {
   throw new Error("Artifact metadata must cover each public page exactly once.");
