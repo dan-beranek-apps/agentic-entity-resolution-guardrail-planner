@@ -242,6 +242,13 @@ for (const artifact of resolvedArtifacts) {
   const runtimeEndpoint = artifact.reference_run?.endpoint;
   const runtimeWorkId = matchRegistryWork(runtimeEndpoint, artifact.id + " reference run");
   if (runtimeWorkId) technologyIds.add(runtimeWorkId);
+  const localBasedOnIds = new Set();
+  for (const item of artifact.based_on ?? []) {
+    const local = resolvedArtifacts.find((candidate) =>
+      item.id === candidate.url || item.id === candidate.url + "#product" || item.id === candidate.url + "#webpage"
+    );
+    if (local) localBasedOnIds.add(local.id);
+  }
   const directWorkIds = new Set([...citationIds, ...basedOnIds]);
   const derivedClosure = new Set(expandDerivedLineage([...directWorkIds]));
   const derivedSourceIds = new Set([...derivedClosure].filter((id) => !directWorkIds.has(id)));
@@ -251,10 +258,20 @@ for (const artifact of resolvedArtifacts) {
   artifact.upstream_derivation_work_ids = [...derivedSourceIds];
   artifact.technology_work_ids = [...technologyIds];
   artifact.referenced_work_ids = [...relatedWorkIds];
+  artifact.local_artifact_based_on_ids = [...localBasedOnIds];
   artifact.keyword_inheritance = "none";
   for (const id of citationIds) artifactRelations.push({ subject: artifact.id, subject_uri: artifact.url, predicate: "cites", object: id, object_uri: canonicalWorkUri(workById.get(id)) });
   for (const id of basedOnIds) artifactRelations.push({ subject: artifact.id, subject_uri: artifact.url, predicate: "isBasedOn", object: id, object_uri: canonicalWorkUri(workById.get(id)) });
   for (const id of technologyIds) artifactRelations.push({ subject: artifact.id, subject_uri: artifact.url, predicate: "usesTechnology", object: id, object_uri: canonicalWorkUri(workById.get(id)) });
+  for (const id of localBasedOnIds) {
+    const target = resolvedArtifacts.find((candidate) => candidate.id === id);
+    artifactRelations.push({ subject: artifact.id, subject_uri: artifact.url, predicate: "isBasedOn", object: id, object_uri: target.url });
+  }
+  for (const relation of artifact.related_artifacts ?? []) {
+    const target = resolvedArtifacts.find((candidate) => candidate.id === relation.id);
+    if (!target) throw new Error(artifact.id + ": unknown related artifact " + relation.id);
+    artifactRelations.push({ subject: artifact.id, subject_uri: artifact.url, predicate: relation.relation, object: target.id, object_uri: target.url });
+  }
 }
 
 const allReferencedWorkIds = new Set(resolvedArtifacts.flatMap((artifact) => artifact.referenced_work_ids));
@@ -476,8 +493,16 @@ const websiteNode = {
   "@id": artifactMetadata.site.id,
   url: artifactMetadata.site.url,
   name: artifactMetadata.site.name,
+  description: artifactMetadata.site.artifact_role,
   inLanguage: artifactMetadata.site.in_language,
-  creator: { "@id": artifactMetadata.author.id }
+  creator: { "@id": artifactMetadata.author.id },
+  additionalProperty: [
+    { "@type": "PropertyValue", propertyID: "hosting", name: "Hosting", value: artifactMetadata.site.implementation.hosting },
+    { "@type": "PropertyValue", propertyID: "buildRuntime", name: "Build runtime", value: artifactMetadata.site.implementation.build_runtime },
+    { "@type": "PropertyValue", propertyID: "buildEntrypoint", name: "Build entrypoint", value: artifactMetadata.site.implementation.build_entrypoint },
+    { "@type": "PropertyValue", propertyID: "ciCd", name: "CI/CD", value: artifactMetadata.site.implementation.ci_cd },
+    { "@type": "PropertyValue", propertyID: "sourceRepository", name: "Source repository", value: artifactMetadata.site.implementation.source_repository }
+  ]
 };
 const authorNode = {
   "@type": "Person",
