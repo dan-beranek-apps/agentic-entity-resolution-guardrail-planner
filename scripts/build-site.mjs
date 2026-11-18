@@ -110,7 +110,7 @@ await fs.cp(path.join(root, "demo-for-agensi"), path.join(dist, "demo-for-agensi
 await fs.mkdir(path.join(dist, "demo"), { recursive: true });
 await fs.copyFile(path.join(root, "demo/index.html"), path.join(dist, "demo/index.html"));
 
-for (const filename of ["robots.txt", "sitemap.xml", "llms.txt"]) {
+for (const filename of ["robots.txt", "sitemap.xml", "llms.txt", "llms-full.txt"]) {
   await fs.copyFile(path.join(root, filename), path.join(dist, filename));
 }
 
@@ -127,7 +127,8 @@ const requiredOutputs = [
   "demo-for-agensi/guardrail-spec.json",
   "robots.txt",
   "sitemap.xml",
-  "llms.txt"
+  "llms.txt",
+  "llms-full.txt"
 ];
 
 for (const relativePath of requiredOutputs) {

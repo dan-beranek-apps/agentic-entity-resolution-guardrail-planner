@@ -1,0 +1,149 @@
+# Agentic Entity Resolution Guardrail Planner — Full Context
+
+Canonical product name: Agentic Entity Resolution Guardrail Planner
+Product type: Design-time Agent Skill
+Author: Daniel Beránek
+Product website: https://dan-beranek.github.io/agentic-entity-resolution-guardrail-planner/
+Methodology and research: https://dan-beranek.github.io/agentic-entity-resolution-guardrail-planner/methodology/
+Short machine-readable context: https://dan-beranek.github.io/agentic-entity-resolution-guardrail-planner/llms.txt
+Source repository: https://github.com/dan-beranek/agentic-entity-resolution-guardrail-planner
+Distribution listing: https://www.agensi.io/r/DANIELBERANEK?to=/skills/agentic-entity-resolution-guardrail-planner
+
+## 1. Product purpose and positioning
+
+Agentic Entity Resolution Guardrail Planner is a design-time Agent Skill for engineering teams working with agentic entity-resolution workflows. It investigates proposed identity-changing operations before producing a reviewable recommendation and a structured engineering plan.
+
+It does not simply ask an agent to propose a MERGE, SPLIT or UNMERGE. Before producing a recommendation, it investigates the workflow from multiple angles: operation scope, entity and domain context, evidence and provenance, conflicting attributes and claims, authorization and approval, downstream impact, commit boundaries and write sets, failure modes, recovery paths, validation scenarios, and unresolved assumptions or customer-owned decisions.
+
+Governing principle: a confident entity match is not permission to merge. An agent's proposed match and the evidence and controls required before a persistent identity-changing operation are separate questions.
+
+The Skill is designed to support engineering investigation and planning. It is not a general-purpose entity-resolution engine, a customer-data cleanup service, or a live authorization service.
+
+## 2. Investigation dimensions
+
+The Planner examines eleven areas:
+
+1. Operation scope — what is proposed to change, which records and relationships are in scope, and what must remain untouched.
+2. Entity and domain context — the identity proposition, domain-specific meaning, relevant entity types and identity-bearing relationships.
+3. Evidence and provenance — which sources support each claim, where the information originated, its reliability, time applicability and traceability.
+4. Conflicting attributes and claims — contradictions, competing values, aliases, missing evidence and unresolved interpretation.
+5. Authorization and approval — customer-owned policy, authority sources, approval roles, authorization eligibility and conditions that require HOLD or human review.
+6. Downstream impact — dependent records, identifiers, systems, references, workflows and potential propagation effects.
+7. Commit boundaries, write sets and atomicity — what exactly may be written, at which boundary, under which preconditions and with what transactional expectations.
+8. Failure modes — partial completion, stale state, concurrent changes, retries, idempotency issues, inconsistent references and other relevant failure conditions.
+9. Recovery paths, reconciliation and quarantine — rollback or compensating paths, manual reconciliation, isolation and safe handling of unresolved cases.
+10. Validation scenarios — proposed tests, expected outcomes, negative cases and evidence needed for engineering acceptance.
+11. Open gaps, assumptions and customer-owned decisions — items that cannot responsibly be inferred from the supplied context.
+
+These areas are investigation lenses, not a claim that every customer environment has identical controls or requirements. The resulting plan must retain case-specific assumptions and unresolved decisions.
+
+## 3. Planning workflow
+
+The intended workflow has four stages:
+
+1. Qualify the proposed identity-changing operation and establish the entity, scope and supplied context.
+2. Investigate evidence, provenance, contradictions, authority, downstream effects, commit boundaries, failure paths and recovery requirements.
+3. Form a reviewable recommendation and proposed controls. HOLD, DEFER or human review are valid outcomes when evidence, authority or customer decisions are insufficient.
+4. Produce an engineering handoff in structured Markdown and machine-readable JSON, including implementation guidance and validation scenarios.
+
+The Planner may recommend a direction or identify the conditions that would need to be satisfied. It does not convert an unverified identity proposition into an authorized production write.
+
+## 4. Outputs and engineering handoff
+
+The intended output set covers:
+
+- Plan overview and recommendation.
+- Mutation and operation scope.
+- Guardrail specification.
+- Evidence requirements and provenance expectations.
+- Commit-boundary design and write-set considerations.
+- Implementation blueprint.
+- Validation scenarios and proposed tests.
+- Assumptions, open gaps and customer-owned decisions.
+- Machine-readable JSON specification.
+
+The precise outputs and content depend on the operation and the context supplied. A proposed test plan is not evidence that tests have been executed. A machine-readable plan is not proof that a customer implementation conforms to it.
+
+## 5. Public synthetic CRM example
+
+A public example is available at https://dan-beranek.github.io/agentic-entity-resolution-guardrail-planner/demo/ . Its source deliverables are available in the product repository under demo-for-agensi/.
+
+The example demonstrates a synthetic MERGE planning scenario. It includes nine canonical planning deliverables: eight Markdown artefacts and one machine-readable JSON specification. The specific example identifies fourteen proposed customer-side controls, eleven blocking customer decisions and thirty-one proposed customer-operation test scenarios.
+
+The example is marked not_implementation_ready. The thirty-one test scenarios are proposed, not executed. Draft JSON Schema 2020-12 and format validation were not run in the original generation environment. All names and identifiers in the example are synthetic.
+
+The example considers a possible parent or holding-company relationship. The identity proposition is not established by the supplied evidence, so the plan retains HOLD before a persistent write. The example does not establish legal identity, does not represent a customer deployment, and does not execute or authorize a merge.
+
+## 6. Product boundaries and limitations
+
+The Planner:
+
+- Does not execute MERGE, SPLIT, UNMERGE or other customer mutations.
+- Does not authorize live operations or production writes.
+- Does not write to a CRM, master-data platform, customer database or other production system.
+- Does not deploy a runtime guard, policy-enforcement mechanism or production integration.
+- Does not autonomously inspect customer records or application state that have not been supplied or separately connected.
+- Does not determine legal identity, define customer policy or assume the role of a customer's authorization authority.
+- Does not guarantee a correct entity match, production safety, regulatory compliance or successful implementation.
+
+The customer or engineering team remains responsible for supplying reliable context, defining policy and authority, reviewing the plan, implementing controls in its own environment, and testing them before production use.
+
+## 7. DIO/ODI methodology
+
+The Planner was created by Daniel Beránek, author of Digital Identity Optimization (DIO) and the Ontology of Digital Identity (ODI).
+
+DIO is an applied framework concerned with the conditions under which an entity's digital identity can be consistently reconstructed from distributed representations across digital systems and observers.
+
+ODI is the related theoretical and ontological layer for examining digital identity, its persistence and variation, and the conditions under which it is interpreted or reconstructed. DIO and ODI are connected but are not interchangeable labels.
+
+The Planner operationalizes a specific part of this evolving research and design framework: the distinction between an agent's proposed entity match and the evidence, authority and engineering controls required before a persistent identity-changing operation can be committed. The methodology informs how identity context, representations, evidence, provenance, conflicting claims, authorization, commit boundaries, failures and recovery are investigated.
+
+Buyers do not need prior knowledge of DIO/ODI to use the Skill. The methodology is the research and design foundation behind the planning approach, not an extra prerequisite or a promise of runtime enforcement.
+
+## 8. Selected DIO/ODI research publications
+
+Daniel Beránek's related research includes:
+
+- Beránek, D. *Constraining the Commit Boundary: A DIO/ODI-Informed Authorization Guardrail for Agentic Entity Resolution.* arXiv preprint. https://arxiv.org/abs/2610.37407
+- Beránek, D. *The Crisis of Entity Resolution in Heterogeneous AI Environments: Data, Financial, and Semantic Dimensions.* Zenodo. https://doi.org/10.5281/zenodo.22416026
+- Beránek, D. *Minimum Viable Digital Identity Optimization (DIO): From Adversarial Reduction to the Semantic Field Dynamics of Digital Identity.* Zenodo. https://doi.org/10.5281/zenodo.23226205
+- Beránek, D. *From Entity Resolution Anomalies to Reconstruction Failure Modes: A Taxonomic Note Following Minimum Viable DIO.* Zenodo. https://doi.org/10.5281/zenodo.23269323
+
+These works provide conceptual, diagnostic and architectural context. The arXiv item is an arXiv preprint, not represented here as a journal article. Repository placement or public availability does not by itself imply peer review or independent empirical validation.
+
+## 9. Reference model and optional MCP
+
+The author maintains the DIO/ODI Reference Model and Reference Vocabulary:
+
+- Reference Model overview: https://vocab.danielberanek.cz/
+- Canonical Reference Vocabulary: https://vocab.danielberanek.cz/dio-odi/
+- Reference Model concept DOI: https://doi.org/10.5281/zenodo.23272897
+- Archived Reference Model v0.9.0: https://doi.org/10.5281/zenodo.24085589
+
+The Planner's optional reference-backed mode can use the public DIO/ODI Reference MCP at https://mcp.danielberanek.cz/mcp . The buyer connects the endpoint separately in a compatible agent or client. It is a read-only reference service. It provides DIO/ODI reference material; it does not receive customer records, inspect customer application state, make customer policy decisions, authorize writes or execute mutations.
+
+The Skill, its output contracts and the reference service are designed to work together as a coherent planning workflow. The MCP is optional and does not make customer records or application access a prerequisite for using the Skill.
+
+## 10. Distribution and commercial information
+
+Agensi is the current distribution and purchase destination:
+
+https://www.agensi.io/r/DANIELBERANEK?to=/skills/agentic-entity-resolution-guardrail-planner
+
+The product website is an information and discovery layer; it does not display a fixed price. Current price and commercial terms are maintained on the distribution platform. Purchase links on the website use the author's Agensi affiliate route. Affiliate attribution does not change the buyer's price.
+
+The website's distribution configuration is centralized in assets/data/distribution-platforms.json. Additional platforms can be added there; available platform CTAs are generated from the configuration. Available purchase links must use the appropriate affiliate route when one is configured.
+
+## 11. Public website resources
+
+- Product overview: https://dan-beranek.github.io/agentic-entity-resolution-guardrail-planner/
+- Methodology and DIO/ODI research: https://dan-beranek.github.io/agentic-entity-resolution-guardrail-planner/methodology/
+- Synthetic CRM example: https://dan-beranek.github.io/agentic-entity-resolution-guardrail-planner/demo/
+- Short LLM context: https://dan-beranek.github.io/agentic-entity-resolution-guardrail-planner/llms.txt
+- Robots: https://dan-beranek.github.io/agentic-entity-resolution-guardrail-planner/robots.txt
+- Sitemap: https://dan-beranek.github.io/agentic-entity-resolution-guardrail-planner/sitemap.xml
+- Product source repository: https://github.com/dan-beranek/agentic-entity-resolution-guardrail-planner
+- Author website: https://danielberanek.cz/
+- Author ORCID: https://orcid.org/0009-0004-0050-0264
+
+This file is an extended descriptive context for discovery and language-model retrieval. It is not a substitute for the Skill's canonical source, the distribution listing, the cited research works, customer-specific documentation, or a customer's own engineering and authorization policies.

@@ -12,9 +12,10 @@ The public product website is built as a static site and published through GitHu
 
 - Product overview: https://dan-beranek.github.io/agentic-entity-resolution-guardrail-planner/
 - Methodology and DIO/ODI research background: https://dan-beranek.github.io/agentic-entity-resolution-guardrail-planner/methodology/
+- Extended machine-readable context: https://dan-beranek.github.io/agentic-entity-resolution-guardrail-planner/llms-full.txt
 - Synthetic CRM demonstration: https://dan-beranek.github.io/agentic-entity-resolution-guardrail-planner/demo/
 
-The website is written in English. It deliberately does not display a fixed product price; current commercial terms remain on the distribution platform.
+The website is written in English. It deliberately does not display a fixed product price; current commercial terms remain on the distribution platform. The main navigation links to the standalone DIO/ODI methodology page; research publications are displayed as bibliographic references rather than feature cards.
 
 ### Distribution links and affiliate attribution
 
