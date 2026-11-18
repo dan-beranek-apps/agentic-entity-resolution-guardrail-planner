@@ -218,27 +218,55 @@ function expandDerivedLineage(seedIds) {
   return [...result];
 }
 
-for (const artifact of resolvedArtifacts) {
-  const directIds = new Set();
-  const technologyIds = new Set();
-  for (const item of [...(artifact.citations ?? []), ...(artifact.based_on ?? [])]) {
-    const workId = matchRegistryWork(item.id, artifact.id + " citations/based_on");
-    if (workId) directIds.add(workId);
-    else if (/^(?:https?:\/\/)?(?:dx\.)?doi\.org\/10\.|^(?:https?:\/\/)?arxiv\.org\/abs\//i.test(item.id)) {
-      throw new Error(artifact.id + ": external citation does not resolve to a DIO/ODI works-registry record: " + item.id);
+function resolveWorkIdSet(items, context) {
+  const ids = new Set();
+  for (const item of items ?? []) {
+    const workId = matchRegistryWork(item.id, context);
+    if (workId) ids.add(workId);
+    else if (/^(?:https?:\\/\\/)?(?:dx\\.)?doi\\.org\\/10\\.|^(?:https?:\\/\\/)?arxiv\\.org\\/abs\\//i.test(item.id)) {
+      throw new Error(context + ": external research identifier does not resolve to a DIO/ODI work: " + item.id);
     }
   }
+  return ids;
+}
+
+const artifactRelations = [];
+for (const artifact of resolvedArtifacts) {
+  const citationIds = resolveWorkIdSet(artifact.citations, artifact.id + " citations");
+  const basedOnIds = resolveWorkIdSet(artifact.based_on, artifact.id + " isBasedOn");
+  const technologyIds = new Set();
   for (const technology of artifact.technologies ?? []) {
     const candidate = technology.endpoint ?? technology.url ?? technology.repository;
     const workId = matchRegistryWork(candidate, artifact.id + " technology " + technology.name);
     if (workId) technologyIds.add(workId);
   }
-  artifact.direct_referenced_work_ids = [...directIds];
+  const runtimeEndpoint = artifact.reference_run?.endpoint;
+  const runtimeWorkId = matchRegistryWork(runtimeEndpoint, artifact.id + " reference run");
+  if (runtimeWorkId) technologyIds.add(runtimeWorkId);
+  const directWorkIds = new Set([...citationIds, ...basedOnIds]);
+  const derivedClosure = new Set(expandDerivedLineage([...directWorkIds]));
+  const derivedSourceIds = new Set([...derivedClosure].filter((id) => !directWorkIds.has(id)));
+  const relatedWorkIds = new Set([...directWorkIds, ...derivedSourceIds, ...technologyIds]);
+  artifact.cited_work_ids = [...citationIds];
+  artifact.declared_based_on_work_ids = [...basedOnIds];
+  artifact.upstream_derivation_work_ids = [...derivedSourceIds];
   artifact.technology_work_ids = [...technologyIds];
-  artifact.lineage_work_ids = expandDerivedLineage([...new Set([...directIds, ...technologyIds])]);
+  artifact.referenced_work_ids = [...relatedWorkIds];
+  artifact.keyword_inheritance = "none";
+  for (const id of citationIds) artifactRelations.push({ subject: artifact.id, predicate: "cites", object: id });
+  for (const id of basedOnIds) artifactRelations.push({ subject: artifact.id, predicate: "isBasedOn", object: id });
+  for (const id of technologyIds) artifactRelations.push({ subject: artifact.id, predicate: "usesTechnology", object: id });
 }
 
-const allReferencedWorkIds = new Set(resolvedArtifacts.flatMap((artifact) => artifact.lineage_work_ids));
+const allReferencedWorkIds = new Set(resolvedArtifacts.flatMap((artifact) => artifact.referenced_work_ids));
+const referencedBy = new Map();
+for (const artifact of resolvedArtifacts) {
+  for (const workId of artifact.referenced_work_ids) {
+    const ids = referencedBy.get(workId) ?? [];
+    ids.push(artifact.id);
+    referencedBy.set(workId, ids);
+  }
+}
 const referencedWorkProfiles = [...allReferencedWorkIds].map((workId) => {
   const work = workById.get(workId);
   if (!work) throw new Error("Missing referenced DIO/ODI work: " + workId);
@@ -249,6 +277,7 @@ const referencedWorkProfiles = [...allReferencedWorkIds].map((workId) => {
     artifact_type: work.type,
     lifecycle_status: work.status ?? work.keyword_profile_status,
     keyword_profile_id: work.keyword_profile,
+    referenced_by_artifact_ids: referencedBy.get(workId) ?? [],
     keywords: projection.keywords,
     keyword_chunks: projection.chunks,
     keyword_rationales: projection.profile.term_rationales ?? {},
@@ -256,6 +285,18 @@ const referencedWorkProfiles = [...allReferencedWorkIds].map((workId) => {
   };
 });
 const referenceRelations = relationsRegistry.relations.filter((edge) => allReferencedWorkIds.has(edge.subject) && allReferencedWorkIds.has(edge.object));
+
+const reconstructionTaxonomyTerms = new Set(keywordRegistry.chunks.C5_failures_robustness.terms.filter((term) => term !== "entity resolution"));
+for (const artifact of resolvedArtifacts) {
+  const leakedTerms = artifact.keywords.filter((term) => reconstructionTaxonomyTerms.has(term));
+  if (leakedTerms.length && artifact.keyword_policy?.allow_reconstruction_taxonomy !== true) {
+    throw new Error(artifact.id + ": DIO Reconstruction Failure taxonomy terms require an explicit substantive-coverage exception; found " + leakedTerms.join(", "));
+  }
+}
+if (!referencedWorkProfiles.some((profile) => profile.id === "taxonomic-note" && profile.keywords.includes("Reconstruction Failure Modes"))) {
+  throw new Error("The cited Reconstruction Failure Modes taxonomic note must remain independently discoverable with its own canonical keyword profile.");
+}
+
 const pages = resolvedArtifacts.map((artifact) => artifact.page);
 if (new Set(pages).size !== pages.length || pages.slice().sort().join("|") !== ["demo/index.html","index.html","methodology/index.html"].sort().join("|")) {
   throw new Error("Artifact metadata must cover each public page exactly once.");
@@ -418,6 +459,7 @@ const resolvedMetadata = {
   },
   artifacts: resolvedArtifacts,
   referenced_work_profiles: referencedWorkProfiles,
+  artifact_relations: artifactRelations,
   reference_relations: referenceRelations
 };
 await fs.writeFile(resolvedArtifactMetadataPath, JSON.stringify(resolvedMetadata, null, 2) + "\n", "utf8");
@@ -641,5 +683,6 @@ for (const artifact of resolvedArtifacts) {
 }
 console.log("Social preview: 1200x630 PNG, referenced by Open Graph and Twitter metadata on all pages.");
 console.log("DIO/ODI Keywords: " + resolvedArtifacts.map((artifact) => artifact.keyword_profile_id + "=" + artifact.keywords.length).join("; ") + " (registry " + keywordRegistry.registry_version + ").");
+console.log("Referenced DIO/ODI work profiles: " + referencedWorkProfiles.length + "; artefact relations: " + artifactRelations.length + "; work relations: " + referenceRelations.length + ".");
 console.log("Machine-readable artifact metadata: assets/data/resolved-artifact-metadata.json.");
 console.log("Output directory: " + dist);
