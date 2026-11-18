@@ -465,11 +465,39 @@ const productNode = {
 };
 const referenceNodes = new Map();
 const referencedWorkById = new Map(referencedWorkProfiles.map((profile) => [profile.id, profile]));
+function schemaTypeForWork(work) {
+  if (work.type === "software") return "SoftwareSourceCode";
+  if (work.type === "publication-preprint") return "ScholarlyArticle";
+  if (work.type === "dataset") return "Dataset";
+  if (work.type === "web-publication") return "WebPage";
+  return "CreativeWork";
+}
+for (const profile of referencedWorkProfiles) {
+  const work = workById.get(profile.id);
+  const uri = canonicalWorkUri(work);
+  if (!uri) continue;
+  const parents = referenceRelations.filter((edge) => edge.subject === profile.id && edge.relation === "isDerivedFrom")
+    .map((edge) => canonicalWorkUri(workById.get(edge.object))).filter(Boolean).map((id) => ({ "@id": id }));
+  referenceNodes.set(uri, {
+    "@id": uri,
+    "@type": schemaTypeForWork(work),
+    name: work.title,
+    url: uri,
+    keywords: profile.keywords,
+    isBasedOn: parents,
+    additionalProperty: [
+      { "@type": "PropertyValue", propertyID: "registryWorkId", name: "DIO/ODI registry work ID", value: profile.id },
+      { "@type": "PropertyValue", propertyID: "keywordProfile", name: "DIO/ODI keyword profile", value: profile.keyword_profile_id },
+      { "@type": "PropertyValue", propertyID: "artifactType", name: "Artifact type", value: profile.artifact_type },
+      { "@type": "PropertyValue", propertyID: "registryStatus", name: "Keyword profile status", value: work.keyword_profile_status }
+    ]
+  });
+}
 function canonicalWorkUri(work) {
   const candidate = work.arxiv?.concept_url || work.canonical_url || work.reference_model_concept_doi_url ||
     work.preferred_relation_identifier || work.current_version_doi || work.version_doi || work.concept_doi;
   if (!candidate) return null;
-  return /^https?:\\/\\//i.test(candidate) ? candidate : "https://doi.org/" + candidate;
+  return /^https?:\/\//i.test(candidate) ? candidate : "https://doi.org/" + candidate;
 }
 for (const artifact of resolvedArtifacts) {
   for (const item of [...(artifact.citations ?? []), ...(artifact.based_on ?? [])]) {
@@ -516,6 +544,7 @@ const graphFor = (artifact) => {
     about: artifact.about_concepts.map((id) => ({ "@id": id })),
     citation: (artifact.citations ?? []).map((item) => ({ "@id": item.id })),
     isBasedOn: (artifact.based_on ?? []).map((item) => ({ "@id": item.id })),
+    mentions: (artifact.technology_work_ids ?? []).map((id) => canonicalWorkUri(workById.get(id))).filter(Boolean).map((id) => ({ "@id": id })),
     additionalProperty: [
       { "@type": "PropertyValue", propertyID: "artifactRole", name: "Artifact role", value: artifact.artifact_role },
       { "@type": "PropertyValue", propertyID: "lifecycleStatus", name: "Lifecycle status", value: artifact.lifecycle_status },
