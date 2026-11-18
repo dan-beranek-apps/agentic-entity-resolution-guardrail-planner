@@ -1,0 +1,205 @@
+{
+  "registry_version": "1.5.2",
+  "relation_semantics": "Directed edges are expressed from subject to object using Zenodo/DataCite-style relation names where possible. Only edges with approved_for_zenodo=true should be projected automatically into .zenodo.json or historical Zenodo records.",
+  "relations": [
+    {
+      "subject": "manifest-v2-web",
+      "relation": "isNewVersionOf",
+      "object": "manifest-v1",
+      "approved_for_zenodo": false,
+      "note": "Useful corpus relation, but the living web edition is not itself a Zenodo deposition."
+    },
+    {
+      "subject": "dio-conceptual-framework",
+      "relation": "isDerivedFrom",
+      "object": "manifest-v1",
+      "approved_for_zenodo": true
+    },
+    {
+      "subject": "crisis-entity-resolution",
+      "relation": "isDerivedFrom",
+      "object": "manifest-v1",
+      "approved_for_zenodo": true
+    },
+    {
+      "subject": "mvdio",
+      "relation": "isDerivedFrom",
+      "object": "manifest-v1",
+      "approved_for_zenodo": true
+    },
+    {
+      "subject": "taxonomic-note",
+      "relation": "isDerivedFrom",
+      "object": "mvdio",
+      "approved_for_zenodo": true
+    },
+    {
+      "subject": "taxonomic-note",
+      "relation": "references",
+      "object": "crisis-entity-resolution",
+      "approved_for_zenodo": true
+    },
+    {
+      "subject": "reference-model",
+      "relation": "references",
+      "object": "manifest-v1",
+      "approved_for_zenodo": true
+    },
+    {
+      "subject": "reference-model",
+      "relation": "references",
+      "object": "dio-conceptual-framework",
+      "approved_for_zenodo": true
+    },
+    {
+      "subject": "reference-model",
+      "relation": "references",
+      "object": "crisis-entity-resolution",
+      "approved_for_zenodo": true
+    },
+    {
+      "subject": "reference-model",
+      "relation": "isDerivedFrom",
+      "object": "mvdio",
+      "approved_for_zenodo": true
+    },
+    {
+      "subject": "reference-model",
+      "relation": "isDerivedFrom",
+      "object": "taxonomic-note",
+      "approved_for_zenodo": true
+    },
+    {
+      "subject": "reference-model",
+      "relation": "references",
+      "object": "external:hem-2026",
+      "approved_for_zenodo": true
+    },
+    {
+      "subject": "reference-model",
+      "relation": "isDocumentedBy",
+      "object": "https://danielberanek.cz/manifest-dio/",
+      "approved_for_zenodo": true,
+      "note": "DIO/ODI hub providing manifest, publications, reference artifacts and updates."
+    },
+    {
+      "subject": "reference-model",
+      "relation": "isIdenticalTo",
+      "object": "https://vocab.danielberanek.cz/dio-odi/#",
+      "approved_for_zenodo": false,
+      "status": "semantic-review",
+      "note": "Existing/considered Zenodo relation. Keep out of automatic projection until the identity claim between an archived Reference Model package and the namespace is explicitly confirmed."
+    },
+    {
+      "subject": "mvdio",
+      "relation": "isIdenticalTo",
+      "object": "distribution:mvdio:researchgate",
+      "approved_for_zenodo": true,
+      "relation_class": "distribution-representation",
+      "observed_relation_on_zenodo": "isIdenticalTo",
+      "canonical_relation": "isIdenticalTo",
+      "status": "verified-by-author",
+      "note": "The author confirmed this distribution as the same research output, and the live Zenodo v1 record currently displays IsIdenticalTo for this DOI as checked on 2026-11-14 (record last modified 2026-11-08). The observed and canonical relations agree.",
+      "zenodo_record_checked_on": "2026-11-14",
+      "zenodo_record_last_modified": "2026-11-08",
+      "zenodo_relation_status": "listed-as-identical"
+    },
+    {
+      "subject": "mvdio",
+      "relation": "isIdenticalTo",
+      "object": "distribution:mvdio:figshare",
+      "approved_for_zenodo": true,
+      "relation_class": "distribution-representation",
+      "observed_relation_on_zenodo": "isIdenticalTo",
+      "canonical_relation": "isIdenticalTo",
+      "status": "verified-by-author",
+      "note": "The author confirmed this distribution as the same research output, and the live Zenodo v1 record currently displays IsIdenticalTo for this DOI as checked on 2026-11-14 (record last modified 2026-11-08). The observed and canonical relations agree.",
+      "zenodo_record_checked_on": "2026-11-14",
+      "zenodo_record_last_modified": "2026-11-08",
+      "zenodo_relation_status": "listed-as-identical"
+    },
+    {
+      "subject": "mvdio",
+      "relation": "isIdenticalTo",
+      "object": "distribution:mvdio:ssrn",
+      "approved_for_zenodo": true,
+      "relation_class": "distribution-representation",
+      "canonical_relation": "isIdenticalTo",
+      "status": "verified-by-author",
+      "note": "The author confirmed this distribution as the same research output, and the live Zenodo v1 record currently displays IsIdenticalTo for this DOI as checked on 2026-11-14 (record last modified 2026-11-08). The observed and canonical relations agree.",
+      "zenodo_record_checked_on": "2026-11-14",
+      "zenodo_relation_status": "listed-as-identical",
+      "observed_relation_on_zenodo": "isIdenticalTo",
+      "zenodo_record_last_modified": "2026-11-08"
+    },
+    {
+      "subject": "dio-conceptual-framework",
+      "relation": "isVersionOf",
+      "object": "distribution:dio-conceptual-framework:researchgate",
+      "approved_for_zenodo": true,
+      "relation_class": "distribution-representation",
+      "applies_to_version_doi": "10.5281/zenodo.23305929",
+      "observed_relation_on_zenodo": "isVersionOf",
+      "canonical_relation": "isVersionOf",
+      "status": "verified-by-author",
+      "note": "The current Zenodo v1.1.0 record relates to the ResearchGate representation as Is version of. This current-version relation must not be retroactively projected onto the archived Zenodo v1 record."
+    },
+    {
+      "subject": "dio-conceptual-framework",
+      "relation": "isVersionOf",
+      "object": "distribution:dio-conceptual-framework:ssrn",
+      "approved_for_zenodo": true,
+      "relation_class": "distribution-representation",
+      "applies_to_version_doi": "10.5281/zenodo.23305929",
+      "observed_relation_on_zenodo": "isVersionOf",
+      "canonical_relation": "isVersionOf",
+      "status": "verified-by-author",
+      "note": "The current Zenodo v1.1.0 record relates to the SSRN representation as Is version of. This current-version relation must not be retroactively projected onto the archived Zenodo v1 record."
+    },
+    {
+      "subject": "dio-conceptual-framework",
+      "relation": "isVersionOf",
+      "object": "distribution:dio-conceptual-framework:figshare",
+      "approved_for_zenodo": true,
+      "relation_class": "distribution-representation",
+      "applies_to_version_doi": "10.5281/zenodo.23305929",
+      "observed_relation_on_zenodo": "isVersionOf",
+      "canonical_relation": "isVersionOf",
+      "status": "verified-by-author",
+      "note": "The current Zenodo v1.1.0 record relates to the Figshare representation as Is version of. This current-version relation must not be retroactively projected onto the archived Zenodo v1 record."
+    },
+    {
+      "subject": "reference-model",
+      "relation": "references",
+      "object": "commit-boundary-paper",
+      "approved_for_zenodo": true,
+      "note": "The v0.4.0 application-mapping layer uses this paper as a source for commit-boundary authorization and distinguishes that boundary from iterative/hypothesis-conditioned evidence acquisition."
+    },
+    {
+      "subject": "mcp-server",
+      "relation": "isDerivedFrom",
+      "object": "reference-model",
+      "approved_for_zenodo": true,
+      "note": "The read-only MCP server exposes a bounded snapshot of the Reference Model and selected derived mappings; it does not modify the canonical vocabulary."
+    },
+    {
+      "subject": "reference-model",
+      "relation": "isSupplementedBy",
+      "object": "mcp-server",
+      "approved_for_zenodo": true,
+      "note": "The MCP server provides an additional read-only, agent-facing interface to the Reference Model and selected derived mappings."
+    },
+    {
+      "subject": "mcp-server",
+      "relation": "references",
+      "object": "commit-boundary-paper",
+      "approved_for_zenodo": true
+    },
+    {
+      "subject": "mcp-server",
+      "relation": "references",
+      "object": "taxonomic-note",
+      "approved_for_zenodo": true
+    }
+  ]
+}
