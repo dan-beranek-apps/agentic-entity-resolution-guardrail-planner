@@ -49,7 +49,7 @@ try {
 const keywordRegistrySha256 = createHash("sha256").update(registryText).digest("hex");
 const keywordRegistry = JSON.parse(registryText);
 function parseVersion(value) {
-  const match = /^(\\d+)\\.(\\d+)\\.(\\d+)$/.exec(value ?? "");
+  const match = /^(\d+)\.(\d+)\.(\d+)$/.exec(value ?? "");
   if (!match) throw new Error("Invalid semantic version in keyword registry: " + value);
   return match.slice(1).map(Number);
 }
