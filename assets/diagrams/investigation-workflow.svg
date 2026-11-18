@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="390" viewBox="0 0 1100 390" role="img" aria-labelledby="title desc">
+<title id="title">Investigation and planning workflow</title>
+<desc id="desc">Four typographic stages connected by a single line: qualify the operation, investigate the workflow, design a recommendation and proposed guardrails, and prepare an engineering handoff.</desc>
+<defs><style>
+.number{font:700 12px Inter,system-ui,sans-serif;letter-spacing:2px;fill:#8eabff}
+.heading{font:400 23px Georgia,serif;fill:#f7f8fb}
+.detail{font:400 13px Inter,system-ui,sans-serif;fill:#aab2c2}
+.line{stroke:#46536b;stroke-width:1.5;fill:none}
+.node{fill:#154cff;stroke:#c6d5ff;stroke-width:1.2}
+.rule{stroke:#30394a;stroke-width:1}
+.footer{font:700 11px Inter,system-ui,sans-serif;letter-spacing:1.35px;fill:#8995a9}
+</style></defs>
+<rect width="1100" height="390" rx="12" fill="#0e1420"/>
+<path class="line" d="M105 84 H995"/>
+<circle class="node" cx="105" cy="84" r="5"/><circle class="node" cx="402" cy="84" r="5"/><circle class="node" cx="699" cy="84" r="5"/><circle class="node" cx="995" cy="84" r="5"/>
+<g transform="translate(62 126)"><text class="number" x="0" y="0">01 / CONTEXT</text><text class="heading" x="0" y="42">Qualify the</text><text class="heading" x="0" y="70">operation</text><path class="rule" d="M0 96 H210"/><text class="detail" x="0" y="123">MERGE · SPLIT · UNMERGE</text><text class="detail" x="0" y="146">Entity context and scope</text></g>
+<g transform="translate(359 126)"><text class="number" x="0" y="0">02 / INVESTIGATE</text><text class="heading" x="0" y="42">Examine the</text><text class="heading" x="0" y="70">whole workflow</text><path class="rule" d="M0 96 H210"/><text class="detail" x="0" y="123">Evidence · authority · impact</text><text class="detail" x="0" y="146">Failure · recovery · open gaps</text></g>
+<g transform="translate(656 126)"><text class="number" x="0" y="0">03 / DESIGN</text><text class="heading" x="0" y="42">Form a reviewable</text><text class="heading" x="0" y="70">recommendation</text><path class="rule" d="M0 96 H210"/><text class="detail" x="0" y="123">Controls · approval conditions</text><text class="detail" x="0" y="146">HOLD · DEFER · REVIEW</text></g>
+<g transform="translate(952 126)"><text class="number" x="0" y="0">04 / HANDOFF</text><text class="heading" x="0" y="42">Prepare the</text><text class="heading" x="0" y="70">engineering plan</text><path class="rule" d="M0 96 H86"/><text class="detail" x="0" y="123">Markdown</text><text class="detail" x="0" y="146">JSON · validation</text></g>
+<path class="rule" d="M48 325 H1052"/><text class="footer" x="550" y="355" text-anchor="middle">DESIGN-TIME PLANNING ONLY · NO CUSTOMER WRITE · NO LIVE AUTHORIZATION</text>
+</svg>

@@ -1,0 +1,332 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <meta name="theme-color" content="#080b12">
+  <title>Agentic Entity Resolution Guardrail Planner</title>
+  <meta name="description" content="Investigate agent-proposed MERGE, SPLIT and UNMERGE operations from multiple angles before producing a reviewable recommendation and structured engineering plan.">
+  <meta name="author" content="Daniel Beránek">
+  <meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1">
+  <link rel="canonical" href="https://dan-beranek.github.io/agentic-entity-resolution-guardrail-planner/">
+  <link rel="icon" href="assets/branding/agentic-entity-resolution-guardrail-planner-logo.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="assets/site.css">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Agentic Entity Resolution Guardrail Planner">
+  <meta property="og:title" content="Investigate before you recommend.">
+  <meta property="og:description" content="A multi-angle investigation and design-time planning skill for agent-proposed identity-changing operations.">
+  <meta property="og:url" content="https://dan-beranek.github.io/agentic-entity-resolution-guardrail-planner/">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Agentic Entity Resolution Guardrail Planner">
+  <meta name="twitter:description" content="Investigate agent-proposed identity changes before producing a reviewable recommendation and engineering plan.">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebSite",
+        "@id": "https://dan-beranek.github.io/agentic-entity-resolution-guardrail-planner/#website",
+        "url": "https://dan-beranek.github.io/agentic-entity-resolution-guardrail-planner/",
+        "name": "Agentic Entity Resolution Guardrail Planner",
+        "inLanguage": "en",
+        "creator": { "@id": "https://danielberanek.cz/#person" }
+      },
+      {
+        "@type": "WebPage",
+        "@id": "https://dan-beranek.github.io/agentic-entity-resolution-guardrail-planner/#webpage",
+        "url": "https://dan-beranek.github.io/agentic-entity-resolution-guardrail-planner/",
+        "name": "Agentic Entity Resolution Guardrail Planner",
+        "description": "A design-time Agent Skill that investigates agent-proposed identity-changing operations and prepares a reviewable recommendation and structured engineering handoff.",
+        "isPartOf": { "@id": "https://dan-beranek.github.io/agentic-entity-resolution-guardrail-planner/#website" },
+        "about": { "@id": "https://dan-beranek.github.io/agentic-entity-resolution-guardrail-planner/#product" },
+        "inLanguage": "en"
+      },
+      {
+        "@type": "SoftwareApplication",
+        "@id": "https://dan-beranek.github.io/agentic-entity-resolution-guardrail-planner/#product",
+        "name": "Agentic Entity Resolution Guardrail Planner",
+        "applicationCategory": "DeveloperApplication",
+        "operatingSystem": "Compatible AI agent environment",
+        "description": "A design-time Agent Skill for multi-angle investigation of agent-proposed MERGE, SPLIT and UNMERGE operations, producing reviewable recommendations, guardrail specifications and engineering handoffs. It does not execute customer mutations or provide runtime authorization.",
+        "url": "https://dan-beranek.github.io/agentic-entity-resolution-guardrail-planner/",
+        "creator": { "@id": "https://danielberanek.cz/#person" },
+        "isAccessibleForFree": false
+      },
+      {
+        "@type": "Person",
+        "@id": "https://danielberanek.cz/#person",
+        "name": "Daniel Beránek",
+        "url": "https://danielberanek.cz/",
+        "sameAs": ["https://orcid.org/0009-0004-0050-0264"]
+      }
+    ]
+  }
+  </script>
+  <script src="assets/site.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="site-header">
+    <div class="shell header-inner">
+      <a class="brand" href="./" aria-label="Agentic Entity Resolution Guardrail Planner home">
+        <img src="assets/branding/agentic-entity-resolution-guardrail-planner-logo.svg" alt="" width="42" height="42">
+        <span class="brand-copy"><strong>Agentic Entity Resolution</strong><span>Guardrail Planner</span></span>
+      </a>
+      <nav class="primary-nav" aria-label="Main navigation">
+        <a href="#why">Why it matters</a><a href="#investigation">Investigation</a><a href="#workflow">Workflow</a><a href="#example">Example</a><a href="#boundaries">Scope</a>
+      </nav>
+      <div class="header-cta"><!-- PLATFORM_LINKS --></div>
+      <details class="mobile-menu">
+        <summary aria-label="Open navigation"><span class="menu-icon" aria-hidden="true"></span></summary>
+        <nav aria-label="Mobile navigation">
+          <a href="#why">Why it matters</a><a href="#investigation">Investigation</a><a href="#workflow">Workflow</a><a href="#example">Example</a><a href="#boundaries">Scope and limitations</a><a href="#get-skill">Get the Agent Skill</a>
+        </nav>
+      </details>
+    </div>
+  </header>
+  <main id="main">
+    <section class="hero">
+      <div class="shell hero-grid">
+        <div class="hero-copy">
+          <p class="eyebrow">A design-time Agent Skill for engineering teams</p>
+          <h1>Investigate the change <span>before you recommend it.</span></h1>
+          <p class="hero-lead">It does not simply ask an agent to propose a MERGE, SPLIT, or UNMERGE. It investigates the entity-resolution workflow from multiple angles before producing a reviewable recommendation and a structured engineering plan.</p>
+          <p class="hero-principle">A confident entity match is not permission to merge.</p>
+          <div class="platform-slot hero-platforms"><!-- PLATFORM_LINKS --></div>
+          <p class="affiliate-note">Platform links may include affiliate attribution. A qualifying purchase through an affiliate link may support the author without changing the buyer's price.</p>
+          <div class="hero-meta"><span>Multi-angle investigation</span><span>Explicit controls and gaps</span><span>Engineering-ready handoff</span></div>
+        </div>
+        <div class="hero-visual">
+          <div class="visual-frame">
+            <div class="visual-topline"><span>INVESTIGATION MODEL</span><span>01 — 04</span></div>
+            <img src="assets/diagrams/investigation-workflow.svg" alt="Four stages: operation context, multi-angle investigation, recommendation and guardrail design, and engineering handoff" width="1200" height="460">
+            <div class="visual-caption"><span class="visual-pulse"></span><span>From proposed identity change to reviewable engineering plan</span></div>
+          </div>
+          <div class="hero-stat-row">
+            <div><strong>11</strong><span>investigation angles</span></div>
+            <div><strong>14</strong><span>controls in the example</span></div>
+            <div><strong>9</strong><span>planning deliverables</span></div>
+          </div>
+          <p class="micro-note">Counts refer to the published methodology and synthetic CRM demonstration; they are not universal fixed output limits.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section-dark" id="why">
+      <div class="shell split-section">
+        <div><p class="eyebrow">The problem</p><h2>Entity resolution is not just a matching problem.</h2></div>
+        <div class="section-copy">
+          <p class="lead">Two records can look similar and still represent different entities. A shared name, domain, contact, identifier or address may be a useful signal — but no single similarity signal automatically establishes that two records refer to the same real-world entity.</p>
+          <p>When an AI agent proposes a persistent identity change, the decision can affect more than the two records on screen. Relationships, ownership, history, downstream systems, permissions and derived data may all be involved.</p>
+          <blockquote>Before deciding whether records should be merged, split or restored, the workflow needs to establish what is known, what conflicts, what can change, who has authority and what must happen when something is uncertain.</blockquote>
+        </div>
+      </div>
+      <div class="shell signal-grid">
+        <article class="signal-card"><span class="signal-index">01</span><h3>Similarity is a signal</h3><p>It can help identify a candidate pair. It is not, by itself, proof of co-reference or authorization.</p></article>
+        <article class="signal-card"><span class="signal-index">02</span><h3>Identity changes have dependencies</h3><p>A mutation may affect relations, history, linked records, indexes and external workflows.</p></article>
+        <article class="signal-card"><span class="signal-index">03</span><h3>Uncertainty must remain visible</h3><p>Missing evidence, conflicting claims and unknown write boundaries should not become invented certainty.</p></article>
+      </div>
+    </section>
+
+    <section class="section" id="difference">
+      <div class="shell">
+        <div class="section-heading">
+          <div><p class="eyebrow">Why not just prompt an agent?</p><h2>One question is not a complete investigation.</h2></div>
+          <p>A general-purpose agent can produce a plausible answer. The Planner provides a defined investigation structure so important dimensions are less likely to disappear between a persuasive recommendation and the engineering work needed to make it safe.</p>
+        </div>
+        <div class="comparison-grid">
+          <article class="comparison-card comparison-generic">
+            <p class="card-kicker">A generic prompt</p><h3>One question. One answer.</h3>
+            <p>A request to review a proposed merge may focus on the visible records and the available similarity signals.</p>
+            <ul><li>Coverage depends on the prompt and context supplied.</li><li>Unknowns can be overlooked or treated as assumptions.</li><li>The answer may not translate into a complete engineering handoff.</li></ul>
+          </article>
+          <article class="comparison-card comparison-planner">
+            <p class="card-kicker">The Guardrail Planner</p><h3>A structured investigation. A reviewable plan.</h3>
+            <p>The Skill works through a defined set of investigative dimensions and translates findings into explicit requirements.</p>
+            <ul><li>Considers evidence, conflicts, scope, authority and downstream effects.</li><li>Surfaces unknowns, conditions and customer-owned decisions.</li><li>Connects recommendations to controls, validation and implementation responsibilities.</li></ul>
+          </article>
+        </div>
+        <p class="comparison-footnote">This is a difference in method and deliverable structure, not a claim that every general-purpose prompt will fail or that the Planner guarantees a correct decision.</p>
+      </div>
+    </section>
+
+    <section class="section section-blue" id="investigation">
+      <div class="shell">
+        <div class="section-heading section-heading-inverse">
+          <div><p class="eyebrow">The investigation</p><h2>Eleven angles. One connected view of the proposed change.</h2></div>
+          <p>The Planner examines the workflow before it produces a recommendation. The areas below are connected: a conflict can change the evidence assessment; the evidence assessment can change the authorization path; and an unknown commit boundary can stop the proposed operation altogether.</p>
+        </div>
+        <div class="investigation-groups">
+          <article class="investigation-group">
+            <div class="group-heading"><span>01</span><h3>Entity and evidence</h3></div>
+            <div class="investigation-item"><span>01</span><div><h4>Scope</h4><p>What operation is proposed, which entities and relationships are involved, and what state could be affected?</p></div></div>
+            <div class="investigation-item"><span>02</span><div><h4>Entity context</h4><p>What kind of entity is involved, what does identity mean in this domain, and what context is required to interpret the records?</p></div></div>
+            <div class="investigation-item"><span>03</span><div><h4>Evidence and provenance</h4><p>Which claims are supported, by what sources, with what provenance, validity and verification status?</p></div></div>
+            <div class="investigation-item"><span>04</span><div><h4>Conflicting attributes</h4><p>Which attributes or documents disagree, and which contradictions remain unresolved rather than silently reconciled?</p></div></div>
+          </article>
+          <article class="investigation-group">
+            <div class="group-heading"><span>02</span><h3>Authority and impact</h3></div>
+            <div class="investigation-item"><span>05</span><div><h4>Authorization</h4><p>Who or what is allowed to approve this specific operation, under which policy and separation-of-duties conditions?</p></div></div>
+            <div class="investigation-item"><span>06</span><div><h4>Downstream impact</h4><p>Which linked records, identity-bearing relationships, indexes, integrations and dependent processes may be affected?</p></div></div>
+            <div class="investigation-item"><span>07</span><div><h4>Commit boundaries</h4><p>Where does the change become persistent, what belongs to the atomic write set, and which checks must hold before that point?</p></div></div>
+          </article>
+          <article class="investigation-group">
+            <div class="group-heading"><span>03</span><h3>Failure, recovery and proof</h3></div>
+            <div class="investigation-item"><span>08</span><div><h4>Failure modes</h4><p>What can fail before, during or after persistence — including stale state, partial effects and ambiguous commit outcomes?</p></div></div>
+            <div class="investigation-item"><span>09</span><div><h4>Recovery paths</h4><p>How should the system reconcile uncertain outcomes, handle idempotency, compensate where proven, or quarantine and escalate?</p></div></div>
+            <div class="investigation-item"><span>10</span><div><h4>Validation scenarios</h4><p>Which positive, negative, boundary and failure cases should engineering validate before deployment?</p></div></div>
+            <div class="investigation-item"><span>11</span><div><h4>Open gaps</h4><p>What facts, policies, permissions, technical boundaries or customer decisions are still unknown or unverified?</p></div></div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="workflow">
+      <div class="shell">
+        <div class="section-heading">
+          <div><p class="eyebrow">How it works</p><h2>From proposed operation to engineering handoff.</h2></div>
+          <p>The investigation is not a decorative checklist. Its findings inform the recommendation, the required controls and the conditions under which the proposed change should not proceed.</p>
+        </div>
+        <div class="workflow">
+          <article class="workflow-step"><span class="workflow-number">01 / CONTEXT</span><h3>Qualify the operation</h3><p>Establish the operation type, entity context, candidate scope and the identity-bearing state that may change.</p></article>
+          <article class="workflow-step"><span class="workflow-number">02 / INVESTIGATE</span><h3>Examine the workflow</h3><p>Work through evidence, provenance, conflicts, authority, downstream effects, commit boundaries, failure and recovery.</p></article>
+          <article class="workflow-step"><span class="workflow-number">03 / DESIGN</span><h3>Form a reviewable recommendation</h3><p>Translate findings into controls, approval conditions, version binding, HOLD points and unresolved decisions.</p></article>
+          <article class="workflow-step"><span class="workflow-number">04 / HANDOFF</span><h3>Prepare the engineering plan</h3><p>Produce structured Markdown deliverables and a machine-readable JSON specification for customer-side implementation and validation.</p></article>
+        </div>
+        <div class="decision-band">
+          <div><p class="eyebrow">Not every path ends in approval</p><h3>When the facts are not established, the plan can say HOLD.</h3></div>
+          <p>Depending on the findings, the recommendation may require further evidence, defer the operation, request human review or block the proposed change. Unknowns remain explicit; the Skill does not invent customer policy or convert model confidence into authorization.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section-dark" id="controls">
+      <div class="shell">
+        <div class="section-heading">
+          <div><p class="eyebrow">Control architecture</p><h2>From broad investigation to explicit controls.</h2></div>
+          <p>The published synthetic MERGE example contains 14 named controls. They illustrate how investigation findings can become concrete requirements for a customer-side implementation. The exact controls depend on the operation and scenario.</p>
+        </div>
+        <div class="control-grid">
+          <div class="control-item"><span>CTRL-01</span><p>Protected-operation qualification and scope binding</p></div>
+          <div class="control-item"><span>CTRL-02</span><p>Claim-specific identity evidence gate</p></div>
+          <div class="control-item"><span>CTRL-03</span><p>Registry-extract verification and evidence admission</p></div>
+          <div class="control-item"><span>CTRL-04</span><p>Parent / holding indication and contradiction handling</p></div>
+          <div class="control-item"><span>CTRL-05</span><p>Temporal applicability and validity interval</p></div>
+          <div class="control-item"><span>CTRL-06</span><p>Complete write-set inventory and pre-write HOLD</p></div>
+          <div class="control-item"><span>CTRL-07</span><p>Transaction coverage, commit point and atomicity gate</p></div>
+          <div class="control-item"><span>CTRL-08</span><p>Pre-commit invariant failure inside a verified atomic transaction</p></div>
+          <div class="control-item"><span>CTRL-09</span><p>Post-commit and out-of-boundary failure handling</p></div>
+          <div class="control-item"><span>CTRL-10</span><p>Ambiguous commit outcome, idempotency and reconciliation</p></div>
+          <div class="control-item"><span>CTRL-11</span><p>Authorization-path eligibility</p></div>
+          <div class="control-item"><span>CTRL-12</span><p>Operation-specific approval and authorized approvers</p></div>
+          <div class="control-item"><span>CTRL-13</span><p>Version binding, stale-state rejection and concurrency</p></div>
+          <div class="control-item"><span>CTRL-14</span><p>Audit and lineage record</p></div>
+        </div>
+        <p class="small-note">These are design requirements in the example plan, not controls implemented by the Skill or an independently verified runtime security layer.</p>
+      </div>
+    </section>
+
+    <section class="section" id="example">
+      <div class="shell">
+        <div class="section-heading">
+          <div><p class="eyebrow">See the output</p><h2>A synthetic CRM case, not a theoretical promise.</h2></div>
+          <p>Explore a complete example of the Planner's output for an AI-proposed MERGE involving two CRM account records. The scenario is synthetic; names and identifiers are fictional.</p>
+        </div>
+        <div class="case-study">
+          <div class="case-story">
+            <p class="card-kicker">THE SCENARIO</p><h3>Two similar accounts. One unresolved identity question.</h3>
+            <p>An agent proposes merging two customer-account records. The supplied scenario includes similar names, a shared web domain, an overlapping contact and a registry extract with a potentially matching identifier.</p>
+            <p>A contract also suggests that one company may be a parent or holding entity of the other. That possibility changes the question: the records may be related, yet still represent distinct legal entities.</p>
+            <div class="case-outcome"><span class="outcome-mark">!</span><div><strong>The identity proposition remains unproven.</strong><p>The example plan requires HOLD before the first persistent write while material evidence, policy, authorization and transaction-boundary decisions remain unresolved.</p></div></div>
+            <a class="text-link" href="demo/">Explore the complete demonstration <span aria-hidden="true">↗</span></a>
+          </div>
+          <div class="case-facts">
+            <div><strong>14</strong><span>named controls in the MERGE example</span></div>
+            <div><strong>31</strong><span>proposed customer-operation test scenarios</span></div>
+            <div><strong>11</strong><span>blocking customer decisions recorded in the example</span></div>
+            <div><strong>9</strong><span>canonical planning deliverables</span></div>
+          </div>
+        </div>
+        <div class="deliverables">
+          <div class="deliverable-intro"><p class="eyebrow">The engineering handoff</p><h3>Structured documents, connected by a machine-readable specification.</h3><p>The example includes a plan overview, operation scope, guardrail and evidence requirements, commit-boundary design, implementation blueprint, validation scenarios, open gaps and JSON.</p></div>
+          <div class="deliverable-list">
+            <a href="demo-for-agensi/00-README.md"><span>00</span><strong>Plan overview and validation record</strong><span>↗</span></a>
+            <a href="demo-for-agensi/01-mutation-scope.md"><span>01</span><strong>Mutation scope</strong><span>↗</span></a>
+            <a href="demo-for-agensi/02-guardrail-specification.md"><span>02</span><strong>Guardrail specification</strong><span>↗</span></a>
+            <a href="demo-for-agensi/03-evidence-requirements.md"><span>03</span><strong>Evidence requirements</strong><span>↗</span></a>
+            <a href="demo-for-agensi/04-commit-boundary-design.md"><span>04</span><strong>Commit-boundary design</strong><span>↗</span></a>
+            <a href="demo-for-agensi/05-implementation-blueprint.md"><span>05</span><strong>Implementation blueprint</strong><span>↗</span></a>
+            <a href="demo-for-agensi/06-validation-scenarios.md"><span>06</span><strong>Validation scenarios</strong><span>↗</span></a>
+            <a href="demo-for-agensi/07-assumptions-and-gaps.md"><span>07</span><strong>Assumptions and gaps</strong><span>↗</span></a>
+            <a href="demo-for-agensi/guardrail-spec.json"><span>JSON</span><strong>Machine-readable guardrail specification</strong><span>↗</span></a>
+          </div>
+        </div>
+        <div class="integrity-note"><strong>Read the example in context.</strong><p>The plan is marked <code>not_implementation_ready</code>. Its 31 customer-operation scenarios are proposed, not executed. Eleven customer decisions remain blocking, and Draft 2020-12 schema and format validation were not run in the original generation environment. The example demonstrates the structure and transparency of the handoff; it is not a production-ready implementation.</p></div>
+      </div>
+    </section>
+
+    <section class="section section-muted" id="audience">
+      <div class="shell">
+        <div class="section-heading">
+          <div><p class="eyebrow">Who it is for</p><h2>Built for teams responsible for identity-bearing data.</h2></div>
+          <p>The Planner is intended for teams designing or reviewing agentic workflows that can persistently alter entity identity or identity-bearing relationships.</p>
+        </div>
+        <div class="audience-grid">
+          <article><span>01</span><h3>AI engineering teams</h3><p>Teams introducing agents into workflows that can propose or initiate identity-changing operations.</p></article>
+          <article><span>02</span><h3>MDM and data architecture</h3><p>Teams responsible for entity registries, master data, identity quality and relationship integrity.</p></article>
+          <article><span>03</span><h3>CRM and platform engineering</h3><p>Teams responsible for persistence paths, integrations, transaction boundaries and downstream effects.</p></article>
+          <article><span>04</span><h3>Knowledge graph and data governance</h3><p>Teams that need traceable evidence, explicit authority and controlled changes to identity-bearing structures.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="reference">
+      <div class="shell reference-grid">
+        <div><p class="eyebrow">Reference-backed mode</p><h2>Grounded in a wider identity reference model.</h2></div>
+        <div>
+          <p class="lead">The Planner's design approach is informed by Digital Identity Optimization (DIO) and the Ontology of Digital Identity (ODI). Buyers do not need prior knowledge of either framework to use the Skill.</p>
+          <p>Reference-backed mode can use the public, read-only DIO/ODI Reference MCP. The buyer connects the endpoint separately in a compatible agent or client. It supplies reference material; it does not receive customer records, inspect customer application state or authorize customer writes.</p>
+          <div class="reference-links">
+            <a href="https://mcp.danielberanek.cz/mcp" target="_blank" rel="noopener noreferrer">DIO/ODI Reference MCP <span>↗</span></a>
+            <a href="https://arxiv.org/abs/2610.37407" target="_blank" rel="noopener noreferrer">Conceptual paper: Constraining the Commit Boundary <span>↗</span></a>
+            <a href="https://danielberanek.cz/manifest-dio/" target="_blank" rel="noopener noreferrer">DIO/ODI Hub <span>↗</span></a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section-dark" id="boundaries">
+      <div class="shell">
+        <div class="section-heading">
+          <div><p class="eyebrow">Scope and limitations</p><h2>Planning is not execution.</h2></div>
+          <p>The distinction is deliberate. The Skill prepares a design-time plan for customer engineering teams. It does not operate the customer's systems or replace their policy, authorization and testing responsibilities.</p>
+        </div>
+        <div class="boundary-grid">
+          <article class="boundary-card"><h3>What it does</h3><ul><li>Investigates identity-changing MERGE, SPLIT, UNMERGE and supported OTHER operations.</li><li>Examines supplied context, evidence, provenance, conflicts and reference material.</li><li>Designs proposed controls, approval conditions, HOLD points and validation scenarios.</li><li>Produces structured documentation and a machine-readable plan.</li><li>Identifies unknowns, assumptions and customer-owned decisions.</li></ul></article>
+          <article class="boundary-card boundary-out"><h3>What it does not do</h3><ul><li>Execute mutations or write to a customer CRM, MDM or registry.</li><li>Authorize a live operation or deploy a runtime guard.</li><li>Independently inspect systems or data that have not been supplied or connected.</li><li>Decide legal identity or define domain policy on the customer's behalf.</li><li>Guarantee production safety, compliance or successful recovery.</li></ul></article>
+        </div>
+        <p class="boundary-bottom">The customer's application and engineering team must implement, review and test the resulting controls in their own environment.</p>
+      </div>
+    </section>
+
+    <section class="section final-cta" id="get-skill">
+      <div class="shell final-cta-inner">
+        <p class="eyebrow">Make the investigation part of the workflow</p>
+        <h2>Before identity changes become permanent, make the reasoning reviewable.</h2>
+        <p>Bring a proposed entity-resolution operation through a structured investigation — and give engineering a clearer plan for what must be verified, controlled and tested.</p>
+        <div class="platform-slot final-platforms"><!-- PLATFORM_LINKS --></div>
+        <p class="affiliate-note">Platform links may include affiliate attribution. A qualifying purchase through an affiliate link may support the author without changing the buyer's price.</p>
+      </div>
+    </section>
+  </main>
+  <footer class="site-footer">
+    <div class="shell footer-main">
+      <div><a class="footer-brand" href="./"><img src="assets/branding/agentic-entity-resolution-guardrail-planner-logo.svg" alt="" width="36" height="36"><span>Agentic Entity Resolution<br><strong>Guardrail Planner</strong></span></a><p>A design-time Agent Skill for investigating and planning agent-proposed identity-changing operations.</p></div>
+      <div><p class="footer-label">Product</p><ul class="footer-links"><li><a href="#investigation">Investigation dimensions</a></li><li><a href="#workflow">How it works</a></li><li><a href="demo/">Synthetic CRM example</a></li><li><a href="#boundaries">Scope and limitations</a></li></ul></div>
+      <div><p class="footer-label">Resources</p><ul class="footer-links"><li><a href="https://github.com/dan-beranek/agentic-entity-resolution-guardrail-planner" target="_blank" rel="noopener noreferrer">Source repository</a></li><li><a href="https://arxiv.org/abs/2610.37407" target="_blank" rel="noopener noreferrer">Conceptual paper</a></li><li><a href="https://danielberanek.cz/" target="_blank" rel="noopener noreferrer">Author website</a></li><li><a href="llms.txt">LLM context</a></li></ul></div>
+    </div>
+    <div class="shell footer-bottom"><span>© <span data-current-year>2026</span> Daniel Beránek</span><span>Independent product · Design-time planning only</span></div>
+  </footer>
+</body>
+</html>

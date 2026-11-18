@@ -1,0 +1,51 @@
+# Agentic Entity Resolution Guardrail Planner
+
+> A confident entity match is not permission to merge.
+
+## Product
+
+Agentic Entity Resolution Guardrail Planner is a design-time Agent Skill for engineering teams working with agentic entity-resolution workflows. It does not simply ask an agent to propose a MERGE, SPLIT, or UNMERGE. It investigates the proposed workflow from multiple angles before producing a reviewable recommendation and a structured engineering plan.
+
+## Investigation dimensions
+
+1. Operation scope
+2. Entity and domain context
+3. Evidence and provenance
+4. Conflicting attributes and claims
+5. Authorization and approval
+6. Downstream impact
+7. Commit boundaries, write sets and atomicity
+8. Failure modes
+9. Recovery paths, reconciliation and quarantine
+10. Validation scenarios
+11. Open gaps, assumptions and customer-owned decisions
+
+## Workflow
+
+1. Qualify the proposed identity-changing operation.
+2. Investigate evidence, context, conflicts, authority, effects and failure paths.
+3. Design a reviewable recommendation and proposed guardrails, including HOLD, DEFER or human-review conditions where necessary.
+4. Produce an engineering handoff in structured Markdown and machine-readable JSON.
+
+## Outputs
+
+The public synthetic CRM MERGE example contains nine canonical planning deliverables: plan overview, mutation scope, guardrail specification, evidence requirements, commit-boundary design, implementation blueprint, validation scenarios, assumptions and gaps, and a machine-readable JSON specification.
+
+The example lists 14 customer-side controls for its specific synthetic MERGE scenario. It is marked not implementation-ready; 11 customer decisions remain blocking. Its 31 customer-operation tests are proposed, not executed. Draft 2020-12 schema and format validation were not run in the original generation environment.
+
+## Scope and limitations
+
+The Skill does not execute mutations, write to customer systems, authorize live operations, deploy runtime guards, inspect systems or records that have not been supplied or connected, determine legal identity, define customer policy, or guarantee production safety. Customer engineering teams must implement and test resulting controls in their own environment.
+
+## Reference dependency
+
+Reference-backed mode can use the public, read-only DIO/ODI Reference MCP at https://mcp.danielberanek.cz/mcp. The buyer connects it separately in a compatible agent or client. It provides reference material only; it does not receive customer records or authorize writes.
+
+The design approach is informed by the conceptual paper https://arxiv.org/abs/2610.37407. Buyers do not need prior knowledge of DIO/ODI.
+
+## Public resources
+
+- Product overview: https://dan-beranek.github.io/agentic-entity-resolution-guardrail-planner/
+- Synthetic example: https://dan-beranek.github.io/agentic-entity-resolution-guardrail-planner/demo/
+- Source repository: https://github.com/dan-beranek/agentic-entity-resolution-guardrail-planner
+- Author: https://danielberanek.cz/

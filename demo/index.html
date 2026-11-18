@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <meta name="description" content="A synthetic CRM MERGE demonstration showing the structured planning deliverables produced by Agentic Entity Resolution Guardrail Planner.">
+  <meta name="robots" content="index,follow">
+  <link rel="canonical" href="https://dan-beranek.github.io/agentic-entity-resolution-guardrail-planner/demo/">
+  <link rel="icon" href="../assets/branding/agentic-entity-resolution-guardrail-planner-logo.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../assets/site.css">
+  <title>Synthetic CRM MERGE Example | Agentic Entity Resolution Guardrail Planner</title>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="site-header">
+    <div class="shell header-inner">
+      <a class="brand" href="../" aria-label="Planner home">
+        <img src="../assets/branding/agentic-entity-resolution-guardrail-planner-logo.svg" alt="" width="42" height="42">
+        <span class="brand-copy"><strong>Agentic Entity Resolution</strong><span>Guardrail Planner</span></span>
+      </a>
+      <a class="text-link" href="../">Back to product overview <span aria-hidden="true">↗</span></a>
+    </div>
+  </header>
+  <main id="main">
+    <section class="demo-page-hero">
+      <div class="shell">
+        <p class="eyebrow">Synthetic CRM case study</p>
+        <h1>From an AI-proposed MERGE to a reviewable engineering plan.</h1>
+        <p>This example shows the nine canonical planning deliverables generated for a synthetic CRM scenario. It demonstrates the structure, specificity and transparency of the handoff — not a production implementation.</p>
+        <a class="back-link" href="../">← Return to the product overview</a>
+      </div>
+    </section>
+    <section class="demo-content">
+      <div class="shell">
+        <div class="section-heading">
+          <div><p class="eyebrow">The scenario</p><h2>Two accounts that may be related — but not identical.</h2></div>
+          <p>An AI agent proposes merging two CRM account records based on several overlapping signals. A contract also suggests a possible parent or holding relationship. The example treats that as a material conflict to investigate, not as a detail to ignore.</p>
+        </div>
+        <table class="demo-table">
+          <thead><tr><th>Deliverable</th><th>What it contains</th><th>Source</th></tr></thead>
+          <tbody>
+            <tr><td>00 — Plan overview</td><td>Scenario, recommendation status, provenance, validation record and handoff summary.</td><td><a href="../demo-for-agensi/00-README.md">Open Markdown ↗</a></td></tr>
+            <tr><td>01 — Mutation scope</td><td>Application and operation scope, affected state classes and operation boundaries.</td><td><a href="../demo-for-agensi/01-mutation-scope.md">Open Markdown ↗</a></td></tr>
+            <tr><td>02 — Guardrail specification</td><td>Fourteen named controls, their triggers, required actions, enforcement points, failure behaviour and validation links.</td><td><a href="../demo-for-agensi/02-guardrail-specification.md">Open Markdown ↗</a></td></tr>
+            <tr><td>03 — Evidence requirements</td><td>Claims, evidence roles, provenance, admission, promotion and conflict requirements.</td><td><a href="../demo-for-agensi/03-evidence-requirements.md">Open Markdown ↗</a></td></tr>
+            <tr><td>04 — Commit-boundary design</td><td>Pre-persistence controls, transaction and write-set questions, version requirements and failure behaviour.</td><td><a href="../demo-for-agensi/04-commit-boundary-design.md">Open Markdown ↗</a></td></tr>
+            <tr><td>05 — Implementation blueprint</td><td>Proposed components, responsibilities, logical interface, implementation sequence and operational concerns.</td><td><a href="../demo-for-agensi/05-implementation-blueprint.md">Open Markdown ↗</a></td></tr>
+            <tr><td>06 — Validation scenarios</td><td>Proposed tests linked to operations and controls, including failure and authorization paths.</td><td><a href="../demo-for-agensi/06-validation-scenarios.md">Open Markdown ↗</a></td></tr>
+            <tr><td>07 — Assumptions and gaps</td><td>Unresolved assumptions, blocking customer decisions and dependencies that must be resolved.</td><td><a href="../demo-for-agensi/07-assumptions-and-gaps.md">Open Markdown ↗</a></td></tr>
+            <tr><td>Machine-readable plan</td><td>JSON representation of the guardrail specification.</td><td><a href="../demo-for-agensi/guardrail-spec.json">Open JSON ↗</a></td></tr>
+          </tbody>
+        </table>
+        <div class="demo-caveat">
+          <strong>Important interpretation notes</strong>
+          <p>The example plan is explicitly marked <code>not_implementation_ready</code>. Eleven customer decisions remain blocking. Its 31 customer-operation scenarios are proposed tests; none was executed against a customer application. Draft 2020-12 JSON Schema and format validation were not run in the original generation environment. The plan does not decide legal identity, execute the merge or authorize a live operation. All names and account identifiers are synthetic.</p>
+        </div>
+        <div class="demo-caveat">
+          <strong>What this example demonstrates</strong>
+          <p>The connection between an investigation, an evidence-based recommendation, explicit customer-side controls, implementation responsibilities, validation scenarios and declared unknowns. The output is a starting point for customer engineering and policy review, not a turnkey production recipe.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+  <footer class="site-footer">
+    <div class="shell footer-bottom"><span>© 2026 Daniel Beránek</span><span><a href="../">Agentic Entity Resolution Guardrail Planner</a></span></div>
+  </footer>
+</body>
+</html>
