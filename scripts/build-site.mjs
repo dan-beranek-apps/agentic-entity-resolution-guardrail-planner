@@ -9,7 +9,8 @@ const base = "https://dan-beranek.github.io/agentic-entity-resolution-guardrail-
 const configPath = path.join(root, "assets/data/distribution-platforms.json");
 const artifactMetadataPath = path.join(root, "assets/data/artifact-metadata.json");
 const resolvedArtifactMetadataPath = path.join(dist, "assets/data/resolved-artifact-metadata.json");
-const socialPreviewRelativePath = "assets/branding/social-preview.png";
+const socialPreviewRelativePath = "assets/branding/social-preview-v2.png";
+const legacySocialPreviewRelativePath = "assets/branding/social-preview.png";
 const socialPreviewUrl = "https://dan-beranek.github.io/agentic-entity-resolution-guardrail-planner/" + socialPreviewRelativePath;
 
 function escapeHtml(value) {
@@ -28,6 +29,60 @@ async function exists(filePath) {
     return false;
   }
 }
+
+const pngCrcTable = new Uint32Array(256);
+for (let index = 0; index < 256; index++) {
+  let value = index;
+  for (let bit = 0; bit < 8; bit++) value = (value & 1) ? (0xedb88320 ^ (value >>> 1)) : (value >>> 1);
+  pngCrcTable[index] = value >>> 0;
+}
+
+function pngCrc32(buffer) {
+  let value = 0xffffffff;
+  for (const byte of buffer) value = pngCrcTable[(value ^ byte) & 0xff] ^ (value >>> 8);
+  return (value ^ 0xffffffff) >>> 0;
+}
+
+function validatePng(buffer, expectedWidth, expectedHeight, label) {
+  const signature = Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]);
+  if (buffer.length < 8 || !buffer.subarray(0, 8).equals(signature)) {
+    throw new Error(label + " does not have a valid PNG signature.");
+  }
+  let offset = 8;
+  let hasHeader = false;
+  let hasImageData = false;
+  let hasEnd = false;
+  while (offset < buffer.length) {
+    if (offset + 12 > buffer.length) throw new Error(label + " has a truncated PNG chunk header.");
+    const length = buffer.readUInt32BE(offset);
+    const chunkEnd = offset + 12 + length;
+    if (chunkEnd > buffer.length) throw new Error(label + " has a truncated PNG chunk.");
+    const type = buffer.toString("ascii", offset + 4, offset + 8);
+    const typeAndData = buffer.subarray(offset + 4, offset + 8 + length);
+    const storedCrc = buffer.readUInt32BE(offset + 8 + length);
+    if (pngCrc32(typeAndData) !== storedCrc) throw new Error(label + " has an invalid " + type + " chunk CRC.");
+    if (type === "IHDR") {
+      if (hasHeader || length !== 13) throw new Error(label + " has an invalid IHDR chunk.");
+      hasHeader = true;
+      const width = buffer.readUInt32BE(offset + 8);
+      const height = buffer.readUInt32BE(offset + 12);
+      if (width !== expectedWidth || height !== expectedHeight) {
+        throw new Error(label + " must be " + expectedWidth + "x" + expectedHeight + " pixels.");
+      }
+    }
+    if (type === "IDAT") hasImageData = true;
+    if (type === "IEND") {
+      if (length !== 0) throw new Error(label + " has an invalid IEND chunk.");
+      hasEnd = true;
+      if (chunkEnd !== buffer.length) throw new Error(label + " has trailing bytes after IEND.");
+      offset = chunkEnd;
+      break;
+    }
+    offset = chunkEnd;
+  }
+  if (!hasHeader || !hasImageData || !hasEnd) throw new Error(label + " is incomplete; IHDR, IDAT and IEND are required.");
+}
+
 
 const config = JSON.parse(await fs.readFile(configPath, "utf8"));
 const artifactMetadata = JSON.parse(await fs.readFile(artifactMetadataPath, "utf8"));
@@ -466,6 +521,7 @@ const requiredOutputs = [
   "assets/data/relations-registry.snapshot.json",
   "assets/branding/agentic-entity-resolution-guardrail-planner-logo.svg",
   "assets/branding/social-preview.png",
+  "assets/branding/social-preview-v2.png",
   "assets/diagrams/investigation-workflow.svg",
   "demo-for-agensi/00-README.md",
   "demo-for-agensi/guardrail-spec.json",
@@ -487,10 +543,9 @@ console.log("Affiliate CTA placements: " + markerCount);
 console.log("Fixed prices on website: none");
 
 const socialImage = await fs.readFile(path.join(dist, socialPreviewRelativePath));
-const pngSignature = Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]);
-if (!socialImage.subarray(0, 8).equals(pngSignature) || socialImage.readUInt32BE(16) !== 1200 || socialImage.readUInt32BE(20) !== 630) {
-  throw new Error("Social preview must be a valid 1200x630 PNG.");
-}
+validatePng(socialImage, 1200, 630, socialPreviewRelativePath);
+const legacySocialImage = await fs.readFile(path.join(dist, legacySocialPreviewRelativePath));
+validatePng(legacySocialImage, 1200, 630, legacySocialPreviewRelativePath);
 await fs.mkdir(path.dirname(resolvedArtifactMetadataPath), { recursive: true });
 const resolvedMetadata = {
   schema_version: "1.2.0",

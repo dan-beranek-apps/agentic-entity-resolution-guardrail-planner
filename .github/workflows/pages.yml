@@ -26,6 +26,14 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 22
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.x"
+      - name: Install Pillow for social preview generation
+        run: python -m pip install --disable-pip-version-check Pillow
+      - name: Generate valid social preview PNGs
+        run: python scripts/generate-social-preview.py
       - name: Build and validate the static website
         run: node scripts/build-site.mjs
       - name: Upload Pages artifact

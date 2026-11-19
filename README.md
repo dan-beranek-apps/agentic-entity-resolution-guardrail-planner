@@ -80,6 +80,7 @@ This repository contains the public product overview, website source and demonst
 - demo/ — curated overview of the synthetic example.
 - demo-for-agensi/ — original planning deliverables.
 - scripts/build-site.mjs — static build and publication checks.
+- scripts/generate-social-preview.py — deterministic 1200×630 social preview PNG generation.
 - .github/workflows/pages.yml — GitHub Pages build and deployment.
 
 ## Canonical product identity
