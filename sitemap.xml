@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url><loc>https://dan-beranek.github.io/agentic-entity-resolution-guardrail-planner/</loc></url>
-  <url><loc>https://dan-beranek.github.io/agentic-entity-resolution-guardrail-planner/methodology/</loc></url>
-  <url><loc>https://dan-beranek.github.io/agentic-entity-resolution-guardrail-planner/demo/</loc></url>
+  <url><loc>{{PRODUCT_URL}}</loc></url>
+  <url><loc>{{METHODOLOGY_URL}}</loc></url>
+  <url><loc>{{DEMO_URL}}</loc></url>
 </urlset>
