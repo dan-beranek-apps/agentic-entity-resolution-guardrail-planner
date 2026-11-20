@@ -123,7 +123,7 @@ if (siteRootUrl.protocol !== "https:" || !siteRootUrl.pathname.endsWith("/") || 
 const base = siteRootUrl.href.endsWith("/") ? siteRootUrl.href.slice(0, -1) : siteRootUrl.href;
 const socialPreviewUrl = new URL(socialPreviewRelativePath, siteRootUrl).href;
 const resolvedArtifactMetadataUrl = new URL("assets/data/resolved-artifact-metadata.json", siteRootUrl).href;
-if (artifactMetadata.site.id !== base + "#website") {
+if (artifactMetadata.site.id !== siteRootUrl.href + "#website") {
   throw new Error("site.id must be derived from site.url and end in #website.");
 }
 const registrySource = artifactMetadata.registry_source;
