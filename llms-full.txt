@@ -3,10 +3,10 @@
 Canonical product name: Agentic Entity Resolution Guardrail Planner
 Product type: Design-time Agent Skill
 Author: Daniel Beránek
-Product website: https://dan-beranek.github.io/agentic-entity-resolution-guardrail-planner/
-Methodology and research: https://dan-beranek.github.io/agentic-entity-resolution-guardrail-planner/methodology/
-Short machine-readable context: https://dan-beranek.github.io/agentic-entity-resolution-guardrail-planner/llms.txt
-Source repository: https://github.com/dan-beranek/agentic-entity-resolution-guardrail-planner
+Product website: {{SITE_BASE}}/
+Methodology and research: {{SITE_BASE}}/methodology/
+Short machine-readable context: {{SITE_BASE}}/llms.txt
+Source repository: https://github.com/dan-beranek-apps/agentic-entity-resolution-guardrail-planner
 Distribution listing: https://www.agensi.io/r/DANIELBERANEK?to=/skills/agentic-entity-resolution-guardrail-planner
 
 ## 1. Product purpose and positioning
@@ -66,7 +66,7 @@ The precise outputs and content depend on the operation and the context supplied
 
 ## 5. Public synthetic CRM example
 
-A public example is available at https://dan-beranek.github.io/agentic-entity-resolution-guardrail-planner/demo/ . Its source deliverables are available in the product repository under demo-for-agensi/.
+A public example is available at {{SITE_BASE}}/demo/ . Its source deliverables are available in the product repository under demo-for-agensi/.
 
 The example demonstrates a synthetic MERGE planning scenario. It includes nine canonical planning deliverables: eight Markdown artefacts and one machine-readable JSON specification. The specific example identifies fourteen proposed customer-side controls, eleven blocking customer decisions and thirty-one proposed customer-operation test scenarios.
 
@@ -136,17 +136,17 @@ The website's distribution configuration is centralized in assets/data/distribut
 
 ## 11. Machine-readable artifact metadata
 
-The site publishes [resolved-artifact-metadata.json](https://dan-beranek.github.io/agentic-entity-resolution-guardrail-planner/assets/data/resolved-artifact-metadata.json), a generated registry for the product, methodology page and synthetic CRM example. It contains each object's canonical URL, role, publication status, version or versioning status, technologies/integrations, typed relations, and the complete ordered keyword projection resolved from that object's approved DIO/ODI profile. It also resolves cited publications and supporting reference software against the central DIO/ODI works registry, includes their independent keyword profiles, and provides the relevant provenance-aware lineage edges from the relations registry. A cited taxonomy paper therefore retains its own Reconstruction Failure Modes keywords rather than transferring them to the citing webpage. The build records exact registry versions and SHA-256 digests. C0 remains invariant; C1 is selected per object from the global reconstruction-environment vocabulary. The public pages expose the JSON manifest through an alternate JSON link and use page-specific JSON-LD.
+The site publishes [resolved-artifact-metadata.json]({{SITE_BASE}}/assets/data/resolved-artifact-metadata.json), a generated registry for the product, methodology page and synthetic CRM example. It contains each object's canonical URL, role, publication status, version or versioning status, technologies/integrations, typed relations, and the complete ordered keyword projection resolved from that object's approved DIO/ODI profile. It also resolves cited publications and supporting reference software against the central DIO/ODI works registry, includes their independent keyword profiles, and provides the relevant provenance-aware lineage edges from the relations registry. A cited taxonomy paper therefore retains its own Reconstruction Failure Modes keywords rather than transferring them to the citing webpage. The build records exact registry versions and SHA-256 digests. C0 remains invariant; C1 is selected per object from the global reconstruction-environment vocabulary. The public pages expose the JSON manifest through an alternate JSON link and use page-specific JSON-LD.
 
 ## 12. Public website resources
 
-- Product overview: https://dan-beranek.github.io/agentic-entity-resolution-guardrail-planner/
-- Methodology and DIO/ODI research: https://dan-beranek.github.io/agentic-entity-resolution-guardrail-planner/methodology/
-- Synthetic CRM example: https://dan-beranek.github.io/agentic-entity-resolution-guardrail-planner/demo/
-- Short LLM context: https://dan-beranek.github.io/agentic-entity-resolution-guardrail-planner/llms.txt
-- Robots: https://dan-beranek.github.io/agentic-entity-resolution-guardrail-planner/robots.txt
-- Sitemap: https://dan-beranek.github.io/agentic-entity-resolution-guardrail-planner/sitemap.xml
-- Product source repository: https://github.com/dan-beranek/agentic-entity-resolution-guardrail-planner
+- Product overview: {{SITE_BASE}}/
+- Methodology and DIO/ODI research: {{SITE_BASE}}/methodology/
+- Synthetic CRM example: {{SITE_BASE}}/demo/
+- Short LLM context: {{SITE_BASE}}/llms.txt
+- Robots: {{SITE_BASE}}/robots.txt
+- Sitemap: {{SITE_BASE}}/sitemap.xml
+- Product source repository: https://github.com/dan-beranek-apps/agentic-entity-resolution-guardrail-planner
 - Author website: https://danielberanek.cz/
 - Author ORCID: https://orcid.org/0009-0004-0050-0264
 
