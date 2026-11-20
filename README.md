@@ -10,10 +10,10 @@ The investigation covers operation scope, entity context, evidence and provenanc
 
 The public product website is built as a static site and published through GitHub Pages:
 
-- Product overview: https://dan-beranek.github.io/agentic-entity-resolution-guardrail-planner/
-- Methodology and DIO/ODI research background: https://dan-beranek.github.io/agentic-entity-resolution-guardrail-planner/methodology/
-- Extended machine-readable context: https://dan-beranek.github.io/agentic-entity-resolution-guardrail-planner/llms-full.txt
-- Synthetic CRM demonstration: https://dan-beranek.github.io/agentic-entity-resolution-guardrail-planner/demo/
+- Product overview: https://apps.danielberanek.cz/agentic-entity-resolution-guardrail-planner/
+- Methodology and DIO/ODI research background: https://apps.danielberanek.cz/agentic-entity-resolution-guardrail-planner/methodology/
+- Extended machine-readable context: https://apps.danielberanek.cz/agentic-entity-resolution-guardrail-planner/llms-full.txt
+- Synthetic CRM demonstration: https://apps.danielberanek.cz/agentic-entity-resolution-guardrail-planner/demo/
 - Social preview image: `assets/branding/social-preview.png` (1200 × 630 PNG), referenced by Open Graph and Twitter metadata on all three public pages.
 
 The website is written in English. It deliberately does not display a fixed product price; current commercial terms remain on the distribution platform. The main navigation links to the standalone DIO/ODI methodology page; research publications are displayed as bibliographic references rather than feature cards.
