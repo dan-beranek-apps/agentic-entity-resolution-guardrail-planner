@@ -17,15 +17,15 @@
     "registry_discovery": "https://vocab.danielberanek.cz/metadata/README.md"
   },
   "site": {
-    "id": "https://dan-beranek.github.io/agentic-entity-resolution-guardrail-planner/#website",
-    "url": "https://dan-beranek.github.io/agentic-entity-resolution-guardrail-planner/",
+    "id": "https://apps.danielberanek.cz/agentic-entity-resolution-guardrail-planner/#website",
+    "url": "https://apps.danielberanek.cz/agentic-entity-resolution-guardrail-planner/",
     "name": "Agentic Entity Resolution Guardrail Planner",
     "in_language": "en",
     "artifact_type": "static-website",
     "artifact_role": "Public product discovery, methodology and demonstration website; the website is a distinct artifact from the paid Agent Skill itself.",
     "lifecycle_status": "published",
     "implementation": {
-      "source_repository": "https://github.com/dan-beranek/agentic-entity-resolution-guardrail-planner",
+      "source_repository": "https://github.com/dan-beranek-apps/agentic-entity-resolution-guardrail-planner",
       "source_entrypoint": "index.html",
       "source_formats": [
         "HTML",
@@ -56,7 +56,7 @@
     {
       "id": "planner-product",
       "page": "index.html",
-      "url": "https://dan-beranek.github.io/agentic-entity-resolution-guardrail-planner/",
+      "url": "https://apps.danielberanek.cz/agentic-entity-resolution-guardrail-planner/",
       "schema_type": "SoftwareApplication",
       "name": "Agentic Entity Resolution Guardrail Planner",
       "description": "A design-time Agent Skill for investigating agent-proposed MERGE, SPLIT, UNMERGE and supported identity-changing operations, then producing reviewable recommendations and structured engineering plans. It does not execute mutations or authorize production writes.",
@@ -141,8 +141,8 @@
           "https://doi.org/10.5281/zenodo.24085589"
         ],
         "provides": [
-          "https://dan-beranek.github.io/agentic-entity-resolution-guardrail-planner/methodology/",
-          "https://dan-beranek.github.io/agentic-entity-resolution-guardrail-planner/demo/"
+          "https://apps.danielberanek.cz/agentic-entity-resolution-guardrail-planner/methodology/",
+          "https://apps.danielberanek.cz/agentic-entity-resolution-guardrail-planner/demo/"
         ]
       },
       "keyword_policy": {
@@ -154,7 +154,7 @@
     {
       "id": "planner-methodology",
       "page": "methodology/index.html",
-      "url": "https://dan-beranek.github.io/agentic-entity-resolution-guardrail-planner/methodology/",
+      "url": "https://apps.danielberanek.cz/agentic-entity-resolution-guardrail-planner/methodology/",
       "schema_type": "WebPage",
       "name": "Methodology and DIO/ODI Research",
       "description": "The research and design foundation behind Agentic Entity Resolution Guardrail Planner, connecting DIO/ODI concepts to identity reconstruction, evidence, authorization, commit boundaries and the optional read-only reference service.",
@@ -228,7 +228,7 @@
       ],
       "relationships": {
         "isPartOf": [
-          "https://dan-beranek.github.io/agentic-entity-resolution-guardrail-planner/#website"
+          "https://apps.danielberanek.cz/agentic-entity-resolution-guardrail-planner/#website"
         ],
         "describes": [
           "planner-product"
@@ -250,7 +250,7 @@
     {
       "id": "planner-demo",
       "page": "demo/index.html",
-      "url": "https://dan-beranek.github.io/agentic-entity-resolution-guardrail-planner/demo/",
+      "url": "https://apps.danielberanek.cz/agentic-entity-resolution-guardrail-planner/demo/",
       "schema_type": "TechArticle",
       "name": "Synthetic CRM MERGE Example",
       "description": "A synthetic CRM MERGE case study with nine planning deliverables, proposed controls, validation scenarios and unresolved customer decisions. It is a reference-backed design-time example, not a production implementation.",
@@ -279,7 +279,7 @@
       ],
       "based_on": [
         {
-          "id": "https://dan-beranek.github.io/agentic-entity-resolution-guardrail-planner/#product",
+          "id": "https://apps.danielberanek.cz/agentic-entity-resolution-guardrail-planner/#product",
           "name": "Agentic Entity Resolution Guardrail Planner"
         },
         {
