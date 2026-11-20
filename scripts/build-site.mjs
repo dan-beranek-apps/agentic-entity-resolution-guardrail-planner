@@ -5,13 +5,11 @@ import { fileURLToPath } from "node:url";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const dist = path.join(root, "dist");
-const base = "https://dan-beranek.github.io/agentic-entity-resolution-guardrail-planner";
 const configPath = path.join(root, "assets/data/distribution-platforms.json");
 const artifactMetadataPath = path.join(root, "assets/data/artifact-metadata.json");
 const resolvedArtifactMetadataPath = path.join(dist, "assets/data/resolved-artifact-metadata.json");
 const socialPreviewRelativePath = "assets/branding/social-preview-v2.png";
 const legacySocialPreviewRelativePath = "assets/branding/social-preview.png";
-const socialPreviewUrl = "https://dan-beranek.github.io/agentic-entity-resolution-guardrail-planner/" + socialPreviewRelativePath;
 
 function escapeHtml(value) {
   return String(value)
@@ -19,6 +17,38 @@ function escapeHtml(value) {
     .replaceAll('"', "&quot;")
     .replaceAll("<", "&lt;")
     .replaceAll(">", "&gt;");
+}
+
+function urlMetadataMarkup(artifact) {
+  return [
+    '<link rel="canonical" href="' + escapeHtml(artifact.url) + '">',
+    '<meta property="og:url" content="' + escapeHtml(artifact.url) + '">',
+    '<meta property="og:image" content="' + escapeHtml(socialPreviewUrl) + '">',
+    '<meta property="og:image:secure_url" content="' + escapeHtml(socialPreviewUrl) + '">',
+    '<meta name="twitter:image" content="' + escapeHtml(socialPreviewUrl) + '">',
+    '<link rel="alternate" type="application/json" href="' + escapeHtml(resolvedArtifactMetadataUrl) + '" title="Machine-readable artifact metadata">'
+  ].join("\n  ");
+}
+
+function injectUrlMetadata(html, artifact, label) {
+  const marker = "<!-- GENERATED_URL_METADATA -->";
+  const count = html.split(marker).length - 1;
+  if (!artifact || count !== 1) {
+    throw new Error("Expected one generated URL metadata marker and a matching artifact in " + label + "; found " + count + ".");
+  }
+  return html.replace(marker, urlMetadataMarkup(artifact));
+}
+
+function renderSiteTemplate(template, replacements, label) {
+  let rendered = template;
+  for (const [token, value] of Object.entries(replacements)) {
+    if (!rendered.includes(token)) throw new Error("Missing template token " + token + " in " + label);
+    rendered = rendered.replaceAll(token, String(value));
+  }
+  if (rendered.includes("{{")) {
+    throw new Error("Unresolved template token in " + label);
+  }
+  return rendered;
 }
 
 async function exists(filePath) {
@@ -86,6 +116,16 @@ function validatePng(buffer, expectedWidth, expectedHeight, label) {
 
 const config = JSON.parse(await fs.readFile(configPath, "utf8"));
 const artifactMetadata = JSON.parse(await fs.readFile(artifactMetadataPath, "utf8"));
+const siteRootUrl = new URL(artifactMetadata.site.url);
+if (siteRootUrl.protocol !== "https:" || !siteRootUrl.pathname.endsWith("/") || siteRootUrl.search || siteRootUrl.hash) {
+  throw new Error("site.url must be an HTTPS URL ending in a slash, without query or fragment.");
+}
+const base = siteRootUrl.href.endsWith("/") ? siteRootUrl.href.slice(0, -1) : siteRootUrl.href;
+const socialPreviewUrl = new URL(socialPreviewRelativePath, siteRootUrl).href;
+const resolvedArtifactMetadataUrl = new URL("assets/data/resolved-artifact-metadata.json", siteRootUrl).href;
+if (artifactMetadata.site.id !== base + "#website") {
+  throw new Error("site.id must be derived from site.url and end in #website.");
+}
 const registrySource = artifactMetadata.registry_source;
 async function loadRegistryResource(filePath, snapshotPath) {
   const url = `https://raw.githubusercontent.com/${registrySource.repository}/${registrySource.ref}/${filePath}`;
@@ -211,6 +251,16 @@ function resolveWorkKeywordProfile(workId, work) {
 const resolvedArtifacts = artifactMetadata.artifacts.map((artifact) => {
   if (!artifact.id || !artifact.page || !artifact.url || !artifact.schema_type || !artifact.keyword_profile_id) {
     throw new Error("Each artefact needs id, page, URL, schema type and keyword profile ID.");
+  }
+  const relativePagePath = artifact.page === "index.html"
+    ? ""
+    : artifact.page.endsWith("/index.html")
+      ? artifact.page.slice(0, -"index.html".length)
+      : null;
+  if (relativePagePath === null) throw new Error(artifact.id + ": page must be index.html or a nested index.html path.");
+  const expectedUrl = new URL(relativePagePath, siteRootUrl).href;
+  if (artifact.url !== expectedUrl) {
+    throw new Error(artifact.id + ": artifact URL must be derived from site.url and its page path; expected " + expectedUrl);
   }
   const projection = resolveKeywordProfile(artifact.keyword_profile_id);
   return { ...artifact, keyword_chunks: projection.chunks, keywords: projection.keywords, keyword_rationales: projection.profile.term_rationales };
@@ -460,6 +510,13 @@ const platforms = config.platforms
 
 if (platforms.length === 0) throw new Error("No available distribution platforms are configured.");
 
+const productPageArtifact = resolvedArtifacts.find((artifact) => artifact.id === "planner-product");
+const methodologyPageArtifact = resolvedArtifacts.find((artifact) => artifact.id === "planner-methodology");
+const demoPageArtifact = resolvedArtifacts.find((artifact) => artifact.id === "planner-demo");
+if (!productPageArtifact || !methodologyPageArtifact || !demoPageArtifact) {
+  throw new Error("Product, methodology and demo artifacts are all required for URL generation.");
+}
+
 const platformMarkup = platforms.map((platform, index) => {
   const style = index === 0 ? "platform-link-primary" : "platform-link-secondary";
   const aria = "Get Agentic Entity Resolution Guardrail Planner on " + platform.name;
@@ -480,6 +537,7 @@ if (markerCount !== 3) {
 }
 html = html.split(marker).join(platformMarkup);
 if (html.includes(marker)) throw new Error("Unresolved distribution-platform insertion point.");
+html = injectUrlMetadata(html, productPageArtifact, "index.html");
 
 if (/href=["']https:\/\/www\.agensi\.io\/skills\//i.test(html)) {
   throw new Error("A direct Agensi Skill URL was found. Purchase links must use the affiliate route.");
@@ -498,14 +556,38 @@ if (ctaUrlCount !== markerCount) {
 
 await fs.writeFile(path.join(dist, "index.html"), html, "utf8");
 await fs.mkdir(path.join(dist, "methodology"), { recursive: true });
-await fs.copyFile(path.join(root, "methodology/index.html"), path.join(dist, "methodology/index.html"));
+const methodologyHtml = injectUrlMetadata(
+  await fs.readFile(path.join(root, "methodology/index.html"), "utf8"),
+  methodologyPageArtifact,
+  "methodology/index.html"
+);
+await fs.writeFile(path.join(dist, "methodology/index.html"), methodologyHtml, "utf8");
 await fs.cp(path.join(root, "assets"), path.join(dist, "assets"), { recursive: true });
 await fs.cp(path.join(root, "demo-for-agensi"), path.join(dist, "demo-for-agensi"), { recursive: true });
 await fs.mkdir(path.join(dist, "demo"), { recursive: true });
-await fs.copyFile(path.join(root, "demo/index.html"), path.join(dist, "demo/index.html"));
+const demoHtml = injectUrlMetadata(
+  await fs.readFile(path.join(root, "demo/index.html"), "utf8"),
+  demoPageArtifact,
+  "demo/index.html"
+);
+await fs.writeFile(path.join(dist, "demo/index.html"), demoHtml, "utf8");
 
-for (const filename of ["robots.txt", "sitemap.xml", "llms.txt", "llms-full.txt"]) {
-  await fs.copyFile(path.join(root, filename), path.join(dist, filename));
+const robotsTemplate = await fs.readFile(path.join(root, "robots.txt"), "utf8");
+const robotsContent = renderSiteTemplate(robotsTemplate, { "{{SITE_BASE}}": base }, "robots.txt");
+await fs.writeFile(path.join(dist, "robots.txt"), robotsContent, "utf8");
+
+const sitemapTemplate = await fs.readFile(path.join(root, "sitemap.xml"), "utf8");
+const sitemapContent = renderSiteTemplate(sitemapTemplate, {
+  "{{PRODUCT_URL}}": productPageArtifact.url,
+  "{{METHODOLOGY_URL}}": methodologyPageArtifact.url,
+  "{{DEMO_URL}}": demoPageArtifact.url
+}, "sitemap.xml");
+await fs.writeFile(path.join(dist, "sitemap.xml"), sitemapContent, "utf8");
+
+for (const filename of ["llms.txt", "llms-full.txt"]) {
+  const template = await fs.readFile(path.join(root, filename), "utf8");
+  const rendered = renderSiteTemplate(template, { "{{SITE_BASE}}": base }, filename);
+  await fs.writeFile(path.join(dist, filename), rendered, "utf8");
 }
 
 const requiredOutputs = [
@@ -817,6 +899,24 @@ for (const artifact of resolvedArtifacts) {
   ]) if (!pageHtml.includes(marker)) throw new Error("Missing required social metadata marker in " + artifact.page + ": " + marker);
   await fs.writeFile(target, pageHtml, "utf8");
 }
+const legacyPublicBase = "https://dan-beranek.github.io/agentic-entity-resolution-guardrail-planner";
+for (const relativePath of [
+  "index.html",
+  "methodology/index.html",
+  "demo/index.html",
+  "robots.txt",
+  "sitemap.xml",
+  "llms.txt",
+  "llms-full.txt",
+  "assets/data/artifact-metadata.json",
+  "assets/data/resolved-artifact-metadata.json"
+]) {
+  const generatedContent = await fs.readFile(path.join(dist, relativePath), "utf8");
+  if (generatedContent.includes(legacyPublicBase)) {
+    throw new Error("Legacy public URL remains in generated output: " + relativePath);
+  }
+}
+console.log("URL metadata: canonical, Open Graph, Twitter, JSON-LD, robots, sitemap and LLM context derived from artifact-metadata.json.");
 console.log("Social preview: 1200x630 PNG, referenced by Open Graph and Twitter metadata on all pages.");
 console.log("DIO/ODI Keywords: " + resolvedArtifacts.map((artifact) => artifact.keyword_profile_id + "=" + artifact.keywords.length).join("; ") + " (registry " + keywordRegistry.registry_version + ").");
 console.log("Referenced DIO/ODI work profiles: " + referencedWorkProfiles.length + "; artefact relations: " + artifactRelations.length + "; work relations: " + referenceRelations.length + ".");
