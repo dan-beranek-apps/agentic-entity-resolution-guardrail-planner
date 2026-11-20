@@ -891,12 +891,15 @@ for (const artifact of resolvedArtifacts) {
   if (!pageHtml.includes('<meta name="dio-odi-keyword-profile" content="' + artifact.keyword_profile_id + '">')) throw new Error("Missing object-specific keyword profile in " + artifact.page);
   if (!pageHtml.includes('application/ld+json')) throw new Error("Missing JSON-LD output in " + artifact.page);
   for (const marker of [
+    '<link rel="canonical" href="' + artifact.url + '">',
+    '<meta property="og:url" content="' + artifact.url + '">',
     '<meta property="og:image" content="' + socialPreviewUrl + '">',
     '<meta name="twitter:image" content="' + socialPreviewUrl + '">',
+    '<link rel="alternate" type="application/json" href="' + resolvedArtifactMetadataUrl + '" title="Machine-readable artifact metadata">',
     '<meta name="twitter:card" content="summary_large_image">',
     '<meta property="og:image:width" content="1200">',
     '<meta property="og:image:height" content="630">'
-  ]) if (!pageHtml.includes(marker)) throw new Error("Missing required social metadata marker in " + artifact.page + ": " + marker);
+  ]) if (!pageHtml.includes(marker)) throw new Error("Missing required URL/social metadata marker in " + artifact.page + ": " + marker);
   await fs.writeFile(target, pageHtml, "utf8");
 }
 const legacyPublicBase = "https://dan-beranek.github.io/agentic-entity-resolution-guardrail-planner";
