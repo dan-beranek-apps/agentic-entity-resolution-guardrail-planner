@@ -2,7 +2,7 @@
 
 > A confident entity match is not permission to merge.
 
-For the extended product, methodology, workflow, output, evidence and limitation context, see [llms-full.txt](https://dan-beranek.github.io/agentic-entity-resolution-guardrail-planner/llms-full.txt).
+For the extended product, methodology, workflow, output, evidence and limitation context, see [llms-full.txt]({{SITE_BASE}}/llms-full.txt).
 
 ## Product
 
@@ -51,18 +51,18 @@ The Planner was created by Daniel Beránek, author of Digital Identity Optimizat
 
 The central planning distinction is between an agent's proposed entity match and the evidence and engineering controls required before a persistent identity-changing operation can be committed. The optional DIO/ODI Reference MCP is public and read-only; it provides reference material only and does not receive customer records or authorize customer writes.
 
-- Methodology and related research: https://dan-beranek.github.io/agentic-entity-resolution-guardrail-planner/methodology/
+- Methodology and related research: {{SITE_BASE}}/methodology/
 - DIO/ODI Reference MCP: https://mcp.danielberanek.cz/mcp
 - DIO/ODI Reference Model: https://vocab.danielberanek.cz/
 
 ## Machine-readable artifact metadata
 
-The public page objects, their page-specific ordered DIO/ODI keyword sequences, object roles, versions, technologies, and artifact relations are available in [resolved-artifact-metadata.json](https://dan-beranek.github.io/agentic-entity-resolution-guardrail-planner/assets/data/resolved-artifact-metadata.json). The manifest also resolves every cited DIO/ODI work and used reference service against the canonical works registry, attaches each object's own keyword profile, and includes the relevant typed lineage edges. Thus a page citing the taxonomic note does not inherit its Reconstruction Failure Modes terms; the note is represented separately with its own terms and lineage. Each page exposes the same resource through an alternate JSON link. C0 is invariant and C1 environments are selected per artifact.
+The public page objects, their page-specific ordered DIO/ODI keyword sequences, object roles, versions, technologies, and artifact relations are available in [resolved-artifact-metadata.json]({{SITE_BASE}}/assets/data/resolved-artifact-metadata.json). The manifest also resolves every cited DIO/ODI work and used reference service against the canonical works registry, attaches each object's own keyword profile, and includes the relevant typed lineage edges. Thus a page citing the taxonomic note does not inherit its Reconstruction Failure Modes terms; the note is represented separately with its own terms and lineage. Each page exposes the same resource through an alternate JSON link. C0 is invariant and C1 environments are selected per artifact.
 
 ## Public resources
 
-- Product overview: https://dan-beranek.github.io/agentic-entity-resolution-guardrail-planner/
-- Methodology: https://dan-beranek.github.io/agentic-entity-resolution-guardrail-planner/methodology/
-- Synthetic example: https://dan-beranek.github.io/agentic-entity-resolution-guardrail-planner/demo/
-- Source repository: https://github.com/dan-beranek/agentic-entity-resolution-guardrail-planner
+- Product overview: {{SITE_BASE}}/
+- Methodology: {{SITE_BASE}}/methodology/
+- Synthetic example: {{SITE_BASE}}/demo/
+- Source repository: https://github.com/dan-beranek-apps/agentic-entity-resolution-guardrail-planner
 - Author: https://danielberanek.cz/
