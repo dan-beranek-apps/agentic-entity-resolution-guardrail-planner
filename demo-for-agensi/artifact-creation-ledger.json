@@ -1,0 +1,302 @@
+{
+  "ledger_version": "2.1.1",
+  "run_id": "2026-11-21T01:15:46Z",
+  "recorded_at": "2026-11-21T11:48:27Z",
+  "hash_algorithm": "SHA-256",
+  "hash_scope": "exact_file_bytes",
+  "export_status": "workspace_only",
+  "artifact_count": 9,
+  "artifacts": [
+    {
+      "canonical_filename": "00-README.md",
+      "creation_method": "created_in_current_run",
+      "created_at": "2026-11-21T11:48:27Z",
+      "revised_at": null,
+      "finalized_at": "2026-11-21T11:48:27Z",
+      "timestamp_basis": "captured_immediately_after_write",
+      "workspace_filename": "00-README.md",
+      "workspace_sha256": "a3ad3dc3667ea8d6bf9b3ce4e5045afb4a3535bce7a7a8a9971962b4e835b339",
+      "exported_filename": null,
+      "exported_sha256": null,
+      "baseline_sha256": null,
+      "observed_by": null,
+      "observed_at": null,
+      "workspace_masked_sha256": "16a88360b73033c72eefadca4fe5466e54c87593a3539cf18362c37a77ceec46"
+    },
+    {
+      "canonical_filename": "01-mutation-scope.md",
+      "creation_method": "created_in_current_run",
+      "created_at": "2026-11-21T11:48:27Z",
+      "revised_at": null,
+      "finalized_at": "2026-11-21T11:48:27Z",
+      "timestamp_basis": "captured_immediately_after_write",
+      "workspace_filename": "01-mutation-scope.md",
+      "workspace_sha256": "e1fab97ed55beebcbed14cbe81bf3c9dfc2b682d07dddeb47aff4ea3219d6881",
+      "exported_filename": null,
+      "exported_sha256": null,
+      "baseline_sha256": null,
+      "observed_by": null,
+      "observed_at": null,
+      "workspace_masked_sha256": "e1fab97ed55beebcbed14cbe81bf3c9dfc2b682d07dddeb47aff4ea3219d6881"
+    },
+    {
+      "canonical_filename": "02-guardrail-specification.md",
+      "creation_method": "created_in_current_run",
+      "created_at": "2026-11-21T11:48:27Z",
+      "revised_at": null,
+      "finalized_at": "2026-11-21T11:48:27Z",
+      "timestamp_basis": "captured_immediately_after_write",
+      "workspace_filename": "02-guardrail-specification.md",
+      "workspace_sha256": "a9f8e8c2fea718b6ea4e2a9021c32d1be63fcd9828c4be9066e08a0d1e3ee419",
+      "exported_filename": null,
+      "exported_sha256": null,
+      "baseline_sha256": null,
+      "observed_by": null,
+      "observed_at": null,
+      "workspace_masked_sha256": "a9f8e8c2fea718b6ea4e2a9021c32d1be63fcd9828c4be9066e08a0d1e3ee419"
+    },
+    {
+      "canonical_filename": "03-evidence-requirements.md",
+      "creation_method": "created_in_current_run",
+      "created_at": "2026-11-21T11:48:27Z",
+      "revised_at": null,
+      "finalized_at": "2026-11-21T11:48:27Z",
+      "timestamp_basis": "captured_immediately_after_write",
+      "workspace_filename": "03-evidence-requirements.md",
+      "workspace_sha256": "30d16692c7d8cf04ce368fde9f3580951c0811d01082410b9ed77966c0d61d69",
+      "exported_filename": null,
+      "exported_sha256": null,
+      "baseline_sha256": null,
+      "observed_by": null,
+      "observed_at": null,
+      "workspace_masked_sha256": "30d16692c7d8cf04ce368fde9f3580951c0811d01082410b9ed77966c0d61d69"
+    },
+    {
+      "canonical_filename": "04-commit-boundary-design.md",
+      "creation_method": "created_in_current_run",
+      "created_at": "2026-11-21T11:48:27Z",
+      "revised_at": null,
+      "finalized_at": "2026-11-21T11:48:27Z",
+      "timestamp_basis": "captured_immediately_after_write",
+      "workspace_filename": "04-commit-boundary-design.md",
+      "workspace_sha256": "979baaf7364b3af6f9e9b8d462af9087bc35efc68a06b335cbe5190add226660",
+      "exported_filename": null,
+      "exported_sha256": null,
+      "baseline_sha256": null,
+      "observed_by": null,
+      "observed_at": null,
+      "workspace_masked_sha256": "979baaf7364b3af6f9e9b8d462af9087bc35efc68a06b335cbe5190add226660"
+    },
+    {
+      "canonical_filename": "05-implementation-blueprint.md",
+      "creation_method": "created_in_current_run",
+      "created_at": "2026-11-21T11:48:27Z",
+      "revised_at": null,
+      "finalized_at": "2026-11-21T11:48:27Z",
+      "timestamp_basis": "captured_immediately_after_write",
+      "workspace_filename": "05-implementation-blueprint.md",
+      "workspace_sha256": "9b98be0aa8977d51feed37b58ddda989f958fe7bdc0e3962a147528d0a1df2f4",
+      "exported_filename": null,
+      "exported_sha256": null,
+      "baseline_sha256": null,
+      "observed_by": null,
+      "observed_at": null,
+      "workspace_masked_sha256": "9b98be0aa8977d51feed37b58ddda989f958fe7bdc0e3962a147528d0a1df2f4"
+    },
+    {
+      "canonical_filename": "06-validation-scenarios.md",
+      "creation_method": "created_in_current_run",
+      "created_at": "2026-11-21T11:48:27Z",
+      "revised_at": null,
+      "finalized_at": "2026-11-21T11:48:27Z",
+      "timestamp_basis": "captured_immediately_after_write",
+      "workspace_filename": "06-validation-scenarios.md",
+      "workspace_sha256": "98325325270b2631cddee08b8a261a4775c1eed149e0b66eddbe2ffd3d2031b2",
+      "exported_filename": null,
+      "exported_sha256": null,
+      "baseline_sha256": null,
+      "observed_by": null,
+      "observed_at": null,
+      "workspace_masked_sha256": "98325325270b2631cddee08b8a261a4775c1eed149e0b66eddbe2ffd3d2031b2"
+    },
+    {
+      "canonical_filename": "07-assumptions-and-gaps.md",
+      "creation_method": "created_in_current_run",
+      "created_at": "2026-11-21T11:48:27Z",
+      "revised_at": null,
+      "finalized_at": "2026-11-21T11:48:27Z",
+      "timestamp_basis": "captured_immediately_after_write",
+      "workspace_filename": "07-assumptions-and-gaps.md",
+      "workspace_sha256": "6fa8d5fdffa1a57444024b6b8a5f4152b3b66edeebfa6841079acc5486c449f7",
+      "exported_filename": null,
+      "exported_sha256": null,
+      "baseline_sha256": null,
+      "observed_by": null,
+      "observed_at": null,
+      "workspace_masked_sha256": "6fa8d5fdffa1a57444024b6b8a5f4152b3b66edeebfa6841079acc5486c449f7"
+    },
+    {
+      "canonical_filename": "guardrail-spec.json",
+      "creation_method": "created_in_current_run",
+      "created_at": "2026-11-21T11:48:27Z",
+      "revised_at": null,
+      "finalized_at": "2026-11-21T11:48:27Z",
+      "timestamp_basis": "captured_immediately_after_write",
+      "workspace_filename": "guardrail-spec.json",
+      "workspace_sha256": "b49985c5ad8845f62f04f47b3f6d9d50c99d7a8fd07a09abcf77f78c4c4298b1",
+      "exported_filename": null,
+      "exported_sha256": null,
+      "baseline_sha256": null,
+      "observed_by": null,
+      "observed_at": null,
+      "workspace_masked_sha256": "b49985c5ad8845f62f04f47b3f6d9d50c99d7a8fd07a09abcf77f78c4c4298b1"
+    }
+  ],
+  "candidate_snapshot": {
+    "status": "retained_session_only",
+    "captured_at": "2026-11-21T11:48:27Z",
+    "location_kind": "workspace_dir",
+    "snapshot_ref": "/home/claude/candidate-snapshot",
+    "delivered_to_user": false,
+    "manifest_sha256": "c6b09f4b506bf7f824c0a4deba918d310a09e22e9e3e2bd0919e122b8f9236c6",
+    "manifest": [
+      {
+        "canonical_filename": "00-README.md",
+        "size_bytes": 17502,
+        "candidate_full_sha256": "f8c7b1dd95d0b9dcfaae9b04fbaef9211ba7da4f0eda470ead5bae01cc6da2e1",
+        "candidate_masked_sha256": "16a88360b73033c72eefadca4fe5466e54c87593a3539cf18362c37a77ceec46"
+      },
+      {
+        "canonical_filename": "01-mutation-scope.md",
+        "size_bytes": 10254,
+        "candidate_full_sha256": "e1fab97ed55beebcbed14cbe81bf3c9dfc2b682d07dddeb47aff4ea3219d6881",
+        "candidate_masked_sha256": "e1fab97ed55beebcbed14cbe81bf3c9dfc2b682d07dddeb47aff4ea3219d6881"
+      },
+      {
+        "canonical_filename": "02-guardrail-specification.md",
+        "size_bytes": 45021,
+        "candidate_full_sha256": "a9f8e8c2fea718b6ea4e2a9021c32d1be63fcd9828c4be9066e08a0d1e3ee419",
+        "candidate_masked_sha256": "a9f8e8c2fea718b6ea4e2a9021c32d1be63fcd9828c4be9066e08a0d1e3ee419"
+      },
+      {
+        "canonical_filename": "03-evidence-requirements.md",
+        "size_bytes": 19065,
+        "candidate_full_sha256": "30d16692c7d8cf04ce368fde9f3580951c0811d01082410b9ed77966c0d61d69",
+        "candidate_masked_sha256": "30d16692c7d8cf04ce368fde9f3580951c0811d01082410b9ed77966c0d61d69"
+      },
+      {
+        "canonical_filename": "04-commit-boundary-design.md",
+        "size_bytes": 7145,
+        "candidate_full_sha256": "979baaf7364b3af6f9e9b8d462af9087bc35efc68a06b335cbe5190add226660",
+        "candidate_masked_sha256": "979baaf7364b3af6f9e9b8d462af9087bc35efc68a06b335cbe5190add226660"
+      },
+      {
+        "canonical_filename": "05-implementation-blueprint.md",
+        "size_bytes": 8536,
+        "candidate_full_sha256": "9b98be0aa8977d51feed37b58ddda989f958fe7bdc0e3962a147528d0a1df2f4",
+        "candidate_masked_sha256": "9b98be0aa8977d51feed37b58ddda989f958fe7bdc0e3962a147528d0a1df2f4"
+      },
+      {
+        "canonical_filename": "06-validation-scenarios.md",
+        "size_bytes": 50041,
+        "candidate_full_sha256": "98325325270b2631cddee08b8a261a4775c1eed149e0b66eddbe2ffd3d2031b2",
+        "candidate_masked_sha256": "98325325270b2631cddee08b8a261a4775c1eed149e0b66eddbe2ffd3d2031b2"
+      },
+      {
+        "canonical_filename": "07-assumptions-and-gaps.md",
+        "size_bytes": 9747,
+        "candidate_full_sha256": "6fa8d5fdffa1a57444024b6b8a5f4152b3b66edeebfa6841079acc5486c449f7",
+        "candidate_masked_sha256": "6fa8d5fdffa1a57444024b6b8a5f4152b3b66edeebfa6841079acc5486c449f7"
+      },
+      {
+        "canonical_filename": "guardrail-spec.json",
+        "size_bytes": 99904,
+        "candidate_full_sha256": "b49985c5ad8845f62f04f47b3f6d9d50c99d7a8fd07a09abcf77f78c4c4298b1",
+        "candidate_masked_sha256": "b49985c5ad8845f62f04f47b3f6d9d50c99d7a8fd07a09abcf77f78c4c4298b1"
+      }
+    ],
+    "mask_spec_id": "mask-spec-1",
+    "rehash_after_freeze_at": "2026-11-21T11:48:27Z",
+    "rehash_after_freeze_result": "all_match",
+    "rehash_before_sidecar_at": "2026-11-21T11:48:27Z",
+    "rehash_before_sidecar_result": "all_match",
+    "platform_limitation": "The snapshot directory exists only in the agent's session workspace and is not delivered to the recipient; equivalence is agent-computed only.",
+    "delivered_snapshot_filename": null,
+    "mask_implementation": "build/finalize.py mask() (single README Freeze status line value replaced by __H10_FREEZE_STATUS__)",
+    "mask_implementation_version": "mask-spec-1 (ad hoc, unversioned)"
+  },
+  "freeze_integrity": {
+    "status": "passed",
+    "equivalence_basis": "snapshot_rehash_comparison",
+    "candidate_equivalence": "established",
+    "frozen_sha256_manifest_sha256": "9d2819d13e63d5547225fc50507ae897f9a96e146e47c54c5e419e1879f73816",
+    "checked_at": "2026-11-21T11:48:27Z",
+    "notes": [
+      "Only the README Freeze status value changed between candidate and frozen bytes; agent-computed comparison."
+    ]
+  },
+  "frozen_checks": {
+    "F1": "not_run",
+    "F2": "not_run",
+    "F3": "executed_pass",
+    "F4": "executed_pass",
+    "F5a": "executed_pass",
+    "F6": "executed_pass",
+    "F7": "executed_pass"
+  },
+  "carried_checks": {
+    "semantic_reference_validation": "executed_pass",
+    "operation_coverage_validation": "executed_pass",
+    "test_operation_scope_validation": "executed_pass",
+    "markdown_json_consistency": "executed_pass",
+    "operation_classification_consistency": "manual_pass",
+    "authorization_path_coverage_validation": "manual_pass",
+    "operation_effect_boundary_validation": "manual_pass",
+    "mcp_provenance_validation": "manual_pass",
+    "planner_checks_validation": "manual_pass"
+  },
+  "engine_checks": {
+    "E1": "not_run"
+  },
+  "sidecar_checks": {
+    "s1": {
+      "status": "not_run",
+      "carried_checks_sha256": null,
+      "plan_validation_record_sha256": null,
+      "checked_at": null,
+      "canonicalization": "not_available",
+      "canonicalization_implementation": null,
+      "canonicalization_version": null
+    }
+  },
+  "package_coherence": "not_run",
+  "equivalence_reproducibility": "agent_computed_only",
+  "attestation_summary": "NOT_ATTESTED",
+  "blockers": [
+    {
+      "item": "F1 plan schema validation (Draft 2020-12)",
+      "status": "not_run",
+      "dependency": "No Draft 2020-12 JSON Schema engine installed (jsonschema absent; Ajv 6.15.0 is draft-07 only); network disabled"
+    },
+    {
+      "item": "F2 format assertions and E1 negative controls",
+      "status": "not_run",
+      "dependency": "Same missing Draft 2020-12 engine with format support"
+    },
+    {
+      "item": "S1 carried-check comparison with RFC 8785 JCS hashes",
+      "status": "not_run",
+      "dependency": "No RFC 8785 JCS implementation available; ad hoc serializer not substituted"
+    },
+    {
+      "item": "Export verification",
+      "status": "not_run",
+      "dependency": "No actual exported object was inspected independently of the workspace files"
+    }
+  ],
+  "notes": [
+    "Exports not inspected; export_status workspace_only. Package coherence is not attested.",
+    "Sidecar schema validation not run (no Draft 2020-12 engine); a custom structural probe result is reported in the handoff only."
+  ],
+  "baseline_snapshot_ref": null
+}

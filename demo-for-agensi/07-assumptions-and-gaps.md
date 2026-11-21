@@ -1,65 +1,70 @@
 # Assumptions and Gaps
 
-**Package run ID:** 2026-11-15T17:25:14Z
+**Package run ID:** 2026-11-21T01:15:46Z
 
 ## Blocking decisions
 
 | ID | Decision / gap | Why it matters | Owner | Needed before implementation? |
 |---|---|---|---|---|
-| GAP-01 | What is the complete persistent write set of the MERGE (account records, identity links, contacts, contracts, billing references, projections, search indexes, downstream integrations, audit/outbox, assignments, history)? | Without a verified inventory the first persistent write must stay on HOLD. | Customer data/application owner (unassigned) | Yes |
-| GAP-02 | Which effects are covered by one transaction, where is the exact commit point, and what atomicity guarantee holds? | Without it no commit and no recovery design can be validated; HOLD before the first write. | Customer engineering owner (unassigned) | Yes |
-| GAP-03 | Has post-commit recovery or compensation for this MERGE been documented and successfully tested (Path A A1/A2)? | Determines whether Path A can ever apply; otherwise Path B or HOLD. | Customer recovery owner (unassigned) | Yes |
-| GAP-04 | Which operation-specific approval policy applies and who are the authorized approvers? | No approval can be valid; the operation stays on HOLD. | Customer policy owner (unassigned) | Yes |
-| GAP-05 | What evidence standard establishes legal-entity co-reference for this customer? | The plan cannot decide legal or domain evidentiary sufficiency. | Customer domain policy owner (unassigned) | Yes |
-| GAP-06 | Is the registry extract current, in scope and applicable to the identity proposition (verification of currency, scope, applicability)? | The potentially matching identifier cannot support the MERGE while unverified. | Customer evidence owner (unassigned) | Yes |
-| GAP-07 | How is the parent/holding indication resolved: one legal entity, related distinct entities (typed relation), or keep both? | If distinct, the MERGE proposition is false; the typed-relation alternative needs its own operation and plan. | Customer domain policy owner (unassigned) | Yes |
-| GAP-08 | Who attests A1/A2 (Path A), who may approve Path B, what policy accepts non-recovery risk, and is the Path B approver required to be independent of the ordinary approver? | Without it neither authorization path can be established; Path B stays on HOLD. | Customer governance owner (unassigned) | Yes |
-| GAP-09 | What validity interval or point in time does the identity assertion cover, and how are renames or continuity treated? | Temporal applicability cannot be established. | Customer domain policy owner (unassigned) | Yes |
-| GAP-10 | Which concurrency and anomaly protections (stale read, lost update, write skew) are required for the customer's database engine and workload? | Database-specific design review is required before implementation; no generic isolation level is prescribed. | Customer database/engineering owner (unassigned) | Yes |
-| GAP-11 | What are the survivorship rules (which record survives, field-level conflict resolution, treatment of the overlapping contact)? | Changes the write set and the result invariants. | Customer data owner (unassigned) | Yes |
-| DEC-01 | Should an isolated shadow-staging target be introduced for candidate preparation before any production publication? | Recommendation only; any staging would need its own verified isolation evidence and tests, and production publication stays a separate protected operation. | Customer architecture owner (unassigned) | No |
-| DEC-02 | How long must evidence snapshots and the pre-merge lineage be retained? | Affects audit and reconstruction capability; not a gate for the plan. | Customer records/compliance owner (unassigned) | No |
+| DEC-01 | Who are the Data Steward and CRM Platform Owner approvers, what is the approval record format, and how are approvals bound to operation OP-DEMO-2026-001 and its state? | No approval artifacts exist and none were supplied; the operation cannot be authorized. | Customer Data Steward and CRM Platform Owner | Yes |
+| DEC-02 | Which evidence is eligible for promotion for the identity and continuity claims, who decides eligibility, what is the registry-ID normalization rule, what is the maximum evidence age, and does the extract show the legacy and current names exactly? | The identity proposition cannot be treated as authorization-eligible until the customer promotes evidence under a defined policy. | Customer domain-policy owner and Data Steward | Yes |
+| DEC-03 | Is there a documented, tested and attested recovery for this MERGE (Path A), or does a current policy accept non-recovery risk with an authorized approver and separation of duties (Path B)? | Factual reversibility is unknown and the protected write cannot be authorized without exactly one path. | Customer risk owner and CRM Platform Owner | Yes |
+| DEC-04 | What is the proven complete write set and atomic boundary, where are historical names and provenance stored, what is the disposition of the CRM-ACCT-2097 row, and which other objects reference the account IDs? | POL-MDM-07 requires proof before the first write; completeness and atomicity are unproven. | Customer CRM application and data owner | Yes |
+| DEC-05 | How is the idempotency key persisted atomically, what is the retry budget, and who owns ambiguous-commit reconciliation? | Blind retries are prohibited and reconciliation needs an authoritative key and an owner. | Customer CRM application owner | Yes |
+| DEC-06 | Are the outbox consumers idempotent and ordered, and who owns downstream reconciliation for the search index, Billing read model and ERP crosswalk? | Post-commit validation and reconciliation cannot be assured without consumer evidence. | Customer consumer owners | Yes |
+| DEC-07 | Who owns quarantine, escalation and any tested compensation after a post-commit failure? | Without an owner and procedure a post-commit failure has no safe path. | Customer CRM Platform Owner | Yes |
+| DEC-08 | What is the origin of the EC-004821 mapping in the migration report and crosswalk, and should the crosswalk be reviewed independently of this merge? | The Planner treats these records as non-independent; a reviewed origin could change how they are used. Not blocking because the design does not rely on them. | Customer Data Steward | No |
 
-Blocking IDs are exactly those with `blocking: true` in the JSON. The first five documentation gaps stated in the request (write set, transaction coverage, commit boundary/atomicity, tested post-commit recovery, operation-specific approval policy and approvers) are GAP-01 to GAP-04.
+Ranked by whether they prevent safe implementation: DEC-04, DEC-03 and DEC-01 prevent any write; DEC-02 prevents treating the identity proposition as authorized; DEC-05, DEC-06 and DEC-07 prevent safe handling of ambiguity and post-commit failure; DEC-08 is not blocking.
 
 ## Assumptions
 
 | ID | Assumption | Basis | Impact if false | How to verify |
 |---|---|---|---|---|
-| ASM-01 | The two records live in one CRM system of record and the MERGE would collapse them into a single surviving account identity. | Inference from the scenario; the survivor and retirement semantics were not described. | Different semantics change the write set and recovery design. | Customer confirms the merge model (GAP-11). |
-| ASM-02 | The registry extract and the contract document exist but their content was not supplied to the planner. | Scenario describes them but attaches nothing. | If supplied later, evidence analysis and CLAIM-04 may change. | Provide the actual documents to the customer's evidence process. |
-| ASM-03 | The parent/holding reading of the contract is an inference from the customer's phrase 'may be a parent or holding entity'. | Customer description only. | If wrong, CLAIM-04 resolves differently; if right, the MERGE proposition is likely false. | Reviewer adjudication per CTRL-04. |
-| ASM-04 | A single production environment is in scope; the plan assumes no isolated shadow staging exists. | No staging was described. | If an isolated shadow target exists and is verified, a separate staging operation could be added. | Customer describes any staging target and its isolation evidence (DEC-01). |
-| ASM-05 | All identifiers in the request are synthetic and are used as labels only. | Stated in the request. | None for design purposes. | None required. |
-| ASM-06 | MCP calls used only abstract labels (customer account, CRM account resolution, current status; validity interval required); no company names, identifiers or records were sent. | Inspected from the actual call arguments in this run. | If wrong, a privacy incident would need review. | Inspect the host call log. |
+| ASM-01 | The merge may be difficult or impossible to reverse and is classified as the protected IRREVERSIBLE_WRITE path. | A production MERGE changes shared account identity and propagates downstream; no recovery mechanism, test or attestation was supplied. | If recovery is later proven through Path A the action class remains IRREVERSIBLE_WRITE and only factual reversibility changes. | Customer supplies A1/A2/A3 or a Path B policy (DEC-03). |
+| ASM-02 | The seven tables named by the customer are the intended write set, and the customer's statement that all writes and outbox insertion must be atomic in one SERIALIZABLE transaction is a requirement, not proof of the implementation. | The request states the write set and the required atomicity but supplies no transaction evidence; POL-MDM-07 requires proof before the first write. | If the implementation differs, the write set or atomic boundary is wrong and the write must stay on HOLD. | Customer dependency analysis and transaction-boundary review (DEC-04). |
+| ASM-03 | The registry extract, verification record, agreement, migration report and crosswalk say what the request describes; their content was not supplied and none was verified by the Planner. | Only descriptions of the evidence were supplied. | Different content could change the evidence assessment or reveal a conflict. | Customer evidence-promotion process reviews the actual documents (DEC-02). |
+| ASM-04 | SRC-MIGRATION-003 and SRC-CROSSWALK-004 share an upstream origin and are not independent identity evidence. | Both record the customer's own mapping of the two accounts to EC-004821; the derivation of that mapping was not supplied. | If the mapping was derived independently from authoritative evidence it could be re-assessed for corroboration. | Customer documents the origin of the EC-004821 mapping (DEC-08). |
+| ASM-05 | The three downstream consumers exist as stated and run after commit, outside the transaction, and read only committed outbox rows. | Customer statement; no consumer evidence supplied. | Consumer behaviour, ordering or idempotency could differ. | Customer consumer owners document idempotency and ordering (DEC-06). |
+| ASM-06 | The pre-commit validator evaluates the candidate state inside the same transaction before COMMIT, so uncommitted writes are the isolated candidate state for Phase 2 validation. | Design mapping from the reference contract to the stated stack; not stated by the customer. | If the validator runs outside the transaction the pre-commit abort guarantee does not hold. | Customer confirms where validator 1.6 runs. |
+| ASM-07 | Only a MERGE operation is in scope; no UNMERGE, SPLIT or staging operation is planned, and no customer requirement for this MERGE is extended to any other mutation type. | The request defines one operation. | A separate UNMERGE or staging operation would need its own classification, controls and tests. | Customer requests a separate plan if needed. |
+| ASM-08 | The extract date of 2026-10-15 and the run date of 2026-11-21 make the extract 37 days old; no customer freshness limit applies. | Dates supplied or taken from the execution clock. | A defined limit could make the extract stale or acceptable. | Customer defines the freshness limit (DEC-02). |
 
 ## Missing evidence or sources
 
-- The registry extract content and its currency, scope and applicability (GAP-06).
-- The contract document itself and the nature and direction of the suggested parent/holding relationship (GAP-07).
-- Registration identifiers and legal-entity evidence for both records (GAP-05).
-- The validity interval (GAP-09).
+- Content of the registry extract (before and after legal names, status fields), the verification record details, the agreement, the migration report and the crosswalk: described only.
+- Policy text of POL-MDM-07 v3.2: summary only; policy owner not named.
+- Contract-side evidence for the six contracts on CRM-ACCT-1042.
+- Origin of the EC-004821 mapping.
+- Approval artifacts: none supplied.
+- A1, A2, A3 or Path B policy: none supplied.
 
 ## Missing implementation details
 
-- Persistence mechanism, transaction boundary, commit point and effect membership (GAP-01, GAP-02).
-- Integration inventory: search indexes, downstream consumers, event/outbox mechanism and delivery semantics.
-- Recovery/compensation procedure and test history (GAP-03).
-- Approval workflow, authorized approvers, Path A attestor, Path B policy and separation-of-duties rules (GAP-04, GAP-08).
-- Concurrency protections for the customer's database engine (GAP-10).
-- Survivorship rules (GAP-11).
+- Transaction-boundary evidence and dependency analysis for the write set; storage location for historical names; disposition of the CRM-ACCT-2097 row.
+- Where idempotency key demo-merge-1042-2097-v1 is persisted and the retry budget.
+- Evidence-promotion service, approval service and authorization-path service: not evidenced.
+- Idempotency, ordering and reconciliation behaviour of the three outbox consumers.
+- Owners for reconciliation, quarantine and recovery.
+- Patch level of pre-commit validator 1.6 and where it runs relative to the transaction.
 
 ## Out-of-scope matters
 
-- Whether the two records are in fact the same legal entity (a customer/legal determination).
-- The alternative outcome of a typed parent/subsidiary relation or keeping both accounts (needs its own operation and plan).
-- Optional isolated shadow staging (DEC-01); any production publication from staging would be a separate protected operation.
-- Unrelated CRUD, access-control review, and execution or authorization of any mutation.
+UNMERGE, SPLIT and staging operations; execution, deployment or authorization of any write; legal determinations on continuity; independent verification of the registry; downstream system internals; production access.
 
 ## Degraded-mode limitations
 
-The run is reference-backed for the IRREVERSIBLE_WRITE / MERGE profile (SRC-01, SRC-02). Two reference tools were not retrieved: the separate evidence-promotion contract (SRC-04) and the PHASE_1/PHASE_2 commit-boundary contract (SRC-05). Statements about evidence admission/promotion and commit checks rely only on the fields returned inside the profile, and no separate contract version is claimed. The three validation limitations are: no compatible Draft 2020-12 validator was available (schema validation, format validation and the format negative control were not run), no JSON canonicalization tool for the sidecar comparison, and per-call retrieval times were not retained.
+None: the run is reference_backed. Retrieved: status, IRREVERSIBLE_WRITE / MERGE profile, evidence promotion contract, PHASE_1 and PHASE_2 IRREVERSIBLE_WRITE contracts. Not retrieved because not needed: application mapping, policy-as-code mapping and concept tools. The reference does not assess customer evidence or authorize anything. Contract versions are inherited from the status record, not contract-specific. No structural schema validation was possible in this environment (see README).
 
 ## Production-readiness conditions
 
-Before any production use the customer must: resolve every blocking decision; implement the controls; verify the write set and atomicity in a non-production environment; define approvers and approval policy; decide on Path A or Path B; execute the proposed tests; and obtain a fresh authorization for any actual write. This package does not authorize any of these.
+Before any production use the customer must: resolve every blocking decision; supply and promote evidence; implement and test the controls in a non-production environment; obtain separate bound approvals; establish exactly one authorization path; prove the write set and atomicity; execute and record the proposed tests; run the real Draft 2020-12 schema validation and format negative controls; and complete an operational review. Nothing in this package grants authorization.
+
+## Limitations
+
+- This is a design-time plan; no database operation was executed, no record was modified, no production system was accessed and no authorization was granted.
+- No approval artifacts were supplied, so the operation is not authorized to commit and no approval has been assumed.
+- The registry extract, verification record, agreement, migration report, crosswalk and policy text were described but not supplied; the Planner had no independent access to the fictional registry and verified nothing.
+- The reference MCP provided reference requirements and illustrative examples only; it did not assess customer evidence, instantiate policy, issue authorization or return a commit verdict.
+- No Draft 2020-12 JSON Schema engine was available, so structural schema validation, validator-enforced format checks and the format negative controls were not run.
+- Proposed tests were designed, not executed; customer runtime tests were not run.

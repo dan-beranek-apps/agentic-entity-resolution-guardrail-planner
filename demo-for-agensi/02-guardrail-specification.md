@@ -1,382 +1,332 @@
 # Guardrail Specification
 
-**Package run ID:** 2026-11-15T17:25:14Z
+**Package run ID:** 2026-11-21T01:15:46Z
 
 ## Summary
 
-One protected operation (OP-01, production MERGE) is controlled by 14 customer-side controls. The strategy is fail-closed: the agent only proposes; identity support must be claim-specific and authorization-eligible; any unresolved conflict, unverified evidence, unknown write set, unknown atomicity or commit point, undefined approval policy, or unestablished authorization path produces HOLD / DEFER / REQUIRE REVIEW before any persistent production write. Decision terms are design recommendations, not runtime verdicts. Controls are requirements for the customer's implementation; none is implemented here.
+One protected MERGE (OP-DEMO-2026-001) is governed by 13 controls that must all be satisfied before the first persistent write and during and after the single atomic transaction. Evidence and identity gates (CTRL-01 to CTRL-04) establish whether the identity proposition is supported; CTRL-05 fixes canonical retention and identity preservation; CTRL-06 to CTRL-09 cover approvals, authorization path, write-set and atomicity proof and pre-write revalidation; CTRL-10 to CTRL-13 cover atomic commit, ambiguous commit, post-commit validation and quarantine. Unresolved cases are HOLD; contradictions and distinct registry IDs are blocked. These are design requirements for the customer application, not runtime verdicts.
 
 ## Control register
 
 | Control ID | Operation | Trigger | Required action | Enforcement point | Failure behaviour | Validation |
 |---|---|---|---|---|---|---|
-| CTRL-01 | OP-01 | The agent proposes the MERGE of CRM-ACCT-1042 and CRM-ACCT-8891, and again immediately before any persistence. | Treat the proposal as a protected IRREVERSIBLE_WRITE candidate only. Bind the candidate to the exact operation, both record identifiers, entity class (legal-entity identity), the declared effect scope and the validity interval; reject any realized operation that differs. The agent's proposal is never an authorization and never triggers a write. | Customer commit-boundary guard before execution (Phase 1 equivalent) and again at the persistence adapter (scope match). | Guard or scope check unavailable: fail closed (no write). | TEST-01, TEST-07, TEST-17 |
-| CTRL-02 | OP-01 | Before any identity decision on the candidate pair. | Require claim-specific, authorization-eligible evidence for CLAIM-02 (co-reference) as defined by customer policy. Name similarity, shared domain, an overlapping contact, embeddings, LLM confidence, agent-generated labels and repetition of the same signals are planner-visible hypotheses only. Absence of a detected conflict is not positive support. The planner may not weaken or replace the required claims. | Customer evidence service and policy evaluator ahead of the commit-boundary guard. | Evidence service unavailable or policy missing: fail closed (HOLD). | TEST-01, TEST-02, TEST-08 |
-| CTRL-03 | OP-01 | A registry extract, or any new observation, is offered as support for CLAIM-02 or CLAIM-03. | Admit every observation first as quarantined/unverified. Before the registry extract may support the proposition, verify its currency, scope, jurisdiction and applicability to both records and to the identity proposition, and record the validation basis and validator version. A potentially matching identifier is a signal to verify, not a verified match. Shadow or agent-derived content must not be promoted. | Customer evidence admission / promotion service. | Validator unavailable: do not promote; HOLD. | TEST-01, TEST-03 |
-| CTRL-04 | OP-01 | Any evidence or document indicates that the two records are related but distinct legal entities (parent/holding, subsidiary, affiliate). | Retain the indication as an unresolved or contradictory claim; clustering or merging does not reconcile it. Preserve the typed relation. Before MERGE, the customer-designated reviewer must adjudicate and record whether the records are one legal entity or related distinct entities. If distinct, do not merge; the alternative outcome (a typed parent/subsidiary link or keeping both accounts) is a separate, separately scoped operation outside this plan. | Customer evidence/policy evaluator and human-review queue before the commit-boundary guard. | Reviewer queue unavailable: HOLD. | TEST-04, TEST-05 |
-| CTRL-05 | OP-01 | Before authorization and again at the commit boundary. | Require a policy-defined validity interval for the identity assertion and confirm that every supporting item, and any rename or continuity relied on, applies to the same referent and interval. Re-check at commit time against the interval and evidence currency. | Customer policy evaluator and commit-boundary guard. | Evidence staleness check unavailable: fail closed. | TEST-01, TEST-06 |
-| CTRL-06 | OP-01 | Before the first persistent write of the MERGE, and whenever the schema or integrations change. | Require a customer-verified inventory of the complete persistent write set: account records, identity links, contacts, contracts, billing references, denormalized projections, search indexes, downstream integrations, audit/outbox records, assignments and history lineage. Each item carries one effect-boundary classification (in-transaction, outside-transaction, external/async, or unknown). If completeness is unverified, HOLD before any persistent write; do not start a partial sequence and do not rely on immediate rollback as a substitute. | Customer engineering review gate plus the commit-boundary guard. | Inventory source unavailable: HOLD. | TEST-09 |
-| CTRL-07 | OP-01 | Before the first persistent write. | Require evidence of the actual transaction or equivalent atomic mechanism, which effects it covers, and the exact commit point. Effects outside the atomic unit (for example search indexes and downstream integrations) must be declared as outside-transaction or external/asynchronous with their delivery and reconciliation semantics. Do not infer atomicity from the database product, an isolation level or application sequencing, and assess concurrency/anomaly protection separately (database-specific design review required). If any of this is unverified: HOLD. | Customer persistence adapter design review and commit-boundary guard. | Verification tooling unavailable: HOLD. | TEST-10, TEST-11 |
-| CTRL-08 | OP-01 | A required invariant or validation fails after writes begin but before commit, and only where CTRL-07 verified the atomic unit. | Abort the transaction and confirm by authoritative read that none of its writes committed. Treat this as transaction abort, not post-commit compensation. Re-evaluate from the start; do not blind retry. Invariants include realized-operation scope equals authorized scope, constraint checks on the candidate result, and evidence-to-claim support under the same snapshot. | Persistence adapter inside the transaction; commit-boundary guard. | Abort fails or outcome unknown: treat as ambiguous commit (CTRL-10). | TEST-12 |
-| CTRL-09 | OP-01 | A failure or invariant breach occurs after commit, or an effect outside the atomic unit (index, downstream integration, async event) fails or has already occurred. | Do not claim that database rollback reverses the full effect. Stop dependent mutations and publications, reconcile the actual persisted state, and invoke only a documented, tested, operation-specific compensation/recovery procedure for this MERGE. If none is established, quarantine the affected records and escalate; keep further identity changes involving them on HOLD. | Customer recovery component, incident/escalation process and persistence adapter. | No tested compensation exists: quarantine/escalate; no improvised repair. | TEST-11, TEST-13 |
-| CTRL-10 | OP-01 | A timeout, connection loss or error leaves it unclear whether the MERGE committed, or the same candidate is submitted more than once. | Do not retry blindly. Assign an idempotency key (or equivalent operation identifier) to the authorized candidate, perform a read-after-failure of authoritative state, and retry only after confirming the original operation did not commit and a retry is safe. A duplicate submission must resolve to the original outcome and must not apply the merge twice. | Persistence adapter and reconciliation component. | Reconciliation unavailable: HOLD; no retry. | TEST-14, TEST-15 |
-| CTRL-11 | OP-01 | At authorization and again at the commit boundary for the protected production MERGE. | Fail closed unless one path is established. Path A requires operation-specific A1 (documented recovery/compensation covering this MERGE and its complete effect scope), A2 (successful recovery test on materially equivalent state/schema with current persistence, policy and validator versions) and A3 (attestation by a customer-designated role); it can set factual reversibility to reversible for the proven scope. Path B applies only when Path A is not established and requires a current explicit customer policy accepting this exact operation's non-recovery risk, operation-specific approval by an authorized role, and customer-defined separation of duties from ordinary approval; it establishes neither reversible nor not_reversible. An UNMERGE procedure is not recovery for MERGE unless it independently satisfies A1/A2/A3 for this operation. Recheck versions at commit; a changed version, scope or stale A2/A3 expires Path A for that decision and reversibility is treated as unknown. | Customer commit-boundary guard / authorization service. | Authorization service unavailable: fail closed. | TEST-21, TEST-22, TEST-23, TEST-24, TEST-25, TEST-26, TEST-27, TEST-28, TEST-29, TEST-30 |
-| CTRL-12 | OP-01 | Before authorization of the protected MERGE. | Require operation-specific approval from a role authorized by a current customer policy; ordinary merge approval does not accept irreversibility risk. Until the policy and the authorized approver list are defined, no approval can be valid and the operation stays on HOLD. The policy must also state whether the Path B approver must be independent of the ordinary approver; if unresolved, keep Path B on HOLD. | Customer approval workflow and commit-boundary guard. | Approval workflow unavailable: HOLD. | TEST-18, TEST-19, TEST-25, TEST-27, TEST-28 |
-| CTRL-13 | OP-01 | Authorization time and the commit boundary. | Bind the authorization to the operation/effect scope and to the graph/data version, evidence (active/quarantined and eligibility) version, policy version and validator version in force. At the commit boundary obtain one consistent snapshot, reject any stale authorization, re-evaluate from the start rather than replaying a stale candidate, and commit only when the checks pass, the scope is valid and the bound versions remain valid. Protect against stale reads, lost updates and concurrent modification of either record; the concrete mechanism depends on the customer's database engine and requires a database-specific design review. | Customer commit-boundary guard and persistence adapter. | Snapshot or version service unavailable: fail closed. | TEST-01, TEST-16, TEST-17, TEST-31 |
-| CTRL-14 | OP-01 | Every candidate, decision, hold, approval, commit attempt and reconciliation. | Record the candidate, proposition, evidence record IDs and roles, versions, decisions and reasons (including HOLD reasons), approvals, the pre-merge identity of both records (lineage sufficient to reconstruct the source identities) and the observed outcome. Records must not be altered after the fact. Audit coverage does not substitute for recovery evidence. | Customer audit/lineage component, written inside the atomic unit where the architecture allows. | Audit store unavailable: fail closed. | TEST-20 |
+| CTRL-01 | OP-DEMO-2026-001 | A candidate MERGE of CRM-ACCT-2097 into CRM-ACCT-1042 is proposed or re-proposed. | Require the narrow identity proposition stated for this operation and require an exact official registry ID match (FIC-REG-004821 on both records and in the authoritative registry evidence) plus evidence of legal continuity before the candidate may advance. Registry ID comparison must use a customer-defined, documented normalization rule applied identically to both records and the evidence. | Candidate preparation and again at pre-persistence evaluation, before any approval request is created. | Do not persist; route to Data Steward review with the failed check recorded. | TEST-01, TEST-02, TEST-03, TEST-04 |
+| CTRL-02 | OP-DEMO-2026-001 | Candidate records resemble each other (names, domains, addresses, contacts, parent/subsidiary or brand relationship) but the evidence does not show the same official registry ID with legal continuity. | Treat names, domains, addresses and contact similarity as insufficient identity proof. Two records that carry different official registry IDs fail the exact-registry-ID criterion of POL-MDM-07 v3.2 and must not be merged on similarity alone; no approval or authorization path inside this operation can satisfy that criterion, and any exception process would be separate and customer-defined. | Before evidence promotion and again at the pre-persistence check. | Do not persist any identity change; record the rejected candidate and reason. | TEST-02, TEST-03 |
+| CTRL-03 | OP-DEMO-2026-001 | Supplied evidence (registry extract, verification record, agreement, migration report, crosswalk) is to be used to support the identity proposition. | Admit evidence first as quarantined, promote it only for the specific proposition and role it supports, and record source, proposition, role, temporal applicability, validation basis and validator/policy version. Treat SRC-REG-001 as primary legal-continuity evidence only after its authenticity (SRC-REG-VERIFY-005, a supplied result) is tied to the exact extract and recorded. Treat SRC-LEGAL-002 as corroboration of post-rename name and registry ID. Do not count SRC-MIGRATION-003 and SRC-CROSSWALK-004 as independent identity evidence because they record the customer's own mapping to EC-004821 and share an upstream origin. Do not infer support from absence of a detected conflict. | Evidence admission and promotion step, before the approval request is created and again at pre-persistence evaluation. | Do not promote; record the unmet evidence requirement. | TEST-01, TEST-05, TEST-06, TEST-07 |
+| CTRL-04 | OP-DEMO-2026-001 | The continuity claim relies on a rename effective 2024-04-01 and a registry extract dated 2026-10-15; the authorization and commit occur later. | Confirm that the continuity evidence applies to the referent and the interval from the rename to the authorization/commit time, that the extract is within a customer-defined freshness limit, and that no dissolution, successor, restructuring or new incorporation is recorded after the extract date. Refresh the evidence when stale or when its age is not covered by a defined freshness limit. | Pre-persistence evaluation and the immediate pre-write revalidation (CTRL-09). | Do not persist; require refreshed evidence and a new authorization record. | TEST-01, TEST-05, TEST-08 |
+| CTRL-05 | OP-DEMO-2026-001 | The merge direction, resulting names and historical state are determined for the write. | Retain CRM-ACCT-1042 as canonical and merge CRM-ACCT-2097 into it; never the reverse. After an approved merge adopt the current legal name Northstar Industrial Components Limited on the canonical account while preserving the legacy name and all historical names with provenance; keep CRM-ACCT-2097 resolvable as a source alias; keep historical activity under its original account IDs; append, never update or delete, account_merge_history rows. | Candidate construction, the in-transaction pre-commit validation, and post-commit validation. | Abort before commit; if detected after commit, stop dependent mutations and quarantine (CTRL-13). | TEST-09, TEST-10 |
+| CTRL-06 | OP-DEMO-2026-001 | The candidate has passed evidence and identity gates and is to be approved for persistence. | Require two separate human approvals, one from a Data Steward and one from a CRM Platform Owner, each by a different authorized individual and each bound to the exact operation ID OP-DEMO-2026-001, idempotency key demo-merge-1042-2097-v1, source row versions 18 and 23, identity schema CRM-IDENTITY-5, MergeCoordinator 2.8.0, pre-commit validator 1.6, policy POL-MDM-07 v3.2, the promoted evidence set and the declared write set. Any change to a bound item invalidates the approvals. No approval artifacts have been supplied, so no approval exists. These ordinary approvals are not acceptance of non-recovery risk. | Approval service / MergeCoordinator pre-persistence check and the immediate pre-write revalidation (CTRL-09). | Reject the approval and require a new approval for the current state. | TEST-11, TEST-12 |
+| CTRL-07 | OP-DEMO-2026-001 | OP-DEMO-2026-001 is a production IRREVERSIBLE_WRITE whose factual reversibility is unknown. | Hold the write unless exactly one authorization path is established for this operation and its complete production effect scope. Path A requires A1 (documented recovery or compensation mechanism for this exact MERGE and complete effect scope), A2 (successful recovery test on materially equivalent state and schema using current persistence, policy and validator versions) and A3 (attestation by a customer-designated responsible role). When established Path A sets factual reversibility to reversible while the action class stays IRREVERSIBLE_WRITE. Path B is available only when Path A is not established and requires a current explicit customer policy accepting this exact operation's non-recovery risk, operation-specific approval by a role authorized by that policy, and customer-defined separation of duties from the ordinary approvals; it establishes neither reversible nor not_reversible. After Path A is established for the scope Path B is unavailable. An UNMERGE is not recovery for this MERGE unless it independently satisfies A1, A2 and A3. Neither path creates an automatic write. | Pre-persistence authorization decision and the immediate pre-write revalidation (CTRL-09). | HOLD; a stale Path A claim expires to unknown and does not automatically select Path B. | TEST-13, TEST-14, TEST-15, TEST-16, TEST-17, TEST-18, TEST-19, TEST-20, TEST-21 |
+| CTRL-08 | OP-DEMO-2026-001 | Before any persistent write for the merge begins. | Prove, with customer-held evidence, that the write set is complete (accounts, account_contact_links, account_contract_links, account_external_ids, account_merge_history, audit_events, transactional_outbox, plus the storage for preserved historical names and any dependent object found by dependency analysis) and that all of it, including outbox insertion, commits in one atomic SERIALIZABLE transaction with a single identified commit point. Prove that no historical activity record or other unlisted object is written. Isolation level alone does not prove atomicity or write-set completeness. If proof is absent, HOLD and begin no write. | Before the first persistent write, at the MergeCoordinator boundary. | Do not begin any write; do not start a partial sequence. | TEST-22, TEST-23 |
+| CTRL-09 | OP-DEMO-2026-001 | Immediately before any persistent write, including after any delay since approval. | Revalidate that CRM-ACCT-1042 is still at row version 18 and CRM-ACCT-2097 at row version 23 and both are active, that the identity schema is CRM-IDENTITY-5, the coordinator is MergeCoordinator 2.8.0, the pre-commit validator is 1.6, the policy is POL-MDM-07 v3.2, the evidence and eligibility state and the approvals and authorization-path basis are unchanged and unexpired, and the realized operation exactly matches the authorized operation and write set. Reject a stale authorization and re-evaluate from the evidence stage with a new authorization record; never replay a stale candidate. Retries share one customer-defined retry budget. | Immediately before the first persistent write, and again inside the transaction before commit. | Reject the authorization; require re-evaluation with a new authorization record. | TEST-12, TEST-24, TEST-29 |
+| CTRL-10 | OP-DEMO-2026-001 | The write is executed after CTRL-01 to CTRL-09 are satisfied. | Execute every write and the outbox insertion in one SERIALIZABLE transaction. Evaluate the pre-commit validator and the resulting-state invariants inside the transaction before COMMIT, including evidence-to-claim support and the identity-preserving requirements. Commit only on PASS with valid scope and versions. On any failure or serialization conflict before commit, abort the transaction so that no write in any of the seven tables becomes committed; this is a transaction abort, not post-commit compensation. Persist the idempotency key inside the same transaction so that its presence proves the commit. | In-transaction, immediately before COMMIT, in MergeCoordinator 2.8.0 with pre-commit validator 1.6. | Abort the transaction and confirm that no committed rows result. | TEST-10, TEST-25, TEST-26 |
+| CTRL-11 | OP-DEMO-2026-001 | The commit outcome is unknown (for example the connection is lost around COMMIT) or the same request is received again. | Do not retry blindly. First reconcile authoritative state by reading, after the failure, whether the idempotency key demo-merge-1042-2097-v1 and the corresponding merge-history, audit and outbox rows exist. Retry only after confirming that the original operation did not commit and that a retry is safe and revalidated under CTRL-09. A duplicate request after a confirmed commit returns the original outcome and performs no second merge. A new authorization record requires a new idempotency key version. | Immediately after any failure or timeout at or after COMMIT, and at request intake for the idempotency key. | Do not retry; escalate to the reconciliation owner. | TEST-27, TEST-28, TEST-29 |
+| CTRL-12 | OP-DEMO-2026-001 | The transaction has committed. | Validate the committed state against the authorized operation and write set, then reconcile the asynchronous outbox consumers: CRM search index, Billing customer read model and ERP customer crosswalk. Consumers must be idempotent, tolerate duplicate and out-of-order delivery and tolerate a crosswalk that already maps both IDs to EC-004821. Detect and report divergence between the committed CRM state and each consumer. Stop dependent mutations while a mismatch is unresolved. | After commit: post-commit validator, outbox consumers and a reconciliation job. | Stop dependent mutations and quarantine (CTRL-13). | TEST-26, TEST-30, TEST-31 |
+| CTRL-13 | OP-DEMO-2026-001 | An invariant fails after commit, an asynchronous effect fails or diverges, or no single atomic boundary can be guaranteed for an effect. | Stop dependent mutations, reconcile the actual persisted state, and invoke only a documented and tested recovery or compensation procedure for this exact MERGE. If none is established, quarantine the affected accounts and downstream projections and escalate to a named owner while keeping the overall decision on HOLD for further identity changes. Do not claim that a database rollback can reverse a committed or asynchronous effect and do not assume UNMERGE as recovery. | After commit, on any post-commit validation or reconciliation failure. | Quarantine and escalate; do not retry the merge. | TEST-30, TEST-32 |
 
-## HOLD conditions before any persistent production write
+## CTRL-01 — Identity proposition and exact official registry ID gate
 
-Any one of these is sufficient to keep OP-01 on HOLD. Today, HOLD-01 to HOLD-06 are all in effect.
+- **Primary operation:** OP-DEMO-2026-001
+- **Also applies to operations:** none (single-operation plan)
+- **Purpose:** Identity proposition and exact official registry ID gate.
+- **Trigger:** A candidate MERGE of CRM-ACCT-2097 into CRM-ACCT-1042 is proposed or re-proposed.
+- **Required inputs:**
+  - Exact official registry ID on both records and in the registry evidence
+  - Evidence of legal continuity for the rename interval
+  - Documented registry-ID normalization rule
+- **Required action:** Require the narrow identity proposition stated for this operation and require an exact official registry ID match (FIC-REG-004821 on both records and in the authoritative registry evidence) plus evidence of legal continuity before the candidate may advance. Registry ID comparison must use a customer-defined, documented normalization rule applied identically to both records and the evidence.
+- **Evidence / approval preconditions:** None for the gate itself; Data Steward review is separate (CTRL-06).
+- **Enforcement point:** Candidate preparation and again at pre-persistence evaluation, before any approval request is created.
+- **On sufficient support:** Advance to the remaining controls; this control alone does not authorize any write.
+- **On conflict:** Block the candidate: do not merge when an official registry ID differs or any record carries a conflicting registry ID.
+- **On indeterminate / insufficient evidence:** HOLD: ambiguous or non-normalizable registry ID, missing continuity evidence, or an identity proposition that is not exact.
+- **On stale version / failed validation:** Do not persist; route to Data Steward review with the failed check recorded.
+- **Requirement origin:** Customer-supplied policy requirement (POL-MDM-07 v3.2) plus reference-derived design requirement; the normalization rule is a recommendation.
+- **Owner / component:** Data Steward (customer-stated role)
+- **Audit record:** record the decision, evidence record IDs, versions, approval IDs and outcome in audit_events (customer to confirm).
+- **Validation:** TEST-01, TEST-02, TEST-03, TEST-04
+- **Provenance:** SRC-REQUEST, SRC-POLICY, SRC-MCP-PROFILE, SRC-MCP-EVID
 
-| HOLD | Condition | Controls | Decisions |
-|---|---|---|---|
-| HOLD-01 | Complete persistent write set not verified | CTRL-06 | GAP-01 |
-| HOLD-02 | Transaction coverage, exact commit point or atomicity unknown or unverified | CTRL-07 | GAP-02, GAP-10 |
-| HOLD-03 | Operation-specific approval policy or authorized approvers undefined | CTRL-12 | GAP-04 |
-| HOLD-04 | Neither Path A (A1+A2+A3) nor Path B (policy + authorized approval + separation of duties) established | CTRL-11 | GAP-03, GAP-08 |
-| HOLD-05 | Identity evidence insufficient, unverified (including the registry extract), contradicted, or an unresolved parent/holding indication | CTRL-02, CTRL-03, CTRL-04 | GAP-05, GAP-06, GAP-07 |
-| HOLD-06 | Validity interval undefined or evidence not applicable to it | CTRL-05 | GAP-09 |
-| HOLD-07 | Authorization stale, scope or version mismatch, or concurrent modification | CTRL-01, CTRL-13 | GAP-10 |
-| HOLD-08 | Audit/lineage record incomplete | CTRL-14 | DEC-02 |
-| HOLD-09 | Ambiguous commit outcome not yet reconciled | CTRL-10 | GAP-02 |
+## CTRL-02 — Similarity-is-not-identity and distinct-registry-ID prohibition (negative control)
 
-## CTRL-01 - Protected-operation qualification and scope binding
+- **Primary operation:** OP-DEMO-2026-001
+- **Also applies to operations:** none (single-operation plan)
+- **Purpose:** Similarity-is-not-identity and distinct-registry-ID prohibition (negative control).
+- **Trigger:** Candidate records resemble each other (names, domains, addresses, contacts, parent/subsidiary or brand relationship) but the evidence does not show the same official registry ID with legal continuity.
+- **Required inputs:**
+  - Official registry ID of each record
+  - Corporate relationship evidence retained as a typed relation, not collapsed into identity
+- **Required action:** Treat names, domains, addresses and contact similarity as insufficient identity proof. Two records that carry different official registry IDs fail the exact-registry-ID criterion of POL-MDM-07 v3.2 and must not be merged on similarity alone; no approval or authorization path inside this operation can satisfy that criterion, and any exception process would be separate and customer-defined.
+- **Evidence / approval preconditions:** No approval can convert a distinct-registry-ID pair into this MERGE; any exception would be a separate customer-defined process outside this plan.
+- **Enforcement point:** Before evidence promotion and again at the pre-persistence check.
+- **On sufficient support:** Not applicable: this control only blocks or holds.
+- **On conflict:** Block the merge and retain the parent/subsidiary or related-entity relation as a typed relation.
+- **On indeterminate / insufficient evidence:** HOLD pending evidence of the official registry IDs; similarity alone never resolves the case.
+- **On stale version / failed validation:** Do not persist any identity change; record the rejected candidate and reason.
+- **Requirement origin:** Customer-supplied policy requirement (similarity not sufficient) with reference-derived design requirement; blocking an unequal-registry-ID pair is the Planner's reading of that policy and needs customer confirmation (DEC-02).
+- **Owner / component:** Data Steward (customer-stated role)
+- **Audit record:** record the decision, evidence record IDs, versions, approval IDs and outcome in audit_events (customer to confirm).
+- **Validation:** TEST-02, TEST-03
+- **Provenance:** SRC-POLICY, SRC-MCP-PROFILE
 
-- **Primary operation:** OP-01
-- **Also applies to operations:** none (single-operation plan; no additional-operation basis objects)
-- **Purpose:** Keeps an agent proposal from becoming a persistent identity change and prevents a staging or account-level claim from standing in for a legal-entity identity claim.
-- **Trigger:** The agent proposes the MERGE of CRM-ACCT-1042 and CRM-ACCT-8891, and again immediately before any persistence.
-- **Required inputs:** Operation identifier and declared effect scope; Both record identifiers and versions; Entity class and proposition text
-- **Required action:** Treat the proposal as a protected IRREVERSIBLE_WRITE candidate only. Bind the candidate to the exact operation, both record identifiers, entity class (legal-entity identity), the declared effect scope and the validity interval; reject any realized operation that differs. The agent's proposal is never an authorization and never triggers a write.
-- **Evidence / approval preconditions:** Operation-specific approval per CTRL-12; none is established.
-- **Enforcement point:** Customer commit-boundary guard before execution (Phase 1 equivalent) and again at the persistence adapter (scope match).
-- **On sufficient support:** Continue to the remaining controls; no write is implied.
-- **On conflict:** Scope or entity-class mismatch: block and require a new candidate and new authorization.
-- **On indeterminate / insufficient evidence:** Scope, entity class or effect scope not fully declared: HOLD.
-- **On stale version / failed validation:** Candidate, scope or record version changed: discard the candidate and re-evaluate from the start. Failure behaviour: Guard or scope check unavailable: fail closed (no write).
-- **Requirement origin:** Reference-derived design requirement (profile protected-write path) plus customer-supplied scenario.
-- **Action class and staging-isolation basis (`REVERSIBLE_WRITE`):** Not applicable; no REVERSIBLE_WRITE operation is defined.
-- **Verified local preparation (`STAGE_LOCAL`):** Not applicable; no STAGE_LOCAL operation is defined.
-- **Factual reversibility and evidence (`IRREVERSIBLE_WRITE`):** OP-01 is IRREVERSIBLE_WRITE with factual reversibility `unknown`; no `reversibility_evidence` or `irreversibility_evidence` object is present. See CTRL-11.
-- **Path exclusivity:** Path A and Path B are alternatives only for OP-01; once Path A is established for the proven scope, Path B is unavailable for it. Neither changes the protected action class.
-- **Owner / component:** unassigned (customer to designate); Customer commit-boundary guard before execution (Phase 1 equivalent) and again at the persistence adapter (scope match).
-- **Audit record:** Candidate ID, proposition, scope hash, record versions, requester/agent identity, decision.
-- **Validation:** TEST-01, TEST-07, TEST-17
-- **Provenance:** SRC-02, SRC-03
+## CTRL-03 — Claim-specific evidence eligibility and provenance
 
-## CTRL-02 - Claim-specific identity evidence gate (similarity is not identity)
+- **Primary operation:** OP-DEMO-2026-001
+- **Also applies to operations:** none (single-operation plan)
+- **Purpose:** Claim-specific evidence eligibility and provenance.
+- **Trigger:** Supplied evidence (registry extract, verification record, agreement, migration report, crosswalk) is to be used to support the identity proposition.
+- **Required inputs:**
+  - Provenance and validation record IDs per proposition
+  - Verification record tied to the exact extract (hash/identifier) with validator identity and version
+  - Independence assessment of each source
+- **Required action:** Admit evidence first as quarantined, promote it only for the specific proposition and role it supports, and record source, proposition, role, temporal applicability, validation basis and validator/policy version. Treat SRC-REG-001 as primary legal-continuity evidence only after its authenticity (SRC-REG-VERIFY-005, a supplied result) is tied to the exact extract and recorded. Treat SRC-LEGAL-002 as corroboration of post-rename name and registry ID. Do not count SRC-MIGRATION-003 and SRC-CROSSWALK-004 as independent identity evidence because they record the customer's own mapping to EC-004821 and share an upstream origin. Do not infer support from absence of a detected conflict.
+- **Evidence / approval preconditions:** Evidence eligibility authority is a customer decision (DEC-02).
+- **Enforcement point:** Evidence admission and promotion step, before the approval request is created and again at pre-persistence evaluation.
+- **On sufficient support:** Mark the proposition supported for the stated scope and interval and continue to the remaining controls.
+- **On conflict:** Keep conflicting observations quarantined for designated adjudication and block the candidate.
+- **On indeterminate / insufficient evidence:** Keep the observation UNVERIFIED and block the candidate; do not treat repetition or the Planner's own label as support.
+- **On stale version / failed validation:** Do not promote; record the unmet evidence requirement.
+- **Requirement origin:** Reference-derived design requirement applied to customer-supplied evidence; independence classification of the migration and crosswalk records is the Planner's inference.
+- **Owner / component:** Data Steward (customer-stated role) for adjudication; evidence-promotion owner unassigned
+- **Audit record:** record the decision, evidence record IDs, versions, approval IDs and outcome in audit_events (customer to confirm).
+- **Validation:** TEST-01, TEST-05, TEST-06, TEST-07
+- **Provenance:** SRC-POLICY, SRC-MCP-EVID, SRC-REG-001, SRC-REG-VERIFY-005, SRC-LEGAL-002, SRC-MIGRATION-003, SRC-CROSSWALK-004
 
-- **Primary operation:** OP-01
-- **Also applies to operations:** none (single-operation plan; no additional-operation basis objects)
-- **Purpose:** Prevents a lexical or commercial-neighbourhood resemblance from being persisted as one legal-entity identity.
-- **Trigger:** Before any identity decision on the candidate pair.
-- **Required inputs:** CLAIM-01 candidate record; CLAIM-02 evidence with provenance, role (support / contradiction / unresolved indication), validation basis, policy and validator version
-- **Required action:** Require claim-specific, authorization-eligible evidence for CLAIM-02 (co-reference) as defined by customer policy. Name similarity, shared domain, an overlapping contact, embeddings, LLM confidence, agent-generated labels and repetition of the same signals are planner-visible hypotheses only. Absence of a detected conflict is not positive support. The planner may not weaken or replace the required claims.
-- **Evidence / approval preconditions:** Evidence eligibility is decided by the customer-designated promotion authority (unassigned).
-- **Enforcement point:** Customer evidence service and policy evaluator ahead of the commit-boundary guard.
-- **On sufficient support:** Evidence requirement satisfied; continue to conflict, temporal, authorization and atomicity controls (no automatic write).
-- **On conflict:** Eligible contradiction: block the MERGE.
-- **On indeterminate / insufficient evidence:** Insufficient or unverified support: HOLD / DEFER and route to evidence gathering or designated review.
-- **On stale version / failed validation:** Evidence or policy version changed since promotion: re-evaluate. Failure behaviour: Evidence service unavailable or policy missing: fail closed (HOLD).
-- **Requirement origin:** Reference-derived design requirement (illustrative profile pattern: similarity does not establish co-reference).
-- **Action class and staging-isolation basis (`REVERSIBLE_WRITE`):** Not applicable; no REVERSIBLE_WRITE operation is defined.
-- **Verified local preparation (`STAGE_LOCAL`):** Not applicable; no STAGE_LOCAL operation is defined.
-- **Factual reversibility and evidence (`IRREVERSIBLE_WRITE`):** OP-01 is IRREVERSIBLE_WRITE with factual reversibility `unknown`; no `reversibility_evidence` or `irreversibility_evidence` object is present. See CTRL-11.
-- **Path exclusivity:** Path A and Path B are alternatives only for OP-01; once Path A is established for the proven scope, Path B is unavailable for it. Neither changes the protected action class.
-- **Owner / component:** unassigned (customer to designate); Customer evidence service and policy evaluator ahead of the commit-boundary guard.
-- **Audit record:** Evidence record IDs per proposition, role, validator and policy version, promotion decision.
-- **Validation:** TEST-01, TEST-02, TEST-08
-- **Provenance:** SRC-02, SRC-03
+## CTRL-04 — Temporal continuity applicability and evidence freshness
 
-## CTRL-03 - Registry-extract eligibility and evidence admission
+- **Primary operation:** OP-DEMO-2026-001
+- **Also applies to operations:** none (single-operation plan)
+- **Purpose:** Temporal continuity applicability and evidence freshness.
+- **Trigger:** The continuity claim relies on a rename effective 2024-04-01 and a registry extract dated 2026-10-15; the authorization and commit occur later.
+- **Required inputs:**
+  - Customer-defined maximum evidence age
+  - Registry status as of the authorization/commit time
+  - Extract content showing before and after legal names
+- **Required action:** Confirm that the continuity evidence applies to the referent and the interval from the rename to the authorization/commit time, that the extract is within a customer-defined freshness limit, and that no dissolution, successor, restructuring or new incorporation is recorded after the extract date. Refresh the evidence when stale or when its age is not covered by a defined freshness limit.
+- **Evidence / approval preconditions:** Freshness limit is a customer policy decision (DEC-02).
+- **Enforcement point:** Pre-persistence evaluation and the immediate pre-write revalidation (CTRL-09).
+- **On sufficient support:** Continue to the remaining controls for the validated interval.
+- **On conflict:** Block and escalate when later registry evidence shows dissolution, succession or a distinct legal person.
+- **On indeterminate / insufficient evidence:** HOLD or refresh when the freshness limit is undefined, exceeded, or the interval cannot be shown to be covered.
+- **On stale version / failed validation:** Do not persist; require refreshed evidence and a new authorization record.
+- **Requirement origin:** Reference-derived design requirement (rename/continuity must apply to the referent and interval) applied to customer evidence; freshness limit is an open customer decision.
+- **Owner / component:** Data Steward (customer-stated role)
+- **Audit record:** record the decision, evidence record IDs, versions, approval IDs and outcome in audit_events (customer to confirm).
+- **Validation:** TEST-01, TEST-05, TEST-08
+- **Provenance:** SRC-POLICY, SRC-MCP-PROFILE, SRC-MCP-EVID, SRC-REG-001
 
-- **Primary operation:** OP-01
-- **Also applies to operations:** none (single-operation plan; no additional-operation basis objects)
-- **Purpose:** Stops an unverified or out-of-scope extract from carrying the identity decision.
-- **Trigger:** A registry extract, or any new observation, is offered as support for CLAIM-02 or CLAIM-03.
-- **Required inputs:** Registry extract with date, source authority and scope; Validation record with validator and policy version
-- **Required action:** Admit every observation first as quarantined/unverified. Before the registry extract may support the proposition, verify its currency, scope, jurisdiction and applicability to both records and to the identity proposition, and record the validation basis and validator version. A potentially matching identifier is a signal to verify, not a verified match. Shadow or agent-derived content must not be promoted.
-- **Evidence / approval preconditions:** Promotion authority is customer-defined (unassigned).
-- **Enforcement point:** Customer evidence admission / promotion service.
-- **On sufficient support:** Extract becomes authorization-eligible for only the proposition and interval it was validated for.
-- **On conflict:** Extract contradicts the proposition: record as contradiction; MERGE blocked.
-- **On indeterminate / insufficient evidence:** Currency, scope or applicability unknown: keep UNVERIFIED; HOLD.
-- **On stale version / failed validation:** Extract older than policy allows or superseded: re-validate. Failure behaviour: Validator unavailable: do not promote; HOLD.
-- **Requirement origin:** Reference-derived design requirement (evidence promotion fields returned by the profile) plus customer-supplied scenario.
-- **Action class and staging-isolation basis (`REVERSIBLE_WRITE`):** Not applicable; no REVERSIBLE_WRITE operation is defined.
-- **Verified local preparation (`STAGE_LOCAL`):** Not applicable; no STAGE_LOCAL operation is defined.
-- **Factual reversibility and evidence (`IRREVERSIBLE_WRITE`):** OP-01 is IRREVERSIBLE_WRITE with factual reversibility `unknown`; no `reversibility_evidence` or `irreversibility_evidence` object is present. See CTRL-11.
-- **Path exclusivity:** Path A and Path B are alternatives only for OP-01; once Path A is established for the proven scope, Path B is unavailable for it. Neither changes the protected action class.
-- **Owner / component:** unassigned (customer to designate); Customer evidence admission / promotion service.
-- **Audit record:** Extract identity and hash, validation result, validator version, promotion decision, evidentiary role.
-- **Validation:** TEST-01, TEST-03
-- **Provenance:** SRC-02, SRC-03
+## CTRL-05 — Canonical record and identity-preserving requirements
 
-## CTRL-04 - Parent/holding indication and contradiction handling
+- **Primary operation:** OP-DEMO-2026-001
+- **Also applies to operations:** none (single-operation plan)
+- **Purpose:** Canonical record and identity-preserving requirements.
+- **Trigger:** The merge direction, resulting names and historical state are determined for the write.
+- **Required inputs:**
+  - Canonical-record decision per POL-MDM-07 v3.2
+  - Resulting-state specification: names, aliases, links, lineage
+  - Identification of where historical names and provenance are stored
+- **Required action:** Retain CRM-ACCT-1042 as canonical and merge CRM-ACCT-2097 into it; never the reverse. After an approved merge adopt the current legal name Northstar Industrial Components Limited on the canonical account while preserving the legacy name and all historical names with provenance; keep CRM-ACCT-2097 resolvable as a source alias; keep historical activity under its original account IDs; append, never update or delete, account_merge_history rows.
+- **Evidence / approval preconditions:** Approval of the resulting state is covered by CTRL-06.
+- **Enforcement point:** Candidate construction, the in-transaction pre-commit validation, and post-commit validation.
+- **On sufficient support:** Continue to the remaining controls.
+- **On conflict:** Block when the merge direction, canonical retention or name adoption contradicts the policy.
+- **On indeterminate / insufficient evidence:** HOLD when the storage of historical names or the disposition of the CRM-ACCT-2097 row is not specified (DEC-04).
+- **On stale version / failed validation:** Abort before commit; if detected after commit, stop dependent mutations and quarantine (CTRL-13).
+- **Requirement origin:** Customer-supplied policy requirements; storage location and tombstone semantics are open customer decisions.
+- **Owner / component:** CRM Platform Owner (customer-stated role)
+- **Audit record:** record the decision, evidence record IDs, versions, approval IDs and outcome in audit_events (customer to confirm).
+- **Validation:** TEST-09, TEST-10
+- **Provenance:** SRC-REQUEST, SRC-POLICY
 
-- **Primary operation:** OP-01
-- **Also applies to operations:** none (single-operation plan; no additional-operation basis objects)
-- **Purpose:** Prevents collapsing two legal entities into one through a merge that loses the parent/holding relation.
-- **Trigger:** Any evidence or document indicates that the two records are related but distinct legal entities (parent/holding, subsidiary, affiliate).
-- **Required inputs:** Contract document (the document itself); Registry ownership/control or entity-type evidence for both records; Reviewer adjudication record
-- **Required action:** Retain the indication as an unresolved or contradictory claim; clustering or merging does not reconcile it. Preserve the typed relation. Before MERGE, the customer-designated reviewer must adjudicate and record whether the records are one legal entity or related distinct entities. If distinct, do not merge; the alternative outcome (a typed parent/subsidiary link or keeping both accounts) is a separate, separately scoped operation outside this plan.
-- **Evidence / approval preconditions:** Designated reviewer / policy owner (unassigned); approval authority unresolved (GAP-04).
-- **Enforcement point:** Customer evidence/policy evaluator and human-review queue before the commit-boundary guard.
-- **On sufficient support:** Only an adjudicated, evidenced determination that the records are one legal entity lets the control pass.
-- **On conflict:** Eligible contradiction: block the MERGE and route to the typed-relation decision.
-- **On indeterminate / insufficient evidence:** Indication unresolved: HOLD; the unresolved indication is INDETERMINATE and blocks commit.
-- **On stale version / failed validation:** New evidence on the relationship after adjudication: re-open. Failure behaviour: Reviewer queue unavailable: HOLD.
-- **Requirement origin:** Reference-derived design requirement (illustrative profile patterns: retain conflicts; preserve relation type) plus customer-supplied scenario; the parent/holding reading is an inference, not a verified fact.
-- **Action class and staging-isolation basis (`REVERSIBLE_WRITE`):** Not applicable; no REVERSIBLE_WRITE operation is defined.
-- **Verified local preparation (`STAGE_LOCAL`):** Not applicable; no STAGE_LOCAL operation is defined.
-- **Factual reversibility and evidence (`IRREVERSIBLE_WRITE`):** OP-01 is IRREVERSIBLE_WRITE with factual reversibility `unknown`; no `reversibility_evidence` or `irreversibility_evidence` object is present. See CTRL-11.
-- **Path exclusivity:** Path A and Path B are alternatives only for OP-01; once Path A is established for the proven scope, Path B is unavailable for it. Neither changes the protected action class.
-- **Owner / component:** unassigned (customer to designate); Customer evidence/policy evaluator and human-review queue before the commit-boundary guard.
-- **Audit record:** Indication source, adjudication outcome, reviewer identity, decision time.
-- **Validation:** TEST-04, TEST-05
-- **Provenance:** SRC-02, SRC-03
+## CTRL-06 — Separate human approvals bound to the exact operation and state
 
-## CTRL-05 - Temporal applicability and validity interval
+- **Primary operation:** OP-DEMO-2026-001
+- **Also applies to operations:** none (single-operation plan)
+- **Purpose:** Separate human approvals bound to the exact operation and state.
+- **Trigger:** The candidate has passed evidence and identity gates and is to be approved for persistence.
+- **Required inputs:**
+  - Data Steward approval record bound to operation and state
+  - CRM Platform Owner approval record bound to operation and state
+  - Evidence that the two approvers are distinct and authorized
+- **Required action:** Require two separate human approvals, one from a Data Steward and one from a CRM Platform Owner, each by a different authorized individual and each bound to the exact operation ID OP-DEMO-2026-001, idempotency key demo-merge-1042-2097-v1, source row versions 18 and 23, identity schema CRM-IDENTITY-5, MergeCoordinator 2.8.0, pre-commit validator 1.6, policy POL-MDM-07 v3.2, the promoted evidence set and the declared write set. Any change to a bound item invalidates the approvals. No approval artifacts have been supplied, so no approval exists. These ordinary approvals are not acceptance of non-recovery risk.
+- **Evidence / approval preconditions:** Data Steward and CRM Platform Owner, separately (customer policy). Individual identities and the approval record format are not supplied (DEC-01).
+- **Enforcement point:** Approval service / MergeCoordinator pre-persistence check and the immediate pre-write revalidation (CTRL-09).
+- **On sufficient support:** Continue to the authorization-path and commit-boundary controls.
+- **On conflict:** Block when a required approver rejects or the approvals disagree on scope.
+- **On indeterminate / insufficient evidence:** HOLD when an approval is missing, unbound, unverifiable, expired or given by the same individual for both roles.
+- **On stale version / failed validation:** Reject the approval and require a new approval for the current state.
+- **Requirement origin:** Customer-supplied policy requirement; binding fields are a reference-derived design requirement (operation/effect scope and relevant versions).
+- **Owner / component:** Data Steward and CRM Platform Owner (customer-stated roles)
+- **Audit record:** record the decision, evidence record IDs, versions, approval IDs and outcome in audit_events (customer to confirm).
+- **Validation:** TEST-11, TEST-12
+- **Provenance:** SRC-REQUEST, SRC-POLICY, SRC-MCP-P1
 
-- **Primary operation:** OP-01
-- **Also applies to operations:** none (single-operation plan; no additional-operation basis objects)
-- **Purpose:** Avoids persisting a continuity or identity claim for the wrong time or referent.
-- **Trigger:** Before authorization and again at the commit boundary.
-- **Required inputs:** Defined validity interval; Dated evidence with validity intervals
-- **Required action:** Require a policy-defined validity interval for the identity assertion and confirm that every supporting item, and any rename or continuity relied on, applies to the same referent and interval. Re-check at commit time against the interval and evidence currency.
-- **Evidence / approval preconditions:** Policy owner defines the interval (unassigned).
-- **Enforcement point:** Customer policy evaluator and commit-boundary guard.
-- **On sufficient support:** Continue when all evidence covers the interval.
-- **On conflict:** Evidence for a different interval or referent: block until corrected.
-- **On indeterminate / insufficient evidence:** Interval undefined or continuity unresolved: HOLD (currently the case, GAP-09).
-- **On stale version / failed validation:** Interval or evidence validity changed: re-evaluate. Failure behaviour: Evidence staleness check unavailable: fail closed.
-- **Requirement origin:** Reference-derived design requirement (illustrative profile pattern: continuity must apply to the relevant referent and interval) plus recommendation.
-- **Action class and staging-isolation basis (`REVERSIBLE_WRITE`):** Not applicable; no REVERSIBLE_WRITE operation is defined.
-- **Verified local preparation (`STAGE_LOCAL`):** Not applicable; no STAGE_LOCAL operation is defined.
-- **Factual reversibility and evidence (`IRREVERSIBLE_WRITE`):** OP-01 is IRREVERSIBLE_WRITE with factual reversibility `unknown`; no `reversibility_evidence` or `irreversibility_evidence` object is present. See CTRL-11.
-- **Path exclusivity:** Path A and Path B are alternatives only for OP-01; once Path A is established for the proven scope, Path B is unavailable for it. Neither changes the protected action class.
-- **Owner / component:** unassigned (customer to designate); Customer policy evaluator and commit-boundary guard.
-- **Audit record:** Interval used, evidence validity dates, comparison result.
-- **Validation:** TEST-01, TEST-06
-- **Provenance:** SRC-02, SRC-03
+## CTRL-07 — Protected-write authorization path (Path A recovery or Path B accepted non-recovery risk)
 
-## CTRL-06 - Complete write-set inventory and pre-write HOLD
+- **Primary operation:** OP-DEMO-2026-001
+- **Also applies to operations:** none (single-operation plan)
+- **Purpose:** Protected-write authorization path (Path A recovery or Path B accepted non-recovery risk).
+- **Trigger:** OP-DEMO-2026-001 is a production IRREVERSIBLE_WRITE whose factual reversibility is unknown.
+- **Required inputs:**
+  - A1 mechanism documentation
+  - A2 recovery-test record with versions
+  - A3 attestation by a designated role
+  - Or: current Path B policy, operation-specific approval, separation-of-duties rule
+- **Required action:** Hold the write unless exactly one authorization path is established for this operation and its complete production effect scope. Path A requires A1 (documented recovery or compensation mechanism for this exact MERGE and complete effect scope), A2 (successful recovery test on materially equivalent state and schema using current persistence, policy and validator versions) and A3 (attestation by a customer-designated responsible role). When established Path A sets factual reversibility to reversible while the action class stays IRREVERSIBLE_WRITE. Path B is available only when Path A is not established and requires a current explicit customer policy accepting this exact operation's non-recovery risk, operation-specific approval by a role authorized by that policy, and customer-defined separation of duties from the ordinary approvals; it establishes neither reversible nor not_reversible. After Path A is established for the scope Path B is unavailable. An UNMERGE is not recovery for this MERGE unless it independently satisfies A1, A2 and A3. Neither path creates an automatic write.
+- **Evidence / approval preconditions:** A3 attester and Path B approver roles and the separation-of-duties rule are not defined by the supplied policy (DEC-03).
+- **Enforcement point:** Pre-persistence authorization decision and the immediate pre-write revalidation (CTRL-09).
+- **On sufficient support:** Record the established path and continue to the remaining controls; the path never replaces approvals, evidence or atomicity proof.
+- **On conflict:** Not applicable: path decision does not resolve identity conflicts.
+- **On indeterminate / insufficient evidence:** HOLD when neither path is fully established or the separation-of-duties question is unresolved.
+- **On stale version / failed validation:** HOLD; a stale Path A claim expires to unknown and does not automatically select Path B.
+- **Requirement origin:** Skill-level planning requirement applied to the reference protected-write class; the customer has not supplied recovery or non-recovery-risk policy.
+- **Owner / component:** Unassigned (A3 attester and Path B approver roles to be defined by the customer)
+- **Audit record:** record the decision, evidence record IDs, versions, approval IDs and outcome in audit_events (customer to confirm).
+- **Validation:** TEST-13, TEST-14, TEST-15, TEST-16, TEST-17, TEST-18, TEST-19, TEST-20, TEST-21
+- **Provenance:** SRC-POLICY, SRC-MCP-PROFILE, SRC-MCP-P1
 
-- **Primary operation:** OP-01
-- **Also applies to operations:** none (single-operation plan; no additional-operation basis objects)
-- **Purpose:** Prevents a partially understood write set from being committed.
-- **Trigger:** Before the first persistent write of the MERGE, and whenever the schema or integrations change.
-- **Required inputs:** CLAIM-06 evidence; Effect inventory with per-effect boundary evidence
-- **Required action:** Require a customer-verified inventory of the complete persistent write set: account records, identity links, contacts, contracts, billing references, denormalized projections, search indexes, downstream integrations, audit/outbox records, assignments and history lineage. Each item carries one effect-boundary classification (in-transaction, outside-transaction, external/async, or unknown). If completeness is unverified, HOLD before any persistent write; do not start a partial sequence and do not rely on immediate rollback as a substitute.
-- **Evidence / approval preconditions:** Engineering/data-owner sign-off (unassigned).
-- **Enforcement point:** Customer engineering review gate plus the commit-boundary guard.
-- **On sufficient support:** Inventory verified complete: continue to CTRL-07.
-- **On conflict:** Inventory contradicts the declared effect scope: block; correct the scope.
-- **On indeterminate / insufficient evidence:** Any effect of unknown existence or membership: HOLD (currently all effects are unknown).
-- **On stale version / failed validation:** Schema, code path or integration change: inventory invalid until re-verified. Failure behaviour: Inventory source unavailable: HOLD.
-- **Requirement origin:** Skill-level engineering requirement derived from customer-supplied gaps; not a reference-contract field.
-- **Action class and staging-isolation basis (`REVERSIBLE_WRITE`):** Not applicable; no REVERSIBLE_WRITE operation is defined.
-- **Verified local preparation (`STAGE_LOCAL`):** Not applicable; no STAGE_LOCAL operation is defined.
-- **Factual reversibility and evidence (`IRREVERSIBLE_WRITE`):** OP-01 is IRREVERSIBLE_WRITE with factual reversibility `unknown`; no `reversibility_evidence` or `irreversibility_evidence` object is present. See CTRL-11.
-- **Path exclusivity:** Path A and Path B are alternatives only for OP-01; once Path A is established for the proven scope, Path B is unavailable for it. Neither changes the protected action class.
-- **Owner / component:** unassigned (customer to designate); Customer engineering review gate plus the commit-boundary guard.
-- **Audit record:** Inventory version, reviewer, per-effect classification, verification evidence.
-- **Validation:** TEST-09
-- **Provenance:** SRC-02, SRC-03
+## CTRL-08 — Complete write-set and atomicity proof before the first persistent write
 
-## CTRL-07 - Transaction coverage, commit point and atomicity gate
+- **Primary operation:** OP-DEMO-2026-001
+- **Also applies to operations:** none (single-operation plan)
+- **Purpose:** Complete write-set and atomicity proof before the first persistent write.
+- **Trigger:** Before any persistent write for the merge begins.
+- **Required inputs:**
+  - Dependency inventory of objects referencing either account ID
+  - Transaction-boundary evidence for every write-set member
+  - Evidence that triggers and extensions have no effects outside the transaction
+- **Required action:** Prove, with customer-held evidence, that the write set is complete (accounts, account_contact_links, account_contract_links, account_external_ids, account_merge_history, audit_events, transactional_outbox, plus the storage for preserved historical names and any dependent object found by dependency analysis) and that all of it, including outbox insertion, commits in one atomic SERIALIZABLE transaction with a single identified commit point. Prove that no historical activity record or other unlisted object is written. Isolation level alone does not prove atomicity or write-set completeness. If proof is absent, HOLD and begin no write.
+- **Evidence / approval preconditions:** CRM Platform Owner reviews the proof (customer-stated role).
+- **Enforcement point:** Before the first persistent write, at the MergeCoordinator boundary.
+- **On sufficient support:** Permit the write to proceed to the remaining controls.
+- **On conflict:** Block when a write outside the declared set or inside historical activity is found.
+- **On indeterminate / insufficient evidence:** HOLD when completeness, membership or the commit point is unknown or unverified.
+- **On stale version / failed validation:** Do not begin any write; do not start a partial sequence.
+- **Requirement origin:** Customer-supplied policy requirement (prove write set and atomicity before the first write); proof methods are recommendations.
+- **Owner / component:** CRM Platform Owner (customer-stated role) with application/data owner
+- **Audit record:** record the decision, evidence record IDs, versions, approval IDs and outcome in audit_events (customer to confirm).
+- **Validation:** TEST-22, TEST-23
+- **Provenance:** SRC-REQUEST, SRC-POLICY, SRC-MCP-P1
 
-- **Primary operation:** OP-01
-- **Also applies to operations:** none (single-operation plan; no additional-operation basis objects)
-- **Purpose:** Turns the undefined commit boundary into an explicit pre-write gate.
-- **Trigger:** Before the first persistent write.
-- **Required inputs:** Transaction and commit-point evidence; External/async effect list with delivery semantics; Database-specific concurrency design review
-- **Required action:** Require evidence of the actual transaction or equivalent atomic mechanism, which effects it covers, and the exact commit point. Effects outside the atomic unit (for example search indexes and downstream integrations) must be declared as outside-transaction or external/asynchronous with their delivery and reconciliation semantics. Do not infer atomicity from the database product, an isolation level or application sequencing, and assess concurrency/anomaly protection separately (database-specific design review required). If any of this is unverified: HOLD.
-- **Evidence / approval preconditions:** Engineering owner sign-off (unassigned).
-- **Enforcement point:** Customer persistence adapter design review and commit-boundary guard.
-- **On sufficient support:** Atomic unit and commit point verified: continue; effects outside it follow CTRL-09.
-- **On conflict:** Evidence shows effects span multiple units: treat as non-atomic; stay on HOLD until a tested design exists.
-- **On indeterminate / insufficient evidence:** Transaction, commit point or atomicity unknown: HOLD before the first persistent write (current state).
-- **On stale version / failed validation:** Schema or persistence-version change: atomicity claim invalid until re-verified. Failure behaviour: Verification tooling unavailable: HOLD.
-- **Requirement origin:** Skill-level engineering requirement; the profile's Phase 2 commit-check fields are the closest reference content and are not a transaction specification.
-- **Action class and staging-isolation basis (`REVERSIBLE_WRITE`):** Not applicable; no REVERSIBLE_WRITE operation is defined.
-- **Verified local preparation (`STAGE_LOCAL`):** Not applicable; no STAGE_LOCAL operation is defined.
-- **Factual reversibility and evidence (`IRREVERSIBLE_WRITE`):** OP-01 is IRREVERSIBLE_WRITE with factual reversibility `unknown`; no `reversibility_evidence` or `irreversibility_evidence` object is present. See CTRL-11.
-- **Path exclusivity:** Path A and Path B are alternatives only for OP-01; once Path A is established for the proven scope, Path B is unavailable for it. Neither changes the protected action class.
-- **Owner / component:** unassigned (customer to designate); Customer persistence adapter design review and commit-boundary guard.
-- **Audit record:** Transaction identifier, covered effects, commit point, verification evidence.
-- **Validation:** TEST-10, TEST-11
-- **Provenance:** SRC-02, SRC-03
+## CTRL-09 — Immediate pre-write revalidation of record state, schema, coordinator, validator, policy and approvals
 
-## CTRL-08 - Pre-commit invariant failure inside a verified atomic transaction
+- **Primary operation:** OP-DEMO-2026-001
+- **Also applies to operations:** none (single-operation plan)
+- **Purpose:** Immediate pre-write revalidation of record state, schema, coordinator, validator, policy and approvals.
+- **Trigger:** Immediately before any persistent write, including after any delay since approval.
+- **Required inputs:**
+  - Current row versions, schema, coordinator, validator and policy identifiers
+  - Authorization record bound to those versions
+- **Required action:** Revalidate that CRM-ACCT-1042 is still at row version 18 and CRM-ACCT-2097 at row version 23 and both are active, that the identity schema is CRM-IDENTITY-5, the coordinator is MergeCoordinator 2.8.0, the pre-commit validator is 1.6, the policy is POL-MDM-07 v3.2, the evidence and eligibility state and the approvals and authorization-path basis are unchanged and unexpired, and the realized operation exactly matches the authorized operation and write set. Reject a stale authorization and re-evaluate from the evidence stage with a new authorization record; never replay a stale candidate. Retries share one customer-defined retry budget.
+- **Evidence / approval preconditions:** New approvals are required whenever a bound item changes (CTRL-06).
+- **Enforcement point:** Immediately before the first persistent write, and again inside the transaction before commit.
+- **On sufficient support:** Proceed to the atomic transaction.
+- **On conflict:** Block when current state contradicts the authorized state or evidence.
+- **On indeterminate / insufficient evidence:** HOLD when a version or state cannot be read or compared.
+- **On stale version / failed validation:** Reject the authorization; require re-evaluation with a new authorization record.
+- **Requirement origin:** Customer-supplied requirement (revalidate record state, schema, coordinator, validator and policy) plus reference-derived version-binding obligations.
+- **Owner / component:** CRM Platform Owner (customer-stated role)
+- **Audit record:** record the decision, evidence record IDs, versions, approval IDs and outcome in audit_events (customer to confirm).
+- **Validation:** TEST-12, TEST-24, TEST-29
+- **Provenance:** SRC-REQUEST, SRC-POLICY, SRC-MCP-P1, SRC-MCP-P2
 
-- **Primary operation:** OP-01
-- **Also applies to operations:** none (single-operation plan; no additional-operation basis objects)
-- **Purpose:** Ensures a failed pre-commit check leaves no partial identity change.
-- **Trigger:** A required invariant or validation fails after writes begin but before commit, and only where CTRL-07 verified the atomic unit.
-- **Required inputs:** Verified atomic unit (CTRL-07); Invariant definitions
-- **Required action:** Abort the transaction and confirm by authoritative read that none of its writes committed. Treat this as transaction abort, not post-commit compensation. Re-evaluate from the start; do not blind retry. Invariants include realized-operation scope equals authorized scope, constraint checks on the candidate result, and evidence-to-claim support under the same snapshot.
-- **Evidence / approval preconditions:** None additional; re-authorization if the candidate changes.
-- **Enforcement point:** Persistence adapter inside the transaction; commit-boundary guard.
-- **On sufficient support:** All invariants pass: commit may proceed only if every other control is satisfied.
-- **On conflict:** Invariant breach: abort.
-- **On indeterminate / insufficient evidence:** Invariant cannot be evaluated: abort.
-- **On stale version / failed validation:** Authorization or version stale during the transaction: abort and re-authorize. Failure behaviour: Abort fails or outcome unknown: treat as ambiguous commit (CTRL-10).
-- **Requirement origin:** Skill-level engineering requirement; Phase 2 commit-check fields returned in the profile are the related reference content.
-- **Action class and staging-isolation basis (`REVERSIBLE_WRITE`):** Not applicable; no REVERSIBLE_WRITE operation is defined.
-- **Verified local preparation (`STAGE_LOCAL`):** Not applicable; no STAGE_LOCAL operation is defined.
-- **Factual reversibility and evidence (`IRREVERSIBLE_WRITE`):** OP-01 is IRREVERSIBLE_WRITE with factual reversibility `unknown`; no `reversibility_evidence` or `irreversibility_evidence` object is present. See CTRL-11.
-- **Path exclusivity:** Path A and Path B are alternatives only for OP-01; once Path A is established for the proven scope, Path B is unavailable for it. Neither changes the protected action class.
-- **Owner / component:** unassigned (customer to designate); Persistence adapter inside the transaction; commit-boundary guard.
-- **Audit record:** Invariant results, abort reason, post-abort state read.
-- **Validation:** TEST-12
-- **Provenance:** SRC-02, SRC-03
+## CTRL-10 — Atomic SERIALIZABLE commit and pre-commit abort
 
-## CTRL-09 - Post-commit and out-of-boundary failure handling
+- **Primary operation:** OP-DEMO-2026-001
+- **Also applies to operations:** none (single-operation plan)
+- **Purpose:** Atomic SERIALIZABLE commit and pre-commit abort.
+- **Trigger:** The write is executed after CTRL-01 to CTRL-09 are satisfied.
+- **Required inputs:**
+  - Pre-commit validator result
+  - Transaction identifier and commit evidence
+  - Idempotency key persisted inside the transaction
+- **Required action:** Execute every write and the outbox insertion in one SERIALIZABLE transaction. Evaluate the pre-commit validator and the resulting-state invariants inside the transaction before COMMIT, including evidence-to-claim support and the identity-preserving requirements. Commit only on PASS with valid scope and versions. On any failure or serialization conflict before commit, abort the transaction so that no write in any of the seven tables becomes committed; this is a transaction abort, not post-commit compensation. Persist the idempotency key inside the same transaction so that its presence proves the commit.
+- **Evidence / approval preconditions:** None beyond CTRL-06.
+- **Enforcement point:** In-transaction, immediately before COMMIT, in MergeCoordinator 2.8.0 with pre-commit validator 1.6.
+- **On sufficient support:** COMMIT; record audit and outbox events committed in the same transaction.
+- **On conflict:** Abort the transaction and keep the candidate non-persistent.
+- **On indeterminate / insufficient evidence:** Abort the transaction; the validator or database being unavailable is a failure, not a pass.
+- **On stale version / failed validation:** Abort the transaction and confirm that no committed rows result.
+- **Requirement origin:** Customer-supplied requirement (single SERIALIZABLE transaction, validate before commit); keeping the idempotency key inside the transaction is a recommendation.
+- **Owner / component:** CRM Platform Owner (customer-stated role)
+- **Audit record:** record the decision, evidence record IDs, versions, approval IDs and outcome in audit_events (customer to confirm).
+- **Validation:** TEST-10, TEST-25, TEST-26
+- **Provenance:** SRC-REQUEST, SRC-POLICY, SRC-MCP-P2
 
-- **Primary operation:** OP-01
-- **Also applies to operations:** none (single-operation plan; no additional-operation basis objects)
-- **Purpose:** Prevents improvised repair of an identity change that has leaked outside the atomic boundary.
-- **Trigger:** A failure or invariant breach occurs after commit, or an effect outside the atomic unit (index, downstream integration, async event) fails or has already occurred.
-- **Required inputs:** Documented and tested compensation procedure for this MERGE (not currently established); Reconciliation read of authoritative state
-- **Required action:** Do not claim that database rollback reverses the full effect. Stop dependent mutations and publications, reconcile the actual persisted state, and invoke only a documented, tested, operation-specific compensation/recovery procedure for this MERGE. If none is established, quarantine the affected records and escalate; keep further identity changes involving them on HOLD.
-- **Evidence / approval preconditions:** Recovery owner (unassigned) authorizes any compensation.
-- **Enforcement point:** Customer recovery component, incident/escalation process and persistence adapter.
-- **On sufficient support:** Reconciled and consistent: resume under CTRL-01.
-- **On conflict:** Inconsistent state: quarantine and escalate.
-- **On indeterminate / insufficient evidence:** State cannot be determined: quarantine and escalate.
-- **On stale version / failed validation:** Compensation procedure version or schema change: re-test before reliance. Failure behaviour: No tested compensation exists: quarantine/escalate; no improvised repair.
-- **Requirement origin:** Skill-level engineering requirement derived from the customer's untested-recovery gap.
-- **Action class and staging-isolation basis (`REVERSIBLE_WRITE`):** Not applicable; no REVERSIBLE_WRITE operation is defined.
-- **Verified local preparation (`STAGE_LOCAL`):** Not applicable; no STAGE_LOCAL operation is defined.
-- **Factual reversibility and evidence (`IRREVERSIBLE_WRITE`):** OP-01 is IRREVERSIBLE_WRITE with factual reversibility `unknown`; no `reversibility_evidence` or `irreversibility_evidence` object is present. See CTRL-11.
-- **Path exclusivity:** Path A and Path B are alternatives only for OP-01; once Path A is established for the proven scope, Path B is unavailable for it. Neither changes the protected action class.
-- **Owner / component:** unassigned (customer to designate); Customer recovery component, incident/escalation process and persistence adapter.
-- **Audit record:** Failure detection time, reconciled state, procedure invoked or quarantine decision.
-- **Validation:** TEST-11, TEST-13
-- **Provenance:** SRC-02, SRC-03
+## CTRL-11 — Ambiguous commit reconciliation, idempotency and no blind retry
 
-## CTRL-10 - Ambiguous commit outcome, idempotency and reconciliation
+- **Primary operation:** OP-DEMO-2026-001
+- **Also applies to operations:** none (single-operation plan)
+- **Purpose:** Ambiguous commit reconciliation, idempotency and no blind retry.
+- **Trigger:** The commit outcome is unknown (for example the connection is lost around COMMIT) or the same request is received again.
+- **Required inputs:**
+  - Authoritative read-after-failure result keyed by the idempotency key
+  - Reconciliation record
+- **Required action:** Do not retry blindly. First reconcile authoritative state by reading, after the failure, whether the idempotency key demo-merge-1042-2097-v1 and the corresponding merge-history, audit and outbox rows exist. Retry only after confirming that the original operation did not commit and that a retry is safe and revalidated under CTRL-09. A duplicate request after a confirmed commit returns the original outcome and performs no second merge. A new authorization record requires a new idempotency key version.
+- **Evidence / approval preconditions:** None; reconciliation is an automated or operator procedure with a named owner (DEC-05).
+- **Enforcement point:** Immediately after any failure or timeout at or after COMMIT, and at request intake for the idempotency key.
+- **On sufficient support:** If the key is found committed, return the original outcome and continue to post-commit controls.
+- **On conflict:** If partial state is observed, stop and quarantine (CTRL-13).
+- **On indeterminate / insufficient evidence:** Stay on HOLD until authoritative state can be read.
+- **On stale version / failed validation:** Do not retry; escalate to the reconciliation owner.
+- **Requirement origin:** Customer-supplied policy requirement (reconcile ambiguous outcomes before retry; blind retries prohibited); key lifecycle details are recommendations.
+- **Owner / component:** Unassigned (reconciliation owner to be named by the customer)
+- **Audit record:** record the decision, evidence record IDs, versions, approval IDs and outcome in audit_events (customer to confirm).
+- **Validation:** TEST-27, TEST-28, TEST-29
+- **Provenance:** SRC-REQUEST, SRC-POLICY
 
-- **Primary operation:** OP-01
-- **Also applies to operations:** none (single-operation plan; no additional-operation basis objects)
-- **Purpose:** Avoids a double application or an unseen partial application of an identity change.
-- **Trigger:** A timeout, connection loss or error leaves it unclear whether the MERGE committed, or the same candidate is submitted more than once.
-- **Required inputs:** Idempotency key bound to the authorization; Authoritative post-failure state read
-- **Required action:** Do not retry blindly. Assign an idempotency key (or equivalent operation identifier) to the authorized candidate, perform a read-after-failure of authoritative state, and retry only after confirming the original operation did not commit and a retry is safe. A duplicate submission must resolve to the original outcome and must not apply the merge twice.
-- **Evidence / approval preconditions:** None additional unless the candidate changes.
-- **Enforcement point:** Persistence adapter and reconciliation component.
-- **On sufficient support:** Confirmed not committed: retry may proceed under re-validated authorization.
-- **On conflict:** Committed but not recorded: record outcome; no retry.
-- **On indeterminate / insufficient evidence:** Outcome unknown: HOLD; escalate.
-- **On stale version / failed validation:** Authorization expired during reconciliation: re-evaluate from the start. Failure behaviour: Reconciliation unavailable: HOLD; no retry.
-- **Requirement origin:** Skill-level engineering requirement.
-- **Action class and staging-isolation basis (`REVERSIBLE_WRITE`):** Not applicable; no REVERSIBLE_WRITE operation is defined.
-- **Verified local preparation (`STAGE_LOCAL`):** Not applicable; no STAGE_LOCAL operation is defined.
-- **Factual reversibility and evidence (`IRREVERSIBLE_WRITE`):** OP-01 is IRREVERSIBLE_WRITE with factual reversibility `unknown`; no `reversibility_evidence` or `irreversibility_evidence` object is present. See CTRL-11.
-- **Path exclusivity:** Path A and Path B are alternatives only for OP-01; once Path A is established for the proven scope, Path B is unavailable for it. Neither changes the protected action class.
-- **Owner / component:** unassigned (customer to designate); Persistence adapter and reconciliation component.
-- **Audit record:** Idempotency key, failure observation, reconciliation read, decision.
-- **Validation:** TEST-14, TEST-15
-- **Provenance:** SRC-02, SRC-03
+## CTRL-12 — Post-commit validation and downstream propagation reconciliation
 
-## CTRL-11 - Authorization-path eligibility for the protected MERGE (Path A / Path B)
+- **Primary operation:** OP-DEMO-2026-001
+- **Also applies to operations:** none (single-operation plan)
+- **Purpose:** Post-commit validation and downstream propagation reconciliation.
+- **Trigger:** The transaction has committed.
+- **Required inputs:**
+  - Post-commit validation result
+  - Per-consumer reconciliation result
+  - Outbox delivery and retry records
+- **Required action:** Validate the committed state against the authorized operation and write set, then reconcile the asynchronous outbox consumers: CRM search index, Billing customer read model and ERP customer crosswalk. Consumers must be idempotent, tolerate duplicate and out-of-order delivery and tolerate a crosswalk that already maps both IDs to EC-004821. Detect and report divergence between the committed CRM state and each consumer. Stop dependent mutations while a mismatch is unresolved.
+- **Evidence / approval preconditions:** None.
+- **Enforcement point:** After commit: post-commit validator, outbox consumers and a reconciliation job.
+- **On sufficient support:** Record reconciled and mark downstream consistent.
+- **On conflict:** Quarantine on a mismatch between committed state and the authorized operation.
+- **On indeterminate / insufficient evidence:** Treat unreconciled consumers as inconsistent; do not mark the operation complete.
+- **On stale version / failed validation:** Stop dependent mutations and quarantine (CTRL-13).
+- **Requirement origin:** Customer-supplied policy requirement (validate and reconcile after commit; idempotent consumers); consumer-level checks are recommendations.
+- **Owner / component:** CRM Platform Owner (customer-stated role) with consumer owners unassigned
+- **Audit record:** record the decision, evidence record IDs, versions, approval IDs and outcome in audit_events (customer to confirm).
+- **Validation:** TEST-26, TEST-30, TEST-31
+- **Provenance:** SRC-REQUEST, SRC-POLICY
 
-- **Primary operation:** OP-01
-- **Also applies to operations:** none (single-operation plan; no additional-operation basis objects)
-- **Purpose:** Keeps protected production identity writes behind explicit recovery proof or explicit accepted risk, and prevents Path B after Path A is established.
-- **Trigger:** At authorization and again at the commit boundary for the protected production MERGE.
-- **Required inputs:** A1/A2/A3 records or the Path B policy, approval and SoD record; Current persistence, policy and validator versions
-- **Required action:** Fail closed unless one path is established. Path A requires operation-specific A1 (documented recovery/compensation covering this MERGE and its complete effect scope), A2 (successful recovery test on materially equivalent state/schema with current persistence, policy and validator versions) and A3 (attestation by a customer-designated role); it can set factual reversibility to reversible for the proven scope. Path B applies only when Path A is not established and requires a current explicit customer policy accepting this exact operation's non-recovery risk, operation-specific approval by an authorized role, and customer-defined separation of duties from ordinary approval; it establishes neither reversible nor not_reversible. An UNMERGE procedure is not recovery for MERGE unless it independently satisfies A1/A2/A3 for this operation. Recheck versions at commit; a changed version, scope or stale A2/A3 expires Path A for that decision and reversibility is treated as unknown.
-- **Evidence / approval preconditions:** Path A attestor and Path B approver/policy roles are customer-defined and currently unresolved (GAP-04, GAP-08).
-- **Enforcement point:** Customer commit-boundary guard / authorization service.
-- **On sufficient support:** Path established: continue subject to every other control; action class remains IRREVERSIBLE_WRITE and no write is automatic.
-- **On conflict:** Contradictory or inconsistent path evidence: HOLD.
-- **On indeterminate / insufficient evidence:** Any prerequisite absent, stale or unresolved: HOLD.
-- **On stale version / failed validation:** Version, scope or equivalence drift: Path A expires; HOLD until A2/A3 renewed or Path B independently established. Failure behaviour: Authorization service unavailable: fail closed.
-- **Requirement origin:** Skill-level planning requirement applied to the protected path (Path A/B are Skill constructs, not reference-contract fields); customer-supplied gaps.
-- **Action class and staging-isolation basis (`REVERSIBLE_WRITE`):** Not applicable; no REVERSIBLE_WRITE operation is defined.
-- **Verified local preparation (`STAGE_LOCAL`):** Not applicable; no STAGE_LOCAL operation is defined.
-- **Factual reversibility and evidence (`IRREVERSIBLE_WRITE`):** OP-01 is IRREVERSIBLE_WRITE with factual reversibility `unknown`; no `reversibility_evidence` or `irreversibility_evidence` object is present. See CTRL-11.
-- **Path exclusivity:** Path A and Path B are alternatives only for OP-01; once Path A is established for the proven scope, Path B is unavailable for it. Neither changes the protected action class.
-- **Owner / component:** unassigned (customer to designate); Customer commit-boundary guard / authorization service.
-- **Audit record:** Path selected, A1/A2/A3 or policy/approval/SoD record IDs, versions checked, decision.
-- **Validation:** TEST-21, TEST-22, TEST-23, TEST-24, TEST-25, TEST-26, TEST-27, TEST-28, TEST-29, TEST-30
-- **Provenance:** SRC-02, SRC-03
+## CTRL-13 — Post-commit failure, quarantine and recovery
 
-## CTRL-12 - Operation-specific approval and authorized approvers
-
-- **Primary operation:** OP-01
-- **Also applies to operations:** none (single-operation plan; no additional-operation basis objects)
-- **Purpose:** Stops the agent, or an unauthorized person, from approving a protected identity change.
-- **Trigger:** Before authorization of the protected MERGE.
-- **Required inputs:** Current approval policy; Authorized approver roster; Approval record bound to this operation and its scope
-- **Required action:** Require operation-specific approval from a role authorized by a current customer policy; ordinary merge approval does not accept irreversibility risk. Until the policy and the authorized approver list are defined, no approval can be valid and the operation stays on HOLD. The policy must also state whether the Path B approver must be independent of the ordinary approver; if unresolved, keep Path B on HOLD.
-- **Evidence / approval preconditions:** Roles are not defined in the current documentation (GAP-04).
-- **Enforcement point:** Customer approval workflow and commit-boundary guard.
-- **On sufficient support:** Valid approval recorded: continue subject to all other controls.
-- **On conflict:** Approver not authorized or not independent where required: reject.
-- **On indeterminate / insufficient evidence:** Policy or roster unresolved: HOLD.
-- **On stale version / failed validation:** Policy or scope changed after approval: approval void. Failure behaviour: Approval workflow unavailable: HOLD.
-- **Requirement origin:** Customer-owned decision; the plan does not invent roles.
-- **Action class and staging-isolation basis (`REVERSIBLE_WRITE`):** Not applicable; no REVERSIBLE_WRITE operation is defined.
-- **Verified local preparation (`STAGE_LOCAL`):** Not applicable; no STAGE_LOCAL operation is defined.
-- **Factual reversibility and evidence (`IRREVERSIBLE_WRITE`):** OP-01 is IRREVERSIBLE_WRITE with factual reversibility `unknown`; no `reversibility_evidence` or `irreversibility_evidence` object is present. See CTRL-11.
-- **Path exclusivity:** Path A and Path B are alternatives only for OP-01; once Path A is established for the proven scope, Path B is unavailable for it. Neither changes the protected action class.
-- **Owner / component:** unassigned (customer to designate); Customer approval workflow and commit-boundary guard.
-- **Audit record:** Approver identity and role, policy version, scope bound, time.
-- **Validation:** TEST-18, TEST-19, TEST-25, TEST-27, TEST-28
-- **Provenance:** SRC-02, SRC-03
-
-## CTRL-13 - Version binding, stale-state rejection and concurrency
-
-- **Primary operation:** OP-01
-- **Also applies to operations:** none (single-operation plan; no additional-operation basis objects)
-- **Purpose:** Prevents an authorization from outliving the state it was based on.
-- **Trigger:** Authorization time and the commit boundary.
-- **Required inputs:** Version identifiers and snapshot; Authorization record
-- **Required action:** Bind the authorization to the operation/effect scope and to the graph/data version, evidence (active/quarantined and eligibility) version, policy version and validator version in force. At the commit boundary obtain one consistent snapshot, reject any stale authorization, re-evaluate from the start rather than replaying a stale candidate, and commit only when the checks pass, the scope is valid and the bound versions remain valid. Protect against stale reads, lost updates and concurrent modification of either record; the concrete mechanism depends on the customer's database engine and requires a database-specific design review.
-- **Evidence / approval preconditions:** None additional.
-- **Enforcement point:** Customer commit-boundary guard and persistence adapter.
-- **On sufficient support:** Versions and scope valid: continue.
-- **On conflict:** Version drift: reject authorization.
-- **On indeterminate / insufficient evidence:** Version unknown: HOLD.
-- **On stale version / failed validation:** Any bound version changed: re-evaluate from Phase 1 equivalent. Failure behaviour: Snapshot or version service unavailable: fail closed.
-- **Requirement origin:** Reference-derived design requirement (version binding and stale-authorization rejection in the profile's commit checks); concurrency mechanism left to the customer.
-- **Action class and staging-isolation basis (`REVERSIBLE_WRITE`):** Not applicable; no REVERSIBLE_WRITE operation is defined.
-- **Verified local preparation (`STAGE_LOCAL`):** Not applicable; no STAGE_LOCAL operation is defined.
-- **Factual reversibility and evidence (`IRREVERSIBLE_WRITE`):** OP-01 is IRREVERSIBLE_WRITE with factual reversibility `unknown`; no `reversibility_evidence` or `irreversibility_evidence` object is present. See CTRL-11.
-- **Path exclusivity:** Path A and Path B are alternatives only for OP-01; once Path A is established for the proven scope, Path B is unavailable for it. Neither changes the protected action class.
-- **Owner / component:** unassigned (customer to designate); Customer commit-boundary guard and persistence adapter.
-- **Audit record:** Bound versions, snapshot ID, comparison result.
-- **Validation:** TEST-01, TEST-16, TEST-17, TEST-31
-- **Provenance:** SRC-02, SRC-03
-
-## CTRL-14 - Audit and lineage record
-
-- **Primary operation:** OP-01
-- **Also applies to operations:** none (single-operation plan; no additional-operation basis objects)
-- **Purpose:** Preserves traceability for review, reconciliation and any later separately authorized corrective operation.
-- **Trigger:** Every candidate, decision, hold, approval, commit attempt and reconciliation.
-- **Required inputs:** Pre-merge snapshot or lineage manifest; Decision log
-- **Required action:** Record the candidate, proposition, evidence record IDs and roles, versions, decisions and reasons (including HOLD reasons), approvals, the pre-merge identity of both records (lineage sufficient to reconstruct the source identities) and the observed outcome. Records must not be altered after the fact. Audit coverage does not substitute for recovery evidence.
-- **Evidence / approval preconditions:** None additional.
-- **Enforcement point:** Customer audit/lineage component, written inside the atomic unit where the architecture allows.
-- **On sufficient support:** Audit record complete: continue.
-- **On conflict:** Audit write fails: block the commit.
-- **On indeterminate / insufficient evidence:** Completeness unknown: HOLD.
-- **On stale version / failed validation:** Schema change in audit store: re-verify. Failure behaviour: Audit store unavailable: fail closed.
-- **Requirement origin:** Reference-derived design requirement (recorded basis and provenance) plus recommendation.
-- **Action class and staging-isolation basis (`REVERSIBLE_WRITE`):** Not applicable; no REVERSIBLE_WRITE operation is defined.
-- **Verified local preparation (`STAGE_LOCAL`):** Not applicable; no STAGE_LOCAL operation is defined.
-- **Factual reversibility and evidence (`IRREVERSIBLE_WRITE`):** OP-01 is IRREVERSIBLE_WRITE with factual reversibility `unknown`; no `reversibility_evidence` or `irreversibility_evidence` object is present. See CTRL-11.
-- **Path exclusivity:** Path A and Path B are alternatives only for OP-01; once Path A is established for the proven scope, Path B is unavailable for it. Neither changes the protected action class.
-- **Owner / component:** unassigned (customer to designate); Customer audit/lineage component, written inside the atomic unit where the architecture allows.
-- **Audit record:** The audit record itself.
-- **Validation:** TEST-20
-- **Provenance:** SRC-02, SRC-03
+- **Primary operation:** OP-DEMO-2026-001
+- **Also applies to operations:** none (single-operation plan)
+- **Purpose:** Post-commit failure, quarantine and recovery.
+- **Trigger:** An invariant fails after commit, an asynchronous effect fails or diverges, or no single atomic boundary can be guaranteed for an effect.
+- **Required inputs:**
+  - Documented tested recovery or compensation procedure (A1/A2) or a quarantine and escalation procedure
+  - Incident and reconciliation record
+- **Required action:** Stop dependent mutations, reconcile the actual persisted state, and invoke only a documented and tested recovery or compensation procedure for this exact MERGE. If none is established, quarantine the affected accounts and downstream projections and escalate to a named owner while keeping the overall decision on HOLD for further identity changes. Do not claim that a database rollback can reverse a committed or asynchronous effect and do not assume UNMERGE as recovery.
+- **Evidence / approval preconditions:** Recovery execution requires operation-specific approval under customer policy (DEC-07).
+- **Enforcement point:** After commit, on any post-commit validation or reconciliation failure.
+- **On sufficient support:** Return to normal once validation and reconciliation pass.
+- **On conflict:** Quarantine and escalate.
+- **On indeterminate / insufficient evidence:** Quarantine and escalate; remain on HOLD.
+- **On stale version / failed validation:** Quarantine and escalate; do not retry the merge.
+- **Requirement origin:** Customer-supplied policy requirement (reconcile after commit) with a Skill-level recovery requirement; no recovery procedure was supplied.
+- **Owner / component:** Unassigned (recovery and quarantine owner to be named by the customer)
+- **Audit record:** record the decision, evidence record IDs, versions, approval IDs and outcome in audit_events (customer to confirm).
+- **Validation:** TEST-30, TEST-32
+- **Provenance:** SRC-REQUEST, SRC-POLICY
 
 ## Decisions requiring customer policy
 
-GAP-04, GAP-05, GAP-07, GAP-08, GAP-09 and GAP-11 require customer policy or role definitions that this plan does not invent. See 07-assumptions-and-gaps.md.
+- DEC-01: Who are the Data Steward and CRM Platform Owner approvers, what is the approval record format, and how are approvals bound to operation OP-DEMO-2026-001 and its state? (owner: Customer Data Steward and CRM Platform Owner; blocking: yes)
+- DEC-02: Which evidence is eligible for promotion for the identity and continuity claims, who decides eligibility, what is the registry-ID normalization rule, what is the maximum evidence age, and does the extract show the legacy and current names exactly? (owner: Customer domain-policy owner and Data Steward; blocking: yes)
+- DEC-03: Is there a documented, tested and attested recovery for this MERGE (Path A), or does a current policy accept non-recovery risk with an authorized approver and separation of duties (Path B)? (owner: Customer risk owner and CRM Platform Owner; blocking: yes)
+- DEC-04: What is the proven complete write set and atomic boundary, where are historical names and provenance stored, what is the disposition of the CRM-ACCT-2097 row, and which other objects reference the account IDs? (owner: Customer CRM application and data owner; blocking: yes)
+- DEC-05: How is the idempotency key persisted atomically, what is the retry budget, and who owns ambiguous-commit reconciliation? (owner: Customer CRM application owner; blocking: yes)
+- DEC-06: Are the outbox consumers idempotent and ordered, and who owns downstream reconciliation for the search index, Billing read model and ERP crosswalk? (owner: Customer consumer owners; blocking: yes)
+- DEC-07: Who owns quarantine, escalation and any tested compensation after a post-commit failure? (owner: Customer CRM Platform Owner; blocking: yes)
+- DEC-08: What is the origin of the EC-004821 mapping in the migration report and crosswalk, and should the crosswalk be reviewed independently of this merge? (owner: Customer Data Steward; blocking: no)
