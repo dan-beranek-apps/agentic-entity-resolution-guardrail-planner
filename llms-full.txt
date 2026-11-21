@@ -68,11 +68,11 @@ The precise outputs and content depend on the operation and the context supplied
 
 A public example is available at {{SITE_BASE}}/demo/ . Its source deliverables are available in the product repository under demo-for-agensi/.
 
-The example demonstrates a synthetic MERGE planning scenario. It includes nine canonical planning deliverables: eight Markdown artefacts and one machine-readable JSON specification. The specific example identifies fourteen proposed customer-side controls, eleven blocking customer decisions and thirty-one proposed customer-operation test scenarios.
+The example demonstrates a synthetic MERGE planning scenario. It includes nine canonical planning deliverables: eight Markdown artefacts and one machine-readable JSON specification. The specific example identifies twelve proposed customer-side controls, eight blocking customer decisions (GAP-01 to GAP-08), thirty-one proposed customer-operation test scenarios and three proposed Planner-level checks. None of the tests or Planner checks was executed.
 
 The example is marked not_implementation_ready. The thirty-one test scenarios are proposed, not executed. Draft JSON Schema 2020-12 and format validation were not run in the original generation environment. All names and identifiers in the example are synthetic.
 
-The example considers a possible parent or holding-company relationship. The identity proposition is not established by the supplied evidence, so the plan retains HOLD before a persistent write. The example does not establish legal identity, does not represent a customer deployment, and does not execute or authorize a merge.
+On the supplied descriptions, CRM-ACCT-2097 and CRM-ACCT-1042 are presented as one continuing legal person identified by registry ID FIC-REG-004821, with a legal-name change effective 2024-04-01. The identity-continuity proposition is supported conditionally on source authenticity and customer-policy eligibility; the Planner did not independently verify the original registry extract, gateway verification record or 2025 agreement, and the evidence is not yet authorization-eligible. The plan therefore retains HOLD before any persistent write. Its negative control rejects similarity-based merging of related companies with different registry IDs. The example is synthetic, does not represent a customer deployment, and does not execute or authorize a merge.
 
 ## 6. Product boundaries and limitations
 
@@ -83,7 +83,7 @@ The Planner:
 - Does not write to a CRM, master-data platform, customer database or other production system.
 - Does not deploy a runtime guard, policy-enforcement mechanism or production integration.
 - Does not autonomously inspect customer records or application state that have not been supplied or separately connected.
-- Does not determine legal identity, define customer policy or assume the role of a customer's authorization authority.
+- Does not independently verify legal identity, make legal determinations, define customer policy or assume the role of a customer's authorization authority.
 - Does not guarantee a correct entity match, production safety, regulatory compliance or successful implementation.
 
 The customer or engineering team remains responsible for supplying reliable context, defining policy and authority, reviewing the plan, implementing controls in its own environment, and testing them before production use.

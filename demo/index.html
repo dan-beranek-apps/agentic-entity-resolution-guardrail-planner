@@ -50,15 +50,15 @@
     <section class="demo-content">
       <div class="shell">
         <div class="section-heading">
-          <div><p class="eyebrow">The scenario</p><h2>Two accounts that may be related — but not identical.</h2></div>
-          <p>An AI agent proposes merging two CRM account records based on several overlapping signals. A contract also suggests a possible parent or holding relationship. The example treats that as a material conflict to investigate, not as a detail to ignore.</p>
+          <div><p class="eyebrow">The scenario</p><h2>Two CRM records described as one continuing legal person.</h2></div>
+          <p>An AI agent proposes merging CRM-ACCT-2097 into canonical CRM-ACCT-1042. The supplied descriptions identify the same official registry ID (FIC-REG-004821) and a legal-name change effective 2024-04-01. On those descriptions, identity continuity is supported conditionally on authenticity and customer-policy eligibility. The Planner did not verify the original registry extract, gateway verification record or 2025 agreement, so the evidence is not yet authorization-eligible. A negative control also rejects similarity-based MERGE for related companies with different registry IDs.</p>
         </div>
         <table class="demo-table">
           <thead><tr><th>Deliverable</th><th>What it contains</th><th>Source</th></tr></thead>
           <tbody>
             <tr><td>00 — Plan overview</td><td>Scenario, recommendation status, provenance, validation record and handoff summary.</td><td><a href="../demo-for-agensi/00-README.md">Open Markdown ↗</a></td></tr>
             <tr><td>01 — Mutation scope</td><td>Application and operation scope, affected state classes and operation boundaries.</td><td><a href="../demo-for-agensi/01-mutation-scope.md">Open Markdown ↗</a></td></tr>
-            <tr><td>02 — Guardrail specification</td><td>Fourteen named controls, their triggers, required actions, enforcement points, failure behaviour and validation links.</td><td><a href="../demo-for-agensi/02-guardrail-specification.md">Open Markdown ↗</a></td></tr>
+            <tr><td>02 — Guardrail specification</td><td>Twelve named controls, their triggers, required actions, enforcement points, failure behaviour and validation links.</td><td><a href="../demo-for-agensi/02-guardrail-specification.md">Open Markdown ↗</a></td></tr>
             <tr><td>03 — Evidence requirements</td><td>Claims, evidence roles, provenance, admission, promotion and conflict requirements.</td><td><a href="../demo-for-agensi/03-evidence-requirements.md">Open Markdown ↗</a></td></tr>
             <tr><td>04 — Commit-boundary design</td><td>Pre-persistence controls, transaction and write-set questions, version requirements and failure behaviour.</td><td><a href="../demo-for-agensi/04-commit-boundary-design.md">Open Markdown ↗</a></td></tr>
             <tr><td>05 — Implementation blueprint</td><td>Proposed components, responsibilities, logical interface, implementation sequence and operational concerns.</td><td><a href="../demo-for-agensi/05-implementation-blueprint.md">Open Markdown ↗</a></td></tr>
@@ -69,7 +69,7 @@
         </table>
         <div class="demo-caveat">
           <strong>Important interpretation notes</strong>
-          <p>The example plan is explicitly marked <code>not_implementation_ready</code>. Eleven customer decisions remain blocking. Its 31 customer-operation scenarios are proposed tests; none was executed against a customer application. Draft 2020-12 JSON Schema and format validation were not run in the original generation environment. The plan does not decide legal identity, execute the merge or authorize a live operation. All names and account identifiers are synthetic.</p>
+          <p>The example plan is explicitly marked <code>not_implementation_ready</code>. It contains 12 proposed controls, 31 customer-operation test scenarios and three proposed Planner-level checks; none of the tests or Planner checks was executed. Eight customer decisions (GAP-01 to GAP-08) remain blocking. Draft 2020-12 JSON Schema and format validation were not run in the original generation environment. On the supplied descriptions, identity continuity is supported, but the Planner did not independently verify the source documents and the evidence is not yet authorization-eligible. Commit status is HOLD; the plan does not execute or authorize a live operation. All names and account identifiers are synthetic.</p>
         </div>
         <div class="demo-caveat">
           <strong>What this example demonstrates</strong>

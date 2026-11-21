@@ -70,7 +70,7 @@
           </div>
           <div class="hero-stat-row">
             <div><strong>11</strong><span>investigation angles</span></div>
-            <div><strong>14</strong><span>controls in the example</span></div>
+            <div><strong>12</strong><span>controls in the example</span></div>
             <div><strong>9</strong><span>planning deliverables</span></div>
           </div>
           <p class="micro-note">Counts refer to the published methodology and synthetic CRM demonstration; they are not universal fixed output limits.</p>
@@ -170,23 +170,21 @@
       <div class="shell">
         <div class="section-heading">
           <div><p class="eyebrow">Control architecture</p><h2>From broad investigation to explicit controls.</h2></div>
-          <p>The published synthetic MERGE example contains 14 named controls. They illustrate how investigation findings can become concrete requirements for a customer-side implementation. The exact controls depend on the operation and scenario.</p>
+          <p>The published synthetic MERGE example contains 12 named controls. They illustrate how investigation findings can become concrete requirements for a customer-side implementation. The exact controls depend on the operation and scenario.</p>
         </div>
         <div class="control-grid">
-          <div class="control-item"><span>CTRL-01</span><p>Protected-operation qualification and scope binding</p></div>
-          <div class="control-item"><span>CTRL-02</span><p>Claim-specific identity evidence gate</p></div>
-          <div class="control-item"><span>CTRL-03</span><p>Registry-extract verification and evidence admission</p></div>
-          <div class="control-item"><span>CTRL-04</span><p>Parent / holding indication and contradiction handling</p></div>
-          <div class="control-item"><span>CTRL-05</span><p>Temporal applicability and validity interval</p></div>
-          <div class="control-item"><span>CTRL-06</span><p>Complete write-set inventory and pre-write HOLD</p></div>
-          <div class="control-item"><span>CTRL-07</span><p>Transaction coverage, commit point and atomicity gate</p></div>
-          <div class="control-item"><span>CTRL-08</span><p>Pre-commit invariant failure inside a verified atomic transaction</p></div>
-          <div class="control-item"><span>CTRL-09</span><p>Post-commit and out-of-boundary failure handling</p></div>
-          <div class="control-item"><span>CTRL-10</span><p>Ambiguous commit outcome, idempotency and reconciliation</p></div>
-          <div class="control-item"><span>CTRL-11</span><p>Authorization-path eligibility</p></div>
-          <div class="control-item"><span>CTRL-12</span><p>Operation-specific approval and authorized approvers</p></div>
-          <div class="control-item"><span>CTRL-13</span><p>Version binding, stale-state rejection and concurrency</p></div>
-          <div class="control-item"><span>CTRL-14</span><p>Audit and lineage record</p></div>
+          <div class="control-item"><span>CTRL-01</span><p>Operation, scope and action-class binding</p></div>
+          <div class="control-item"><span>CTRL-02</span><p>Registry-ID and legal-continuity identity gate</p></div>
+          <div class="control-item"><span>CTRL-03</span><p>Evidence eligibility, provenance and independence</p></div>
+          <div class="control-item"><span>CTRL-04</span><p>Claim-specific conflict and indeterminate-evidence handling</p></div>
+          <div class="control-item"><span>CTRL-05</span><p>Separate human approvals bound to operation and state</p></div>
+          <div class="control-item"><span>CTRL-06</span><p>Version binding and stale-state check</p></div>
+          <div class="control-item"><span>CTRL-07</span><p>Write-set completeness and atomicity gate</p></div>
+          <div class="control-item"><span>CTRL-08</span><p>Pre-commit invariants and transaction abort</p></div>
+          <div class="control-item"><span>CTRL-09</span><p>Post-commit validation and downstream reconciliation</p></div>
+          <div class="control-item"><span>CTRL-10</span><p>Post-commit and out-of-boundary failure handling</p></div>
+          <div class="control-item"><span>CTRL-11</span><p>Ambiguous commit outcome and idempotency</p></div>
+          <div class="control-item"><span>CTRL-12</span><p>Reversibility and authorization-path gate</p></div>
         </div>
         <p class="small-note">These are design requirements in the example plan, not controls implemented by the Skill or an independently verified runtime security layer.</p>
       </div>
@@ -200,16 +198,16 @@
         </div>
         <div class="case-study">
           <div class="case-story">
-            <p class="card-kicker">THE SCENARIO</p><h3>Two similar accounts. One unresolved identity question.</h3>
-            <p>An agent proposes merging two customer-account records. The supplied scenario includes similar names, a shared web domain, an overlapping contact and a registry extract with a potentially matching identifier.</p>
-            <p>A contract also suggests that one company may be a parent or holding entity of the other. That possibility changes the question: the records may be related, yet still represent distinct legal entities.</p>
-            <div class="case-outcome"><span class="outcome-mark">!</span><div><strong>The identity proposition remains unproven.</strong><p>The example plan requires HOLD before the first persistent write while material evidence, policy, authorization and transaction-boundary decisions remain unresolved.</p></div></div>
+            <p class="card-kicker">THE SCENARIO</p><h3>Two CRM records. Supported continuity, blocked commit.</h3>
+            <p>An agent proposes merging CRM-ACCT-2097 into canonical record CRM-ACCT-1042. The supplied descriptions identify the same official registry ID (FIC-REG-004821) and a legal-name change effective 2024-04-01.</p>
+            <p>On those descriptions, the identity-continuity proposition is supported. The Planner did not independently verify the registry extract, gateway verification record or 2025 agreement, and the evidence is not yet authorization-eligible. The proposed tests also include a negative control: related companies with different registry IDs must not be merged on name, domain, address or contact similarity alone.</p>
+            <div class="case-outcome"><span class="outcome-mark">!</span><div><strong>Identity continuity is supported on supplied descriptions, not yet authorization-eligible.</strong><p>The example plan requires HOLD before the first persistent write while material evidence, policy, authorization and transaction-boundary decisions remain unresolved.</p></div></div>
             <a class="text-link" href="demo/">Explore the complete demonstration <span aria-hidden="true">↗</span></a>
           </div>
           <div class="case-facts">
-            <div><strong>14</strong><span>named controls in the MERGE example</span></div>
+            <div><strong>12</strong><span>named controls in the MERGE example</span></div>
             <div><strong>31</strong><span>proposed customer-operation test scenarios</span></div>
-            <div><strong>11</strong><span>blocking customer decisions recorded in the example</span></div>
+            <div><strong>8</strong><span>blocking customer decisions recorded in the example</span></div>
             <div><strong>9</strong><span>canonical planning deliverables</span></div>
           </div>
         </div>
@@ -227,7 +225,7 @@
             <a href="demo-for-agensi/guardrail-spec.json"><span>JSON</span><strong>Machine-readable guardrail specification</strong><span>↗</span></a>
           </div>
         </div>
-        <div class="integrity-note"><strong>Read the example in context.</strong><p>The plan is marked <code>not_implementation_ready</code>. Its 31 customer-operation scenarios are proposed, not executed. Eleven customer decisions remain blocking, and Draft 2020-12 schema and format validation were not run in the original generation environment. The example demonstrates the structure and transparency of the handoff; it is not a production-ready implementation.</p></div>
+        <div class="integrity-note"><strong>Read the example in context.</strong><p>The plan is marked <code>not_implementation_ready</code>. It contains 12 proposed controls, 31 customer-operation test scenarios and three proposed Planner-level checks; none of the tests or Planner checks was executed. Eight customer decisions (GAP-01 to GAP-08) remain blocking. Draft 2020-12 JSON Schema and format validation were not run in the original generation environment. The example demonstrates the structure and transparency of the handoff; it is not a production-ready implementation.</p></div>
       </div>
     </section>
 
@@ -268,7 +266,7 @@
         </div>
         <div class="boundary-grid">
           <article class="boundary-card"><h3>What it does</h3><ul><li>Investigates identity-changing MERGE, SPLIT, UNMERGE and supported OTHER operations.</li><li>Examines supplied context, evidence, provenance, conflicts and reference material.</li><li>Designs proposed controls, approval conditions, HOLD points and validation scenarios.</li><li>Produces structured documentation and a machine-readable plan.</li><li>Identifies unknowns, assumptions and customer-owned decisions.</li></ul></article>
-          <article class="boundary-card boundary-out"><h3>What it does not do</h3><ul><li>Execute mutations or write to a customer CRM, MDM or registry.</li><li>Authorize a live operation or deploy a runtime guard.</li><li>Independently inspect systems or data that have not been supplied or connected.</li><li>Decide legal identity or define domain policy on the customer's behalf.</li><li>Guarantee production safety, compliance or successful recovery.</li></ul></article>
+          <article class="boundary-card boundary-out"><h3>What it does not do</h3><ul><li>Execute mutations or write to a customer CRM, MDM or registry.</li><li>Authorize a live operation or deploy a runtime guard.</li><li>Independently inspect systems or data that have not been supplied or connected.</li><li>Independently verify legal identity or act as the customer's legal, policy or authorization authority.</li><li>Guarantee production safety, compliance or successful recovery.</li></ul></article>
         </div>
         <p class="boundary-bottom">The customer's application and engineering team must implement, review and test the resulting controls in their own environment.</p>
       </div>
