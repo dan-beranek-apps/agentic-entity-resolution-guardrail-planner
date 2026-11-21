@@ -1,7 +1,7 @@
 {
   "ledger_version": "2.1.1",
-  "run_id": "2026-11-21T01:15:46Z",
-  "recorded_at": "2026-11-21T11:48:27Z",
+  "run_id": "2026-11-21T01:44:38Z",
+  "recorded_at": "2026-11-21T11:56:19Z",
   "hash_algorithm": "SHA-256",
   "hash_scope": "exact_file_bytes",
   "export_status": "workspace_only",
@@ -10,229 +10,230 @@
     {
       "canonical_filename": "00-README.md",
       "creation_method": "created_in_current_run",
-      "created_at": "2026-11-21T11:48:27Z",
+      "created_at": "2026-11-21T11:55:21Z",
       "revised_at": null,
-      "finalized_at": "2026-11-21T11:48:27Z",
+      "finalized_at": "2026-11-21T11:55:55Z",
       "timestamp_basis": "captured_immediately_after_write",
       "workspace_filename": "00-README.md",
-      "workspace_sha256": "a3ad3dc3667ea8d6bf9b3ce4e5045afb4a3535bce7a7a8a9971962b4e835b339",
+      "workspace_sha256": "ad27ad2571a469dd29985de80b5a3d89b2095f911580edb10884a26b2b22fca5",
       "exported_filename": null,
       "exported_sha256": null,
       "baseline_sha256": null,
       "observed_by": null,
       "observed_at": null,
-      "workspace_masked_sha256": "16a88360b73033c72eefadca4fe5466e54c87593a3539cf18362c37a77ceec46"
+      "workspace_masked_sha256": "459664ff02c3e5926a4200be77abcec374ea1bf1baeb9ff510ffd468e2cf8c96"
     },
     {
       "canonical_filename": "01-mutation-scope.md",
       "creation_method": "created_in_current_run",
-      "created_at": "2026-11-21T11:48:27Z",
+      "created_at": "2026-11-21T11:55:21Z",
       "revised_at": null,
-      "finalized_at": "2026-11-21T11:48:27Z",
+      "finalized_at": "2026-11-21T11:55:55Z",
       "timestamp_basis": "captured_immediately_after_write",
       "workspace_filename": "01-mutation-scope.md",
-      "workspace_sha256": "e1fab97ed55beebcbed14cbe81bf3c9dfc2b682d07dddeb47aff4ea3219d6881",
+      "workspace_sha256": "097aecaca110b075fdca7e57bbf7b1ece99600bc1fa0c8ede775fae00dcd0d6c",
       "exported_filename": null,
       "exported_sha256": null,
       "baseline_sha256": null,
       "observed_by": null,
       "observed_at": null,
-      "workspace_masked_sha256": "e1fab97ed55beebcbed14cbe81bf3c9dfc2b682d07dddeb47aff4ea3219d6881"
+      "workspace_masked_sha256": "097aecaca110b075fdca7e57bbf7b1ece99600bc1fa0c8ede775fae00dcd0d6c"
     },
     {
       "canonical_filename": "02-guardrail-specification.md",
       "creation_method": "created_in_current_run",
-      "created_at": "2026-11-21T11:48:27Z",
+      "created_at": "2026-11-21T11:55:21Z",
       "revised_at": null,
-      "finalized_at": "2026-11-21T11:48:27Z",
+      "finalized_at": "2026-11-21T11:55:55Z",
       "timestamp_basis": "captured_immediately_after_write",
       "workspace_filename": "02-guardrail-specification.md",
-      "workspace_sha256": "a9f8e8c2fea718b6ea4e2a9021c32d1be63fcd9828c4be9066e08a0d1e3ee419",
+      "workspace_sha256": "1f9419e7d9175ff55e4c24853ea98c5c672c73c031f7708c56e100df81a052ef",
       "exported_filename": null,
       "exported_sha256": null,
       "baseline_sha256": null,
       "observed_by": null,
       "observed_at": null,
-      "workspace_masked_sha256": "a9f8e8c2fea718b6ea4e2a9021c32d1be63fcd9828c4be9066e08a0d1e3ee419"
+      "workspace_masked_sha256": "1f9419e7d9175ff55e4c24853ea98c5c672c73c031f7708c56e100df81a052ef"
     },
     {
       "canonical_filename": "03-evidence-requirements.md",
       "creation_method": "created_in_current_run",
-      "created_at": "2026-11-21T11:48:27Z",
+      "created_at": "2026-11-21T11:55:21Z",
       "revised_at": null,
-      "finalized_at": "2026-11-21T11:48:27Z",
+      "finalized_at": "2026-11-21T11:55:55Z",
       "timestamp_basis": "captured_immediately_after_write",
       "workspace_filename": "03-evidence-requirements.md",
-      "workspace_sha256": "30d16692c7d8cf04ce368fde9f3580951c0811d01082410b9ed77966c0d61d69",
+      "workspace_sha256": "e5c403fd91e3975304aacf3696e4a5b50ff9495e86cbc217af2dcdc50c3e46ff",
       "exported_filename": null,
       "exported_sha256": null,
       "baseline_sha256": null,
       "observed_by": null,
       "observed_at": null,
-      "workspace_masked_sha256": "30d16692c7d8cf04ce368fde9f3580951c0811d01082410b9ed77966c0d61d69"
+      "workspace_masked_sha256": "e5c403fd91e3975304aacf3696e4a5b50ff9495e86cbc217af2dcdc50c3e46ff"
     },
     {
       "canonical_filename": "04-commit-boundary-design.md",
       "creation_method": "created_in_current_run",
-      "created_at": "2026-11-21T11:48:27Z",
+      "created_at": "2026-11-21T11:55:21Z",
       "revised_at": null,
-      "finalized_at": "2026-11-21T11:48:27Z",
+      "finalized_at": "2026-11-21T11:55:55Z",
       "timestamp_basis": "captured_immediately_after_write",
       "workspace_filename": "04-commit-boundary-design.md",
-      "workspace_sha256": "979baaf7364b3af6f9e9b8d462af9087bc35efc68a06b335cbe5190add226660",
+      "workspace_sha256": "0ec3e3f9919da83ff2762eeb64beb01a230b8e6a8872ffff1ff982f3f6263a31",
       "exported_filename": null,
       "exported_sha256": null,
       "baseline_sha256": null,
       "observed_by": null,
       "observed_at": null,
-      "workspace_masked_sha256": "979baaf7364b3af6f9e9b8d462af9087bc35efc68a06b335cbe5190add226660"
+      "workspace_masked_sha256": "0ec3e3f9919da83ff2762eeb64beb01a230b8e6a8872ffff1ff982f3f6263a31"
     },
     {
       "canonical_filename": "05-implementation-blueprint.md",
       "creation_method": "created_in_current_run",
-      "created_at": "2026-11-21T11:48:27Z",
+      "created_at": "2026-11-21T11:55:21Z",
       "revised_at": null,
-      "finalized_at": "2026-11-21T11:48:27Z",
+      "finalized_at": "2026-11-21T11:55:55Z",
       "timestamp_basis": "captured_immediately_after_write",
       "workspace_filename": "05-implementation-blueprint.md",
-      "workspace_sha256": "9b98be0aa8977d51feed37b58ddda989f958fe7bdc0e3962a147528d0a1df2f4",
+      "workspace_sha256": "94b965d88c770213115f38e0df5c05afa3e39a75484527b7b1231772475171f8",
       "exported_filename": null,
       "exported_sha256": null,
       "baseline_sha256": null,
       "observed_by": null,
       "observed_at": null,
-      "workspace_masked_sha256": "9b98be0aa8977d51feed37b58ddda989f958fe7bdc0e3962a147528d0a1df2f4"
+      "workspace_masked_sha256": "94b965d88c770213115f38e0df5c05afa3e39a75484527b7b1231772475171f8"
     },
     {
       "canonical_filename": "06-validation-scenarios.md",
       "creation_method": "created_in_current_run",
-      "created_at": "2026-11-21T11:48:27Z",
+      "created_at": "2026-11-21T11:55:21Z",
       "revised_at": null,
-      "finalized_at": "2026-11-21T11:48:27Z",
+      "finalized_at": "2026-11-21T11:55:55Z",
       "timestamp_basis": "captured_immediately_after_write",
       "workspace_filename": "06-validation-scenarios.md",
-      "workspace_sha256": "98325325270b2631cddee08b8a261a4775c1eed149e0b66eddbe2ffd3d2031b2",
+      "workspace_sha256": "47f5a2ee2c51088da265f98051783944a5abeefad07b3596965e7851ff62a862",
       "exported_filename": null,
       "exported_sha256": null,
       "baseline_sha256": null,
       "observed_by": null,
       "observed_at": null,
-      "workspace_masked_sha256": "98325325270b2631cddee08b8a261a4775c1eed149e0b66eddbe2ffd3d2031b2"
+      "workspace_masked_sha256": "47f5a2ee2c51088da265f98051783944a5abeefad07b3596965e7851ff62a862"
     },
     {
       "canonical_filename": "07-assumptions-and-gaps.md",
       "creation_method": "created_in_current_run",
-      "created_at": "2026-11-21T11:48:27Z",
+      "created_at": "2026-11-21T11:55:21Z",
       "revised_at": null,
-      "finalized_at": "2026-11-21T11:48:27Z",
+      "finalized_at": "2026-11-21T11:55:55Z",
       "timestamp_basis": "captured_immediately_after_write",
       "workspace_filename": "07-assumptions-and-gaps.md",
-      "workspace_sha256": "6fa8d5fdffa1a57444024b6b8a5f4152b3b66edeebfa6841079acc5486c449f7",
+      "workspace_sha256": "12cca21502091fd19bc0f55e5f02056d0867364038f903c745a45a228446a1a1",
       "exported_filename": null,
       "exported_sha256": null,
       "baseline_sha256": null,
       "observed_by": null,
       "observed_at": null,
-      "workspace_masked_sha256": "6fa8d5fdffa1a57444024b6b8a5f4152b3b66edeebfa6841079acc5486c449f7"
+      "workspace_masked_sha256": "12cca21502091fd19bc0f55e5f02056d0867364038f903c745a45a228446a1a1"
     },
     {
       "canonical_filename": "guardrail-spec.json",
       "creation_method": "created_in_current_run",
-      "created_at": "2026-11-21T11:48:27Z",
+      "created_at": "2026-11-21T11:55:21Z",
       "revised_at": null,
-      "finalized_at": "2026-11-21T11:48:27Z",
+      "finalized_at": "2026-11-21T11:55:55Z",
       "timestamp_basis": "captured_immediately_after_write",
       "workspace_filename": "guardrail-spec.json",
-      "workspace_sha256": "b49985c5ad8845f62f04f47b3f6d9d50c99d7a8fd07a09abcf77f78c4c4298b1",
+      "workspace_sha256": "a8dc38862671107c7b17ab010da218ae62e513f5577ab2c70995a96a113f69a9",
       "exported_filename": null,
       "exported_sha256": null,
       "baseline_sha256": null,
       "observed_by": null,
       "observed_at": null,
-      "workspace_masked_sha256": "b49985c5ad8845f62f04f47b3f6d9d50c99d7a8fd07a09abcf77f78c4c4298b1"
+      "workspace_masked_sha256": "a8dc38862671107c7b17ab010da218ae62e513f5577ab2c70995a96a113f69a9"
     }
   ],
   "candidate_snapshot": {
     "status": "retained_session_only",
-    "captured_at": "2026-11-21T11:48:27Z",
+    "captured_at": "2026-11-21T11:55:55Z",
     "location_kind": "workspace_dir",
-    "snapshot_ref": "/home/claude/candidate-snapshot",
+    "snapshot_ref": "/home/claude/snapshot-candidate (container workspace directory; not delivered to the user)",
     "delivered_to_user": false,
-    "manifest_sha256": "c6b09f4b506bf7f824c0a4deba918d310a09e22e9e3e2bd0919e122b8f9236c6",
+    "manifest_sha256": "e80462eb0787714d6a46d68b0f3da24f22bff8f51a1711b8b6937abdd2ce8045",
     "manifest": [
       {
         "canonical_filename": "00-README.md",
-        "size_bytes": 17502,
-        "candidate_full_sha256": "f8c7b1dd95d0b9dcfaae9b04fbaef9211ba7da4f0eda470ead5bae01cc6da2e1",
-        "candidate_masked_sha256": "16a88360b73033c72eefadca4fe5466e54c87593a3539cf18362c37a77ceec46"
+        "size_bytes": 14077,
+        "candidate_full_sha256": "1b7a084d48a9fd6a5abd2941f0368da562aebdb76e80af65ed172bf52d673ddd",
+        "candidate_masked_sha256": "459664ff02c3e5926a4200be77abcec374ea1bf1baeb9ff510ffd468e2cf8c96"
       },
       {
         "canonical_filename": "01-mutation-scope.md",
-        "size_bytes": 10254,
-        "candidate_full_sha256": "e1fab97ed55beebcbed14cbe81bf3c9dfc2b682d07dddeb47aff4ea3219d6881",
-        "candidate_masked_sha256": "e1fab97ed55beebcbed14cbe81bf3c9dfc2b682d07dddeb47aff4ea3219d6881"
+        "size_bytes": 9277,
+        "candidate_full_sha256": "097aecaca110b075fdca7e57bbf7b1ece99600bc1fa0c8ede775fae00dcd0d6c",
+        "candidate_masked_sha256": "097aecaca110b075fdca7e57bbf7b1ece99600bc1fa0c8ede775fae00dcd0d6c"
       },
       {
         "canonical_filename": "02-guardrail-specification.md",
-        "size_bytes": 45021,
-        "candidate_full_sha256": "a9f8e8c2fea718b6ea4e2a9021c32d1be63fcd9828c4be9066e08a0d1e3ee419",
-        "candidate_masked_sha256": "a9f8e8c2fea718b6ea4e2a9021c32d1be63fcd9828c4be9066e08a0d1e3ee419"
+        "size_bytes": 38881,
+        "candidate_full_sha256": "1f9419e7d9175ff55e4c24853ea98c5c672c73c031f7708c56e100df81a052ef",
+        "candidate_masked_sha256": "1f9419e7d9175ff55e4c24853ea98c5c672c73c031f7708c56e100df81a052ef"
       },
       {
         "canonical_filename": "03-evidence-requirements.md",
-        "size_bytes": 19065,
-        "candidate_full_sha256": "30d16692c7d8cf04ce368fde9f3580951c0811d01082410b9ed77966c0d61d69",
-        "candidate_masked_sha256": "30d16692c7d8cf04ce368fde9f3580951c0811d01082410b9ed77966c0d61d69"
+        "size_bytes": 19505,
+        "candidate_full_sha256": "e5c403fd91e3975304aacf3696e4a5b50ff9495e86cbc217af2dcdc50c3e46ff",
+        "candidate_masked_sha256": "e5c403fd91e3975304aacf3696e4a5b50ff9495e86cbc217af2dcdc50c3e46ff"
       },
       {
         "canonical_filename": "04-commit-boundary-design.md",
-        "size_bytes": 7145,
-        "candidate_full_sha256": "979baaf7364b3af6f9e9b8d462af9087bc35efc68a06b335cbe5190add226660",
-        "candidate_masked_sha256": "979baaf7364b3af6f9e9b8d462af9087bc35efc68a06b335cbe5190add226660"
+        "size_bytes": 5502,
+        "candidate_full_sha256": "0ec3e3f9919da83ff2762eeb64beb01a230b8e6a8872ffff1ff982f3f6263a31",
+        "candidate_masked_sha256": "0ec3e3f9919da83ff2762eeb64beb01a230b8e6a8872ffff1ff982f3f6263a31"
       },
       {
         "canonical_filename": "05-implementation-blueprint.md",
-        "size_bytes": 8536,
-        "candidate_full_sha256": "9b98be0aa8977d51feed37b58ddda989f958fe7bdc0e3962a147528d0a1df2f4",
-        "candidate_masked_sha256": "9b98be0aa8977d51feed37b58ddda989f958fe7bdc0e3962a147528d0a1df2f4"
+        "size_bytes": 7595,
+        "candidate_full_sha256": "94b965d88c770213115f38e0df5c05afa3e39a75484527b7b1231772475171f8",
+        "candidate_masked_sha256": "94b965d88c770213115f38e0df5c05afa3e39a75484527b7b1231772475171f8"
       },
       {
         "canonical_filename": "06-validation-scenarios.md",
-        "size_bytes": 50041,
-        "candidate_full_sha256": "98325325270b2631cddee08b8a261a4775c1eed149e0b66eddbe2ffd3d2031b2",
-        "candidate_masked_sha256": "98325325270b2631cddee08b8a261a4775c1eed149e0b66eddbe2ffd3d2031b2"
+        "size_bytes": 44117,
+        "candidate_full_sha256": "47f5a2ee2c51088da265f98051783944a5abeefad07b3596965e7851ff62a862",
+        "candidate_masked_sha256": "47f5a2ee2c51088da265f98051783944a5abeefad07b3596965e7851ff62a862"
       },
       {
         "canonical_filename": "07-assumptions-and-gaps.md",
-        "size_bytes": 9747,
-        "candidate_full_sha256": "6fa8d5fdffa1a57444024b6b8a5f4152b3b66edeebfa6841079acc5486c449f7",
-        "candidate_masked_sha256": "6fa8d5fdffa1a57444024b6b8a5f4152b3b66edeebfa6841079acc5486c449f7"
+        "size_bytes": 9697,
+        "candidate_full_sha256": "12cca21502091fd19bc0f55e5f02056d0867364038f903c745a45a228446a1a1",
+        "candidate_masked_sha256": "12cca21502091fd19bc0f55e5f02056d0867364038f903c745a45a228446a1a1"
       },
       {
         "canonical_filename": "guardrail-spec.json",
-        "size_bytes": 99904,
-        "candidate_full_sha256": "b49985c5ad8845f62f04f47b3f6d9d50c99d7a8fd07a09abcf77f78c4c4298b1",
-        "candidate_masked_sha256": "b49985c5ad8845f62f04f47b3f6d9d50c99d7a8fd07a09abcf77f78c4c4298b1"
+        "size_bytes": 103728,
+        "candidate_full_sha256": "a8dc38862671107c7b17ab010da218ae62e513f5577ab2c70995a96a113f69a9",
+        "candidate_masked_sha256": "a8dc38862671107c7b17ab010da218ae62e513f5577ab2c70995a96a113f69a9"
       }
     ],
     "mask_spec_id": "mask-spec-1",
-    "rehash_after_freeze_at": "2026-11-21T11:48:27Z",
+    "rehash_after_freeze_at": "2026-11-21T11:55:55Z",
     "rehash_after_freeze_result": "all_match",
-    "rehash_before_sidecar_at": "2026-11-21T11:48:27Z",
+    "rehash_before_sidecar_at": "2026-11-21T11:55:55Z",
     "rehash_before_sidecar_result": "all_match",
-    "platform_limitation": "The snapshot directory exists only in the agent's session workspace and is not delivered to the recipient; equivalence is agent-computed only.",
+    "platform_limitation": null,
     "delivered_snapshot_filename": null,
-    "mask_implementation": "build/finalize.py mask() (single README Freeze status line value replaced by __H10_FREEZE_STATUS__)",
-    "mask_implementation_version": "mask-spec-1 (ad hoc, unversioned)"
+    "mask_implementation": "freeze.py regex substitution of the single Freeze status value in 00-README.md",
+    "mask_implementation_version": "1"
   },
   "freeze_integrity": {
     "status": "passed",
     "equivalence_basis": "snapshot_rehash_comparison",
     "candidate_equivalence": "established",
-    "frozen_sha256_manifest_sha256": "9d2819d13e63d5547225fc50507ae897f9a96e146e47c54c5e419e1879f73816",
-    "checked_at": "2026-11-21T11:48:27Z",
+    "frozen_sha256_manifest_sha256": "28a90aac50fca82e03ca2a8e74fbafbca01b487d63f098e52a513a32f33a874e",
+    "checked_at": "2026-11-21T11:55:55Z",
     "notes": [
-      "Only the README Freeze status value changed between candidate and frozen bytes; agent-computed comparison."
+      "Manifest hash is the SHA-256 of tab-separated lines (filename, size, full SHA-256, masked SHA-256) in canonical order; the frozen manifest hash uses (filename, frozen SHA-256) lines.",
+      "Only the Freeze status value in 00-README.md differs between candidate and frozen bytes; the other eight files are byte-identical."
     ]
   },
   "frozen_checks": {
@@ -253,7 +254,7 @@
     "authorization_path_coverage_validation": "manual_pass",
     "operation_effect_boundary_validation": "manual_pass",
     "mcp_provenance_validation": "manual_pass",
-    "planner_checks_validation": "manual_pass"
+    "planner_checks_validation": "executed_pass"
   },
   "engine_checks": {
     "E1": "not_run"
@@ -274,29 +275,35 @@
   "attestation_summary": "NOT_ATTESTED",
   "blockers": [
     {
-      "item": "F1 plan schema validation (Draft 2020-12)",
+      "item": "F1",
       "status": "not_run",
-      "dependency": "No Draft 2020-12 JSON Schema engine installed (jsonschema absent; Ajv 6.15.0 is draft-07 only); network disabled"
+      "dependency": "No JSON Schema Draft 2020-12 engine available (Python jsonschema absent; Node Ajv 6.15.0 is Draft-07 only, ajv/dist/2020 absent); nothing was installed"
     },
     {
-      "item": "F2 format assertions and E1 negative controls",
+      "item": "F2",
       "status": "not_run",
-      "dependency": "Same missing Draft 2020-12 engine with format support"
+      "dependency": "No JSON Schema Draft 2020-12 engine available (Python jsonschema absent; Node Ajv 6.15.0 is Draft-07 only, ajv/dist/2020 absent); nothing was installed (format support also absent)"
     },
     {
-      "item": "S1 carried-check comparison with RFC 8785 JCS hashes",
+      "item": "E1",
       "status": "not_run",
-      "dependency": "No RFC 8785 JCS implementation available; ad hoc serializer not substituted"
+      "dependency": "No JSON Schema Draft 2020-12 engine available (Python jsonschema absent; Node Ajv 6.15.0 is Draft-07 only, ajv/dist/2020 absent); nothing was installed (format negative controls need a configured format checker)"
     },
     {
-      "item": "Export verification",
+      "item": "S1",
       "status": "not_run",
-      "dependency": "No actual exported object was inspected independently of the workspace files"
+      "dependency": "No RFC 8785 JCS implementation available; no ad hoc serializer substituted"
+    },
+    {
+      "item": "export verification",
+      "status": "not_run",
+      "dependency": "No exported object was independently inspected; hashes are of workspace files"
     }
   ],
   "notes": [
-    "Exports not inspected; export_status workspace_only. Package coherence is not attested.",
-    "Sidecar schema validation not run (no Draft 2020-12 engine); a custom structural probe result is reported in the handoff only."
-  ],
-  "baseline_snapshot_ref": null
+    "F3, F4, F5a and F6 were executed together by the helper script check.py on the frozen bytes (reference integrity, run-ID identity across eight Markdown files, JSON and pointer, README validation table equals JSON validation_record, chronology); F7 was a directory listing. check.py is not a JSON Schema validator.",
+    "Creation times are agent-recorded at command granularity; the candidate files were written in one build step.",
+    "carried_checks were copied programmatically from the frozen guardrail-spec.json validation_record (nine allowlisted keys).",
+    "export_status is workspace_only: no delivered export was inspected. Final D2-byte evidence is reported in the handoff message, not in this file."
+  ]
 }

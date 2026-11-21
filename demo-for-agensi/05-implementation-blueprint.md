@@ -1,69 +1,68 @@
 # Implementation Blueprint
 
-**Package run ID:** 2026-11-21T01:15:46Z
+**Package run ID:** 2026-11-21T01:44:38Z
 
 ## Architecture context
 
-Established from customer context only: a CRM on PostgreSQL 16.5 with MergeCoordinator 2.8.0, identity schema CRM-IDENTITY-5 and pre-commit validator 1.6; seven declared write-set tables including an append-only account_merge_history and a transactional_outbox; asynchronous outbox consumers for the CRM search index, the Billing customer read model and the ERP customer crosswalk. No other component is assumed to exist.
+Established from customer context only: MergeCoordinator 2.8.0, PostgreSQL 16.5, identity schema CRM-IDENTITY-5, pre-commit validator 1.6, an evidence gateway, a transactional outbox with three asynchronous consumers, and the seven declared tables. Everything else is proposed or customer-owned.
 
 ## Proposed components and responsibilities
 
 | Point ID | Component | Responsibility | Inputs | Outputs | Owner | Status |
 |---|---|---|---|---|---|---|
-| IMPL-01 | MergeCoordinator 2.8.0 (candidate preparation and transaction owner) | Assemble the candidate operation, bind it to operation ID, idempotency key and versions, run the pre-write revalidation and execute the single SERIALIZABLE transaction. | Candidate records; Operation ID and idempotency key; Authorization record | Candidate operation; Transaction outcome | CRM Platform Owner (customer-stated role) | existing |
-| IMPL-02 | Evidence admission and promotion service | Quarantine evidence, check conflicts, promote evidence for specific propositions and roles with recorded provenance and validator/policy version. | Registry extract; Verification record; Agreement, migration and crosswalk records | Promotion and validation record IDs per proposition | unassigned | unknown |
-| IMPL-03 | Evidence-control record and verification of the registry extract | Verify signature and issuer certificate of the extract and tie the result to the exact extract. | Registry extract; Issuer certificate chain | Verification record with validator identity and version | Customer evidence-control function (name not supplied) | existing |
-| IMPL-04 | Policy evaluator for POL-MDM-07 v3.2 | Evaluate exact registry ID, continuity, canonical-record and name-adoption requirements and the distinct-registry-ID prohibition. | Promoted evidence; Record attributes; Policy version | Policy evaluation result | unassigned | unknown |
-| IMPL-05 | Approval service for Data Steward and CRM Platform Owner approvals | Create approval requests, capture two separate approvals bound to operation and state, and invalidate them on change. | Operation ID; Idempotency key; Versions; Evidence set; Write set | Bound approval records | Data Steward and CRM Platform Owner (customer-stated roles) | customer_action_required |
-| IMPL-06 | Authorization-path service (Path A / Path B) | Record A1/A2/A3 or the Path B policy, approval and separation-of-duties basis and expire them on version drift. | A1/A2/A3 records; Path B policy and approval | Authorization-path decision | unassigned | customer_action_required |
-| IMPL-07 | Pre-commit validator 1.6 | Validate the resulting state and evidence-to-claim support inside the transaction before COMMIT. | Candidate state inside the transaction; Authorization record | PASS or failure result | CRM Platform Owner (customer-stated role) | existing |
-| IMPL-08 | Idempotency and ambiguous-commit reconciliation component | Persist the idempotency key inside the transaction and reconcile unknown outcomes by authoritative read before any retry. | Idempotency key; Merge-history, audit and outbox rows | Reconciliation record | unassigned | customer_action_required |
-| IMPL-09 | Asynchronous outbox consumers (CRM search index, Billing customer read model, ERP customer crosswalk) | Apply committed outbox events idempotently after commit. | Outbox events | Updated projections; Delivery records | Consumer owners (not supplied) | existing |
-| IMPL-10 | Post-commit validation and reconciliation job | Compare committed CRM state with the authorized operation and each consumer and report divergence. | Committed state; Consumer state | Reconciliation result | unassigned | customer_action_required |
-| IMPL-11 | Quarantine and escalation procedure | Stop dependent mutations, quarantine affected accounts and projections and escalate to a named owner. | Failure signal; Affected IDs | Quarantine record; Escalation | unassigned | customer_action_required |
-| IMPL-12 | Audit recording (audit_events) | Record operation, evidence, approvals, versions, decisions and outcomes. | Decision events | Audit records | CRM Platform Owner (customer-stated role) | existing |
+| IMPL-01 | MergeCoordinator 2.8.0 | Customer-declared coordinator of the merge: receive the request, bind operation and scope, sequence the controls and the single transaction. | Candidate operation; Authorization record | Operation record; Commit or abort outcome | unassigned | existing |
+| IMPL-02 | Customer evidence gateway | Customer-declared service that reported signature and issuer-certificate verification of the registry extract; supply validator identity and version to the promotion record. | Registry extract | Verification result with validator identity and version | unassigned | existing |
+| IMPL-03 | Evidence admission and promotion service | Quarantine admission, conflict check and claim-specific promotion with recorded provenance, role, temporal applicability and validator version. | Evidence items; Policy version | Eligible-evidence record IDs; Conflict status | unassigned | customer_action_required |
+| IMPL-04 | POL-MDM-07 policy evaluator | Evaluate the registry-ID and continuity rules, retain-canonical rule and name-adoption rule against eligible evidence. | Eligible evidence; Operation record | Policy decision with policy version | unassigned (MDM policy owner) | customer_action_required |
+| IMPL-05 | Approval service | Collect and validate separate Data Steward and CRM Platform Owner approvals bound to the exact operation and state. | Operation record; Binding fields | Bound approval records | Data Steward and CRM Platform Owner (approvers) | customer_action_required |
+| IMPL-06 | Pre-commit validator 1.6 | Customer-declared validator; confirm that it can evaluate the listed invariants inside the same transaction and snapshot before COMMIT. | Uncommitted transaction state; Invariant list | Invariant results | unassigned | existing |
+| IMPL-07 | Commit-boundary guard | Verify operation, scope, evidence, conflicts, approvals, versions, write-set and atomicity proof and authorization path before the first write and at the commit boundary; fail closed. | Operation record; Evidence record IDs; Approvals; Version snapshots; Path A or Path B record | Allow or HOLD decision with reasons | unassigned | customer_action_required |
+| IMPL-08 | PostgreSQL 16.5 persistence adapter and transaction | Customer-declared single SERIALIZABLE transaction over the declared tables and outbox insertion; identify the exact commit point; compare-and-set on row versions. | Approved operation | Committed or aborted state | unassigned | existing |
+| IMPL-09 | Transactional outbox and consumers (search index, Billing read model, ERP crosswalk) | Customer-declared asynchronous consumers after commit; require idempotent, replay-safe processing and reconciliation. | Outbox events | Consumer updates; Delivery status | unassigned | existing |
+| IMPL-10 | Reconciliation and recovery service | Post-commit validation, ambiguous-commit reconciliation by idempotency key, downstream reconciliation, quarantine and escalation. | Idempotency key; Authoritative state; Consumer status | Reconciliation record; Quarantine or closure | unassigned | customer_action_required |
+| IMPL-11 | Audit trail (audit_events and retention) | Record every gate decision, rejection and outcome, including rejections recorded outside an aborted transaction. | Gate decisions; Outcomes | Audit records | unassigned | existing |
+| IMPL-12 | Authorization-path registry | Hold A1, A2 and A3 evidence and the Path B policy, approval and separation-of-duties records, with version-drift expiry. | Recovery mechanism, test and attestation records; Path B policy and approval | Path A or Path B eligibility with expiry | unassigned (customer to designate) | customer_action_required |
 
-Statuses use the Schema 5.0.0 values. 'existing' reflects only what the customer stated; it does not mean the component already implements these controls.
+Status `existing` means customer-declared; behaviour is not verified. Do not imply these components already enforce the controls.
 
 ## Logical interface contract
 
 ### Request
 
-The merge request supplies: operation ID OP-DEMO-2026-001; idempotency key demo-merge-1042-2097-v1; source and target account IDs; the identity proposition; promoted-evidence record IDs per proposition; approval record IDs for the Data Steward and CRM Platform Owner; authorization-path record (Path A or Path B); versions (row versions 18 and 23, CRM-IDENTITY-5, MergeCoordinator 2.8.0, validator 1.6, POL-MDM-07 v3.2); the declared write set.
+Operation ID OP-DEMO-2026-001, idempotency key demo-merge-1042-2097-v1, mutation MERGE, source CRM-ACCT-2097, canonical CRM-ACCT-1042, source and canonical row versions, policy and validator versions, eligible-evidence record IDs, both approval records, and the Path A or Path B record.
 
 ### Response
 
-A control result of ALLOW AS DESIGNED, HOLD, DEFER, REQUIRE REVIEW or BLOCK for each stage, with the failed control IDs, reasons and record IDs. ALLOW AS DESIGNED at one stage is never a commit authorization; only the complete sequence authorizes persistence in the customer's runtime.
+A design-level decision: ALLOW AS DESIGNED only when every control is satisfied, otherwise HOLD, DEFER or REQUIRE REVIEW, with the failing control IDs and reasons. This is a customer-implementation output, not a runtime verdict from this plan.
 
 ### Error behaviour
 
-Missing evidence, unreadable versions, unavailable policy or validator, timeouts and malformed input fail closed (HOLD or abort). A timeout or connection loss at or after COMMIT is an ambiguous outcome: reconcile by idempotency key before any retry. A stale authorization is rejected and re-evaluated with a new authorization record. Retries share one customer-defined budget.
+Timeout, missing evidence, unavailable policy or validator, stale version and malformed input all fail closed. A serialization failure is a definite abort and leads to re-evaluation within the common retry budget. A lost connection around COMMIT is an ambiguous outcome and must be reconciled by idempotency key before any retry.
 
 ## Implementation sequence
 
-1. Prove the write set and atomic boundary and decide where historical names are stored (CTRL-08).
-2. Decide the authorization path and its roles (CTRL-07).
-3. Implement evidence admission and promotion and record the verification result tied to the exact extract (CTRL-01 to CTRL-04).
-4. Implement bound approvals and revalidation (CTRL-06, CTRL-09).
-5. Implement the in-transaction validator call, idempotency key persistence and commit-or-abort (CTRL-10).
-6. Implement reconciliation, idempotent consumers, quarantine and recovery (CTRL-11 to CTRL-13).
-7. Execute the proposed tests in a non-production environment with the same schema and record real evidence.
+1. Verify the write set and the transaction boundary (GAP-03, GAP-04).
+2. Define evidence eligibility, validator and approvers (GAP-01, GAP-02).
+3. Decide Path A or Path B (GAP-05).
+4. Build the commit-boundary guard, version binding and approval binding (GAP-06).
+5. Build reconciliation, idempotency and consumer idempotency (GAP-07, GAP-08).
+6. Execute the proposed tests and review before any production use.
 
 ## Stack-specific notes
 
-Grounded only in the stated PostgreSQL 16.5 stack and conceptual, not tested: a SERIALIZABLE transaction can fail with a serialization error, which aborts the transaction; this is an abort, not an ambiguous outcome. A connection loss around COMMIT is ambiguous and needs the idempotency reconciliation. Unique constraints on the idempotency key and on external identifiers are customer schema decisions that must be checked against account_external_ids and account_merge_history. Triggers and extensions with effects outside the transaction must be inventoried. No executable sample code or policy is provided because the application semantics are not supplied.
+Conceptual, grounded only in the declared PostgreSQL 16.5: a SERIALIZABLE transaction can fail with a serialization failure, in which case the whole transaction must be retried from a fresh snapshot; a connection loss during COMMIT leaves the outcome unknown. These are generic database behaviours, not claims about this application. Adequacy of SERIALIZABLE for the link-set anomalies needs database-specific design review.
 
 ## Operational concerns
 
-- Authentication / service identity: customer-defined; unknown.
-- Authorization: two separate human approvals plus an authorization path; the Planner issues none.
-- Idempotency: key demo-merge-1042-2097-v1 persisted inside the transaction (recommendation); a new authorization record needs a new key version.
-- Concurrency control (database-specific; distinguish isolation from atomicity): SERIALIZABLE is the customer's stated choice; atomicity must be proven separately.
-- Atomic write set and transaction boundary (list all persistent and external effects): see 04-commit-boundary-design.md; unverified.
-- Commit point and pre-commit invariant checks: COMMIT after validator PASS; commit point unverified.
-- Ambiguous commit reconciliation and idempotency: CTRL-11.
-- Logging and audit: audit_events inside the transaction; promotion, approval and reconciliation records.
-- Monitoring: alert on outbox lag, consumer divergence and quarantined accounts (recommendation).
-- Rollback / compensation (distinguish transaction abort from post-commit compensation; require operation-specific evidence and tests): abort before commit only; no post-commit compensation is established.
-- Data retention: customer-defined; account_merge_history is append-only.
-- Failure mode (pre-write HOLD / in-transaction abort / post-commit quarantine or proven compensation): all three are specified in CTRL-08, CTRL-10 and CTRL-13.
+- Authentication / service identity: unassigned; approvers must be authenticated human principals.
+- Authorization: two separate role-bound approvals plus the authorization-path record.
+- Idempotency: persist and enforce demo-merge-1042-2097-v1; same key with different content is rejected.
+- Concurrency control (database-specific; distinguish isolation from atomicity): compare-and-set on both account rows and the link sets; SERIALIZABLE is a customer requirement.
+- Atomic write set and transaction boundary: seven declared tables plus outbox insertion; unverified; external consumers outside.
+- Commit point and pre-commit invariant checks: the COMMIT of one transaction after validator 1.6 passes in the same snapshot.
+- Ambiguous commit reconciliation and idempotency: read-after-failure by key before any retry.
+- Logging and audit: log every gate decision and rejection, including rejections outside an aborted transaction.
+- Monitoring: alert on outbox lag, consumer failure and reconciliation divergence.
+- Rollback / compensation: transaction abort before commit is not post-commit compensation; post-commit recovery requires a documented, tested, operation-specific procedure, otherwise quarantine and escalate.
+- Data retention: unassigned (GAP-10).
+- Failure mode: pre-write HOLD, in-transaction abort, post-commit quarantine or proven compensation.

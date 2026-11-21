@@ -3,618 +3,615 @@
   "product": {
     "name": "Agentic Entity Resolution Guardrail Planner",
     "role": "planning_and_specification",
-    "generated_at": "2026-11-21T01:15:46Z",
+    "generated_at": "2026-11-21T01:44:38Z",
     "design_time_only": true,
     "skill_version": "0.4.2",
-    "artifact_revision": "fresh complete Skill run (Skill 0.4.2, plan schema 5.0.0); no prior baseline; no revision",
+    "artifact_revision": "Fresh complete Skill run (original generation; no manual revision; synthetic CRM MERGE demo)",
     "revised_at": null
   },
   "application_context": {
-    "application": "CRM (PostgreSQL 16.5; MergeCoordinator 2.8.0; identity schema CRM-IDENTITY-5)",
-    "workflow": "Agent-proposed MERGE of CRM-ACCT-2097 into canonical CRM-ACCT-1042 after a legal name change",
-    "environment": "Synthetic design-time demonstration; no production access",
+    "application": "Synthetic CRM account master (MergeCoordinator 2.8.0, identity schema CRM-IDENTITY-5)",
+    "workflow": "Agentic MERGE of duplicate customer account CRM-ACCT-2097 into canonical CRM-ACCT-1042 (planning exercise; no production access)",
+    "environment": "PostgreSQL 16.5; MergeCoordinator 2.8.0; pre-commit validator 1.6; identity schema CRM-IDENTITY-5 (all customer-declared; not independently verified)",
     "entity_classes": [
-      "customer account",
-      "legal entity (registered company)"
+      "customer account (legal entity)"
     ],
-    "summary": "An agent proposes merging a CRM account created by migration under a company's current legal name into the established master account held under its legacy legal name, relying on a shared official registry ID and a registry-documented name change. The plan assesses the supplied evidence, the approval and authorization conditions and the commit boundary for one protected MERGE.",
+    "summary": "Synthetic CRM MERGE of CRM-ACCT-2097 into canonical CRM-ACCT-1042 (planning exercise only). Three separate determinations: (1) Identity continuity - the supplied descriptions SUPPORT the proposition that both records denote one continuing legal person (registry ID FIC-REG-004821; legal-name change effective 2024-04-01), conditional on authenticity and customer-policy eligibility; the evidence is not verified by the Planner and is not yet authorization-eligible. (2) Human review - the proposition, evidence analysis and operation scope are specific enough for Data Steward and CRM Platform Owner review; review is not approval. (3) Commit authorization - NOT authorized: no approval artifacts exist, write-set completeness and atomicity are unverified, and the authorization path (Path A or Path B) is unresolved; the design-time decision is HOLD.",
     "domain_policy_owner": null,
     "policy_version": "POL-MDM-07 v3.2",
-    "temporal_scope": "Current account identity as of authorization and commit; legal-name change effective 2024-04-01; registry extract dated 2026-10-15",
-    "persistence_mechanism": "PostgreSQL 16.5; customer-required single SERIALIZABLE transaction via MergeCoordinator 2.8.0 with pre-commit validator 1.6; asynchronous outbox consumers after commit"
+    "temporal_scope": "Legal-name change effective 2024-04-01; registry extract dated 2026-10-15; continuity must hold from creation of CRM-ACCT-1042 (2019-06-12) through the commit time; evidence currency window not defined by policy",
+    "persistence_mechanism": "Customer requirement: one PostgreSQL 16.5 SERIALIZABLE transaction covering all database writes and the outbox insertion, with asynchronous outbox consumers after commit (declared; not verified)"
   },
   "reference_mode": "reference_backed",
   "source_provenance": [
     {
-      "source_id": "SRC-REQUEST",
-      "source": "Customer task request, sections 1, 4 and 5: proposed operation, application stack, commit boundary, write set, operation ID and idempotency key",
-      "version": null,
-      "version_basis": "not_applicable",
-      "version_source_id": null,
-      "retrieved_at": null,
-      "time_basis": "not_applicable",
-      "status": "customer_supplied",
-      "used_for": [
-        "Operation scope, record attributes, application and commit-boundary facts, declared write set, downstream consumers, operation ID and idempotency key."
-      ],
-      "url": null,
-      "retrieval_note": "Customer-supplied synthetic input in the task request; not retrieved from any system and not independently verified by the Planner."
-    },
-    {
-      "source_id": "SRC-POLICY",
-      "source": "Customer policy POL-MDM-07 v3.2 as summarised in the task request, section 3 (policy text itself not supplied)",
-      "version": null,
-      "version_basis": "not_applicable",
-      "version_source_id": null,
-      "retrieved_at": null,
-      "time_basis": "not_applicable",
-      "status": "customer_supplied",
-      "used_for": [
-        "Identity-merge criteria, canonical-record rule, name adoption, approval separation, write-set/atomicity proof, post-commit reconciliation and ambiguous-commit rules."
-      ],
-      "url": null,
-      "retrieval_note": "Customer-supplied synthetic input in the task request; not retrieved from any system and not independently verified by the Planner."
-    },
-    {
-      "source_id": "SRC-REG-001",
-      "source": "Registry extract FCR-EXTRACT-004821-2026-10-15 (as described in the task request; extract content not supplied)",
-      "version": null,
-      "version_basis": "not_applicable",
-      "version_source_id": null,
-      "retrieved_at": null,
-      "time_basis": "not_applicable",
-      "status": "customer_supplied",
-      "used_for": [
-        "Legal-name change on 2024-04-01 with unchanged registration number and legal-person continuity; no dissolution, successor or new incorporation recorded."
-      ],
-      "url": null,
-      "retrieval_note": "Customer-supplied synthetic input in the task request; not retrieved from any system and not independently verified by the Planner."
-    },
-    {
-      "source_id": "SRC-REG-VERIFY-005",
-      "source": "Customer evidence-control record: reported successful verification of the extract digital signature and issuer certificate (supplied result; not performed by the Planner)",
-      "version": null,
-      "version_basis": "not_applicable",
-      "version_source_id": null,
-      "retrieved_at": null,
-      "time_basis": "not_applicable",
-      "status": "customer_supplied",
-      "used_for": [
-        "Authenticity/integrity claim for SRC-REG-001 as reported by the customer's evidence-control process."
-      ],
-      "url": null,
-      "retrieval_note": "Customer-supplied synthetic input in the task request; not retrieved from any system and not independently verified by the Planner."
-    },
-    {
-      "source_id": "SRC-LEGAL-002",
-      "source": "Executed agreement MSA-NSI-2025-02 dated 2025-02-14 (as described in the task request; document not supplied)",
-      "version": null,
-      "version_basis": "not_applicable",
-      "version_source_id": null,
-      "retrieved_at": null,
-      "time_basis": "not_applicable",
-      "status": "customer_supplied",
-      "used_for": [
-        "Post-rename contracting-party name and same registry ID as of 2025-02-14."
-      ],
-      "url": null,
-      "retrieval_note": "Customer-supplied synthetic input in the task request; not retrieved from any system and not independently verified by the Planner."
-    },
-    {
-      "source_id": "SRC-MIGRATION-003",
-      "source": "Migration report MIG-REPORT-2024-05-15 (as described in the task request; report not supplied)",
-      "version": null,
-      "version_basis": "not_applicable",
-      "version_source_id": null,
-      "retrieved_at": null,
-      "time_basis": "not_applicable",
-      "status": "customer_supplied",
-      "used_for": [
-        "Both CRM records were imported and mapped to entity EC-004821; origin of the second CRM record."
-      ],
-      "url": null,
-      "retrieval_note": "Customer-supplied synthetic input in the task request; not retrieved from any system and not independently verified by the Planner."
-    },
-    {
-      "source_id": "SRC-CROSSWALK-004",
-      "source": "Account-to-entity crosswalk (as described in the task request; crosswalk content not supplied)",
-      "version": null,
-      "version_basis": "not_applicable",
-      "version_source_id": null,
-      "retrieved_at": null,
-      "time_basis": "not_applicable",
-      "status": "customer_supplied",
-      "used_for": [
-        "Both CRM account IDs map to entity EC-004821."
-      ],
-      "url": null,
-      "retrieval_note": "Customer-supplied synthetic input in the task request; not retrieved from any system and not independently verified by the Planner."
-    },
-    {
       "source_id": "SRC-MCP-STATUS",
-      "source": "get_reference_status (no arguments)",
-      "version": "Reference Model 0.9.0; Reference Vocabulary 0.2.2; Agentic ER mapping 0.3.1; Semantic Change Feed live 0.1.4",
+      "source": "DIO-ODI Reference MCP - get_reference_status (no arguments)",
+      "version": "Reference Model 0.9.0 (archived); Reference Vocabulary 0.2.2; agentic ER mapping 0.3.1 (derived, non-normative); semantic change feed live 0.1.4; service checkedAt 2026-11-12",
       "version_basis": "direct",
       "version_source_id": null,
-      "retrieved_at": "2026-11-21T01:15:46Z",
+      "retrieved_at": "2026-11-21T01:44:38Z",
       "time_basis": "run_timestamp",
       "status": "canonical_reference",
       "used_for": [
-        "Reference-set and service version metadata only; checkedAt 2026-11-12 returned by the service."
+        "Reference-set and service version identification for this run"
       ],
       "url": "https://mcp.danielberanek.cz/mcp",
-      "retrieval_note": "Retrieved in this run with no arguments. retrieved_at is the shared run timestamp, not a per-call time. Metadata only; it does not support operation-specific constraints."
+      "retrieval_note": "Metadata only. Supports no operation-specific constraint and no application-mapping content. Retrieval time is the shared run timestamp, not a per-call time."
     },
     {
       "source_id": "SRC-MCP-PROFILE",
-      "source": "get_mutation_guardrail_profile (actionClass=IRREVERSIBLE_WRITE, mutationType=MERGE, entityClass='customer account', observationDomain='CRM account resolution', temporalScope='current status', include=[evidence_requirements, commit_checks])",
+      "source": "DIO-ODI Reference MCP - get_mutation_guardrail_profile (actionClass=IRREVERSIBLE_WRITE; mutationType=MERGE; entityClass='customer account'; observationDomain='CRM account resolution'; temporalScope='validity interval required'; include=[evidence_requirements, commit_checks]; domainPolicyVersion not supplied)",
       "version": "0.1.0",
       "version_basis": "direct",
       "version_source_id": null,
-      "retrieved_at": "2026-11-21T01:15:46Z",
+      "retrieved_at": "2026-11-21T01:44:38Z",
       "time_basis": "run_timestamp",
       "status": "illustrative",
       "used_for": [
-        "IRREVERSIBLE_WRITE / MERGE profile only: protected-write contract summary and illustrative diagnostic-to-constraint examples (similarity is not identity; rename/continuity must apply to the referent and interval; incompatible identity claims retained as conflict; preserve relation type for the observation purpose)."
+        "IRREVERSIBLE_WRITE / MERGE profile: protected identity-changing write requiring pre-execution authorization and post-execution validation",
+        "Illustrative constraint examples: similarity does not establish identity; a continuity claim must apply to the relevant referent and validity interval; defer if temporal applicability or legal continuity is unresolved; unresolved identity-affecting conflicts are retained until reconciled",
+        "Required domain inputs (versioned policy, admission and claim-specific promotion process with recorded provenance and validator version)"
       ],
       "url": "https://mcp.danielberanek.cz/mcp",
-      "retrieval_note": "Retrieved in this run; profileVersion returned directly. Constraint examples are illustrative per the service. Arguments were abstract labels only. retrieved_at is the shared run timestamp."
+      "retrieval_note": "Profile version returned directly. Canonical definitions inside the response are canonical-reference; the constraint examples used here are illustrative. Retrieval time is the shared run timestamp. Not a verdict, policy decision or authorization."
     },
     {
       "source_id": "SRC-MCP-EVID",
-      "source": "get_evidence_promotion_contract (no arguments)",
-      "version": "DIO/ODI Reference Model 0.9.0 (archive DOI 10.5281/zenodo.24085589); Reference Vocabulary 0.2.2; Agentic ER mapping 0.3.1 (derived, non-normative); version inherited from SRC-MCP-STATUS",
+      "source": "DIO-ODI Reference MCP - get_evidence_promotion_contract (no arguments)",
+      "version": "0.9.0 (reference-set version inherited; no contract-specific version returned)",
       "version_basis": "inherited_reference_set",
       "version_source_id": "SRC-MCP-STATUS",
-      "retrieved_at": "2026-11-21T01:15:46Z",
+      "retrieved_at": "2026-11-21T01:44:38Z",
       "time_basis": "run_timestamp",
       "status": "derived_non_normative",
       "used_for": [
-        "Quarantine admission, planner-visible UNVERIFIED evidence, claim-specific P_auth eligibility, evidentiary roles, conflict outcomes and promotion requirements (no inference of support from absent conflict; no counting of shared upstream origins as independent corroboration)."
+        "Evidence admission to quarantine, planner-visible unverified evidence versus claim-specific authorization-eligible evidence, evidentiary roles and conflict outcomes",
+        "Promotion requirements: proposition-specific assessment, recorded provenance/validator/policy version, no promotion on planner confidence or repetition, shared upstream origins not counted as independent, no positive support inferred from absence of conflict"
       ],
       "url": "https://mcp.danielberanek.cz/mcp",
-      "retrieval_note": "No contract-specific version returned. Inherited from SRC-MCP-STATUS: same endpoint, same uninterrupted invocation, status call first, no reconnect between calls. retrieved_at is the shared run timestamp."
+      "retrieval_note": "No contract-specific version was returned; the reference-set version is inherited from SRC-MCP-STATUS (same endpoint, same uninterrupted run, no reconfiguration, call made after the successful status call). Retrieval time is the shared run timestamp, not a per-call time. The response carries no explicit canonical-reference label and is treated conservatively as non-normative."
     },
     {
-      "source_id": "SRC-MCP-P1",
-      "source": "get_commit_boundary_contract (phase=PHASE_1, actionClass=IRREVERSIBLE_WRITE)",
-      "version": "DIO/ODI Reference Model 0.9.0 (archive DOI 10.5281/zenodo.24085589); Reference Vocabulary 0.2.2; Agentic ER mapping 0.3.1 (derived, non-normative); version inherited from SRC-MCP-STATUS",
+      "source_id": "SRC-MCP-PH1",
+      "source": "DIO-ODI Reference MCP - get_commit_boundary_contract (phase=PHASE_1; actionClass=IRREVERSIBLE_WRITE)",
+      "version": "0.9.0 (reference-set version inherited; no contract-specific version returned)",
       "version_basis": "inherited_reference_set",
       "version_source_id": "SRC-MCP-STATUS",
-      "retrieved_at": "2026-11-21T01:15:46Z",
+      "retrieved_at": "2026-11-21T01:44:38Z",
       "time_basis": "run_timestamp",
       "status": "derived_non_normative",
       "used_for": [
-        "PHASE_1 / IRREVERSIBLE_WRITE only: action-class meanings, pre-execution authorization obligations, status precedence, commit invariant, version-binding list and retry statement."
+        "Phase 1 pre-execution authorization obligations for a protected write: verify action class, target and effect scope; derive required propositions that the planner cannot weaken; claim-specific evidence and conflict checks; authorization bound to operation/effect scope, versions and evidence record IDs",
+        "Retry rule: one common retry budget; a stale candidate is not replayed"
       ],
       "url": "https://mcp.danielberanek.cz/mcp",
-      "retrieval_note": "No contract-specific version returned; inherited as for SRC-MCP-EVID. Conceptual interface specification, not an implemented supervisor. Does not support STAGE_LOCAL or REVERSIBLE_WRITE classification."
+      "retrieval_note": "No contract-specific version was returned; the reference-set version is inherited from SRC-MCP-STATUS (same endpoint, same uninterrupted run, no reconfiguration, call made after the successful status call). Retrieval time is the shared run timestamp, not a per-call time. The response carries no explicit canonical-reference label and is treated conservatively as non-normative."
     },
     {
-      "source_id": "SRC-MCP-P2",
-      "source": "get_commit_boundary_contract (phase=PHASE_2, actionClass=IRREVERSIBLE_WRITE)",
-      "version": "DIO/ODI Reference Model 0.9.0 (archive DOI 10.5281/zenodo.24085589); Reference Vocabulary 0.2.2; Agentic ER mapping 0.3.1 (derived, non-normative); version inherited from SRC-MCP-STATUS",
+      "source_id": "SRC-MCP-PH2",
+      "source": "DIO-ODI Reference MCP - get_commit_boundary_contract (phase=PHASE_2; actionClass=IRREVERSIBLE_WRITE)",
+      "version": "0.9.0 (reference-set version inherited; no contract-specific version returned)",
       "version_basis": "inherited_reference_set",
       "version_source_id": "SRC-MCP-STATUS",
-      "retrieved_at": "2026-11-21T01:15:46Z",
+      "retrieved_at": "2026-11-21T01:44:38Z",
       "time_basis": "run_timestamp",
       "status": "derived_non_normative",
       "used_for": [
-        "PHASE_2 / IRREVERSIBLE_WRITE only: realized-operation scope match, consistent snapshot, stale-authorization rejection, isolated candidate write and validation, commit only on PASS with valid scope and versions."
+        "Phase 2 post-execution validation obligations before commit: realized operation equals authorized scope; one consistent snapshot; stale authorization rejected; constraints and evidence-to-claim support evaluated; commit only on pass with valid scope and versions",
+        "Version bindings (graph/data, evidence, policy) and outcome precedence"
       ],
       "url": "https://mcp.danielberanek.cz/mcp",
-      "retrieval_note": "No contract-specific version returned; inherited as for SRC-MCP-EVID. Conceptual interface specification, not an implemented supervisor."
+      "retrieval_note": "No contract-specific version was returned; the reference-set version is inherited from SRC-MCP-STATUS (same endpoint, same uninterrupted run, no reconfiguration, call made after the successful status call). Retrieval time is the shared run timestamp, not a per-call time. The response carries no explicit canonical-reference label and is treated conservatively as non-normative."
+    },
+    {
+      "source_id": "SRC-POLICY-MDM-07",
+      "source": "Customer policy POL-MDM-07 v3.2, as stated in the task input (policy document itself not supplied)",
+      "version": null,
+      "version_basis": "not_applicable",
+      "version_source_id": null,
+      "retrieved_at": null,
+      "time_basis": "not_applicable",
+      "status": "customer_supplied",
+      "used_for": [
+        "Exact official registry ID plus legal-continuity evidence required; similarity not sufficient; retain CRM-ACCT-1042 as canonical; adopt current legal name and preserve historical names/provenance; two separate human approvals bound to operation and state; write-set coverage and atomicity before first write; post-commit validation and reconciliation; no blind retry"
+      ],
+      "url": null,
+      "retrieval_note": "Customer-stated policy summary. The full policy text, policy owner, exception process, evidence-currency window and approver identities were not supplied."
+    },
+    {
+      "source_id": "SRC-APP-CONTEXT",
+      "source": "Customer-declared application and persistence context (PostgreSQL 16.5; MergeCoordinator 2.8.0; CRM-IDENTITY-5; pre-commit validator 1.6; declared write set; SERIALIZABLE single-transaction requirement; asynchronous consumers; operation ID OP-DEMO-2026-001; idempotency key demo-merge-1042-2097-v1)",
+      "version": null,
+      "version_basis": "not_applicable",
+      "version_source_id": null,
+      "retrieved_at": null,
+      "time_basis": "not_applicable",
+      "status": "customer_supplied",
+      "used_for": [
+        "Declared write set, transaction requirement and post-commit consumers",
+        "Operation and idempotency identifiers; current source row versions 18 and 23"
+      ],
+      "url": null,
+      "retrieval_note": "Treated as customer-declared requirements, not independently verified implementation facts."
+    },
+    {
+      "source_id": "SRC-CAND-RECORDS",
+      "source": "Customer-supplied candidate record descriptions: canonical candidate CRM-ACCT-1042 (legacy record, created 2019-06-12, row version 18, six active contracts, four contact links) and source candidate CRM-ACCT-2097 (created 2024-05-15 during CRM migration, row version 23, two active contracts, three contact links)",
+      "version": null,
+      "version_basis": "not_applicable",
+      "version_source_id": null,
+      "retrieved_at": null,
+      "time_basis": "not_applicable",
+      "status": "customer_supplied",
+      "used_for": [
+        "Candidate attributes (names, shared registry ID FIC-REG-004821, address, domain, counts, versions, creation dates)"
+      ],
+      "url": null,
+      "retrieval_note": "Record attributes as described by the customer; not read from any system by the Planner. Name, domain, address and contact similarity are context only under the customer policy."
+    },
+    {
+      "source_id": "SRC-REG-001",
+      "source": "Customer-described registry extract FCR-EXTRACT-004821-2026-10-15: legal name changed on 2024-04-01; registration number and legal-person continuity unchanged; no dissolution, successor or new incorporation recorded",
+      "version": null,
+      "version_basis": "not_applicable",
+      "version_source_id": null,
+      "retrieved_at": null,
+      "time_basis": "not_applicable",
+      "status": "customer_supplied",
+      "used_for": [
+        "Direct support for legal-continuity and temporal applicability of the name change"
+      ],
+      "url": null,
+      "retrieval_note": "Description supplied by the customer; the document was not seen or verified by the Planner. The description does not restate the registration number, the old/new legal names, or the currency requirement."
+    },
+    {
+      "source_id": "SRC-REG-VERIFY-005",
+      "source": "Customer evidence gateway result: digital-signature and issuer-certificate verification of the registry extract reported successful",
+      "version": null,
+      "version_basis": "not_applicable",
+      "version_source_id": null,
+      "retrieved_at": null,
+      "time_basis": "not_applicable",
+      "status": "customer_supplied",
+      "used_for": [
+        "Authenticity/integrity basis for SRC-REG-001 only"
+      ],
+      "url": null,
+      "retrieval_note": "Supplied result; the Planner did not perform or re-perform the check. Gateway/validator identity and version were not supplied. Not independent of SRC-REG-001."
+    },
+    {
+      "source_id": "SRC-LEGAL-002",
+      "source": "Customer-described executed agreement MSA-NSI-2025-02 dated 2025-02-14, using the current legal name and the same registry ID",
+      "version": null,
+      "version_basis": "not_applicable",
+      "version_source_id": null,
+      "retrieved_at": null,
+      "time_basis": "not_applicable",
+      "status": "customer_supplied",
+      "used_for": [
+        "Limited corroboration that the current name and registry ID were used in a 2025 agreement"
+      ],
+      "url": null,
+      "retrieval_note": "Description supplied by the customer; the document was not seen. It does not state the name change, the legacy name or legal continuity, and the CRM account it is linked to is not stated."
+    },
+    {
+      "source_id": "SRC-MIGRATION-003",
+      "source": "Customer-described migration report MIG-REPORT-2024-05-15: both CRM records were imported and mapped to EC-004821",
+      "version": null,
+      "version_basis": "not_applicable",
+      "version_source_id": null,
+      "retrieved_at": null,
+      "time_basis": "not_applicable",
+      "status": "customer_supplied",
+      "used_for": [
+        "Context for how the duplicate record arose"
+      ],
+      "url": null,
+      "retrieval_note": "Internal system record from the same migration that produced the crosswalk; its mapping is an assertion of the migration process, not independent identity proof."
+    },
+    {
+      "source_id": "SRC-CROSSWALK-004",
+      "source": "Customer-described crosswalk: both CRM IDs map to EC-004821",
+      "version": null,
+      "version_basis": "not_applicable",
+      "version_source_id": null,
+      "retrieved_at": null,
+      "time_basis": "not_applicable",
+      "status": "customer_supplied",
+      "used_for": [
+        "Context only: internal mapping of both CRM IDs to one enterprise-entity code"
+      ],
+      "url": null,
+      "retrieval_note": "Shares an upstream origin with SRC-MIGRATION-003; the two are one dependency cluster. Must not be promoted if its mapping was produced or induced by the merge hypothesis."
     }
   ],
   "operations": [
     {
       "operation_id": "OP-DEMO-2026-001",
-      "title": "Proposed MERGE of CRM-ACCT-2097 into canonical CRM-ACCT-1042 after a legal name change",
-      "identity_proposition": "CRM-ACCT-2097 (current legal name Northstar Industrial Components Limited) and CRM-ACCT-1042 (legacy legal name Northstar Components Limited) both denote the single continuing legal person with official registry ID FIC-REG-004821, whose legal name changed on 2024-04-01 without change of legal-person identity, for the purpose of one persistent CRM customer-account identity as of the authorization and commit time.",
+      "title": "Merge CRM-ACCT-2097 into canonical CRM-ACCT-1042",
+      "identity_proposition": "CRM-ACCT-2097 (Northstar Industrial Components Limited) and CRM-ACCT-1042 (Northstar Components Ltd.; legacy legal name Northstar Components Limited) denote the same continuing legal person identified by official registry ID FIC-REG-004821, whose legal name changed on 2024-04-01 without change of registration number or legal-person continuity, so that CRM-ACCT-2097 may be merged into canonical CRM-ACCT-1042 under POL-MDM-07 v3.2.",
       "mutation_type": "MERGE",
       "action_class": "IRREVERSIBLE_WRITE",
-      "entity_class": "customer account / legal entity (registered company)",
+      "entity_class": "customer account (legal entity)",
       "affected_state": [
-        "UNKNOWN_UNVERIFIED: accounts - retained canonical row CRM-ACCT-1042 (adoption of the current legal name, row version 18) and the CRM-ACCT-2097 source row (row version 23; its post-merge disposition, such as status flag or tombstone, is not specified); the table is in the customer-declared write set and is required to be in the single SERIALIZABLE transaction, but transaction membership is not proven",
-        "UNKNOWN_UNVERIFIED: account_contact_links - re-association of the three CRM-ACCT-2097 contact links to the canonical account, including handling of duplicate contacts; declared write-set member, transaction membership not proven",
-        "UNKNOWN_UNVERIFIED: account_contract_links - re-association of the two active CRM-ACCT-2097 contracts to the canonical account (six existing on CRM-ACCT-1042); declared write-set member, transaction membership not proven",
-        "UNKNOWN_UNVERIFIED: account_external_ids - external identifiers including registry ID FIC-REG-004821 and the CRM-ACCT-2097 alias; declared write-set member, uniqueness-collision handling and transaction membership not proven",
-        "UNKNOWN_UNVERIFIED: account_merge_history - append-only merge lineage record for this operation; declared write-set member, transaction membership not proven",
-        "UNKNOWN_UNVERIFIED: audit_events - audit record for this operation; declared write-set member, transaction membership not proven",
-        "UNKNOWN_UNVERIFIED: transactional_outbox - outbox event(s) that drive downstream propagation; declared write-set member required to be inserted in the same transaction, membership not proven",
-        "UNKNOWN_UNVERIFIED: storage location for preserved historical legal names and provenance (policy requires preservation); no named table or column is identified, so write-set completeness for this effect is not established",
-        "UNKNOWN_UNVERIFIED: other persistent objects that reference either account ID beyond the seven declared tables (dependent foreign keys, triggers, caches, exports); existence and membership not assessed; historical activity records must retain original account IDs and must not be written",
-        "EXTERNAL_OR_ASYNC: CRM search index update performed after commit by an asynchronous outbox consumer (customer-stated)",
-        "EXTERNAL_OR_ASYNC: Billing customer read model update performed after commit by an asynchronous outbox consumer (customer-stated)",
-        "EXTERNAL_OR_ASYNC: ERP customer crosswalk update performed after commit by an asynchronous outbox consumer (customer-stated); the supplied crosswalk already maps both account IDs to EC-004821, so idempotent handling is required"
+        "UNKNOWN_UNVERIFIED: accounts - customer-declared write-set member (canonical row CRM-ACCT-1042 at row version 18; source row CRM-ACCT-2097 at row version 23); membership in one SERIALIZABLE transaction is a customer requirement and is not verified by implementation evidence",
+        "UNKNOWN_UNVERIFIED: account_contact_links - customer-declared write-set member (three links on CRM-ACCT-2097, four on CRM-ACCT-1042); duplicate-contact handling and transaction membership not verified",
+        "UNKNOWN_UNVERIFIED: account_contract_links - customer-declared write-set member (two active contracts on CRM-ACCT-2097, six on CRM-ACCT-1042); transaction membership not verified",
+        "UNKNOWN_UNVERIFIED: account_external_ids - customer-declared write-set member (registry ID FIC-REG-004821 and enterprise-entity mapping EC-004821 on both records); uniqueness constraints and transaction membership not verified",
+        "UNKNOWN_UNVERIFIED: account_merge_history - customer-declared append-only write-set member; append-only enforcement and transaction membership not verified",
+        "UNKNOWN_UNVERIFIED: audit_events - customer-declared write-set member; event content and transaction membership not verified",
+        "UNKNOWN_UNVERIFIED: transactional_outbox - customer-declared write-set member (outbox insertion required in the same transaction); event schema, ordering and transaction membership not verified",
+        "UNKNOWN_UNVERIFIED: CRM search index update by an outbox consumer - customer-declared asynchronous effect after commit, outside the database transaction; consumer idempotency, ordering and reconciliation not verified",
+        "UNKNOWN_UNVERIFIED: Billing customer read model update by an outbox consumer - customer-declared asynchronous effect after commit, outside the database transaction; consumer idempotency, ordering and reconciliation not verified",
+        "UNKNOWN_UNVERIFIED: ERP customer crosswalk update by an outbox consumer - customer-declared asynchronous effect after commit, outside the database transaction; consumer idempotency, ordering and reconciliation not verified",
+        "UNKNOWN_UNVERIFIED: storage of historical legal names and provenance needed for the adopt-current-name and preserve-history requirement - no table or column declared; may sit in accounts, account_external_ids, account_merge_history or an undeclared store",
+        "UNKNOWN_UNVERIFIED: disposition of source record CRM-ACCT-2097 (status flag, tombstone, redirect or retention) and its external IDs - mechanism and affected tables not declared",
+        "UNKNOWN_UNVERIFIED: historical activity records that must retain original account IDs - no table declared; foreign-key actions (for example cascading updates), triggers and rewrite risk not assessed",
+        "UNKNOWN_UNVERIFIED: undeclared dependents that may reference either account ID (contracts, subscriptions, billing or invoice records, tickets, ownership and permissions, reporting copies) - existence and foreign-key or trigger behaviour not assessed",
+        "UNKNOWN_UNVERIFIED: other write paths touching these tables during the operation (triggers, change-data-capture or replication consumers, other services) - not assessed"
       ],
-      "temporal_scope": "Current account identity as of authorization and commit time. The legal-name change took effect on 2024-04-01 per SRC-REG-001 (extract dated 2026-10-15); CRM-ACCT-1042 was created 2019-06-12 under the legacy name; CRM-ACCT-2097 was created 2024-05-15 by migration under the current name. Registry status after the extract date has not been evidenced.",
-      "persistence_point": "unknown / unverified - HOLD before first persistent write. Customer-required design: one SERIALIZABLE PostgreSQL 16.5 transaction coordinated by MergeCoordinator 2.8.0 covering the seven declared tables and the outbox insertion, with the commit point at that transaction's COMMIT. No evidence proves that the implementation matches this design, that the write set is complete, or that atomicity holds; asynchronous consumers run after commit outside the transaction.",
+      "temporal_scope": "Legal-name change effective 2024-04-01; registry extract dated 2026-10-15; continuity must hold from creation of CRM-ACCT-1042 (2019-06-12) through the commit time; evidence currency window not defined by policy",
+      "persistence_point": "unknown / unverified - HOLD before first persistent write. Customer requirement: one PostgreSQL 16.5 SERIALIZABLE transaction, coordinated by MergeCoordinator 2.8.0, covering all writes to the seven declared tables and the outbox insertion, with the exact commit point being the COMMIT of that single transaction. The transaction boundary, its complete scope and the exact commit point are not evidenced. Outbox consumers (search index, Billing read model, ERP crosswalk) run after commit, outside the transaction.",
       "reversibility": "unknown",
-      "reversibility_basis": "No recovery or compensation mechanism (A1), recovery test (A2) or responsible-role attestation (A3) was supplied, and no customer policy accepts non-recovery risk for this operation. Absence of documentation does not prove the merge is not reversible, and ordinary Data Steward / CRM Platform Owner approvals are not acceptance of non-recovery risk. Factual reversibility therefore remains unknown.",
+      "reversibility_basis": "No recovery or compensation mechanism (A1), recovery test (A2) or customer attestation (A3) was supplied, and no positive technical evidence of irreversibility was supplied. Absence of evidence does not prove irreversibility, so factual reversibility remains unknown. The action class is the protected IRREVERSIBLE_WRITE path because a production MERGE changes shared identity state and feeds downstream consumers.",
       "scope_status": "in_scope",
       "classification_status": "confirmed",
-      "classification_note": "Production MERGE of persistent shared CRM account identity with downstream propagation: protected IRREVERSIBLE_WRITE path. The label identifies the authorization boundary and does not assert that technical recovery is impossible."
+      "classification_note": "Mutation type MERGE is stated by the customer. IRREVERSIBLE_WRITE is the protected authorization class for a potentially shared production identity effect; it does not assert that technical recovery is impossible."
     }
   ],
   "controls": [
     {
       "control_id": "CTRL-01",
       "operation_id": "OP-DEMO-2026-001",
-      "title": "Identity proposition and exact official registry ID gate",
-      "trigger": "A candidate MERGE of CRM-ACCT-2097 into CRM-ACCT-1042 is proposed or re-proposed.",
-      "required_action": "Require the narrow identity proposition stated for this operation and require an exact official registry ID match (FIC-REG-004821 on both records and in the authoritative registry evidence) plus evidence of legal continuity before the candidate may advance. Registry ID comparison must use a customer-defined, documented normalization rule applied identically to both records and the evidence.",
-      "enforcement_point": "Candidate preparation and again at pre-persistence evaluation, before any approval request is created.",
+      "title": "Operation, scope and action-class binding",
+      "trigger": "Any request to execute OP-DEMO-2026-001 or any change to its source, target, direction, canonical record or effect scope.",
+      "required_action": "Before evidence evaluation and again immediately before the first persistent write, verify and record that the request is exactly MERGE of source CRM-ACCT-2097 into canonical CRM-ACCT-1042 (policy retains CRM-ACCT-1042), classified on the protected IRREVERSIBLE_WRITE path, with operation ID OP-DEMO-2026-001, idempotency key demo-merge-1042-2097-v1 and the declared effect scope. The agent or planner must not weaken, substitute or expand the required propositions or the effect scope. Any difference in direction, record IDs, canonical choice, added accounts or write-set members requires a new operation and fresh authorization.",
+      "enforcement_point": "Pre-persistence: MergeCoordinator request intake and the commit-boundary guard, before any approval request and again immediately before the first persistent write.",
       "required_evidence": [
-        "Exact official registry ID on both records and in the registry evidence",
-        "Evidence of legal continuity for the rename interval",
-        "Documented registry-ID normalization rule"
+        "Operation request record bound to OP-DEMO-2026-001",
+        "Declared effect scope (write set and out-of-transaction effects)",
+        "Retain-canonical rule from POL-MDM-07 v3.2"
       ],
-      "approval_requirement": "None for the gate itself; Data Steward review is separate (CTRL-06).",
-      "on_sufficient_support": "Advance to the remaining controls; this control alone does not authorize any write.",
-      "on_conflict": "Block the candidate: do not merge when an official registry ID differs or any record carries a conflicting registry ID.",
-      "on_indeterminate": "HOLD: ambiguous or non-normalizable registry ID, missing continuity evidence, or an identity proposition that is not exact.",
-      "on_failure": "Do not persist; route to Data Steward review with the failed check recorded.",
-      "owner": "Data Steward (customer-stated role)",
+      "approval_requirement": "None at this control; separate human approvals are required by CTRL-05.",
+      "on_sufficient_support": "Continue to the remaining controls; this control alone never authorizes the write.",
+      "on_conflict": "Block the request and require a new operation ID and fresh evaluation.",
+      "on_indeterminate": "HOLD; an unclassifiable or ambiguous effect class is treated as protected.",
+      "on_failure": "Fail closed: begin no persistent write and record the rejection in the audit trail.",
+      "owner": "unassigned (customer to designate)",
       "provenance_refs": [
-        "SRC-REQUEST",
-        "SRC-POLICY",
+        "SRC-POLICY-MDM-07",
+        "SRC-APP-CONTEXT",
         "SRC-MCP-PROFILE",
-        "SRC-MCP-EVID"
+        "SRC-MCP-PH1"
       ],
       "validation_test_ids": [
-        "TEST-01",
-        "TEST-02",
-        "TEST-03",
-        "TEST-04"
+        "TEST-SCOPE-01",
+        "TEST-APPR-02"
       ]
     },
     {
       "control_id": "CTRL-02",
       "operation_id": "OP-DEMO-2026-001",
-      "title": "Similarity-is-not-identity and distinct-registry-ID prohibition (negative control)",
-      "trigger": "Candidate records resemble each other (names, domains, addresses, contacts, parent/subsidiary or brand relationship) but the evidence does not show the same official registry ID with legal continuity.",
-      "required_action": "Treat names, domains, addresses and contact similarity as insufficient identity proof. Two records that carry different official registry IDs fail the exact-registry-ID criterion of POL-MDM-07 v3.2 and must not be merged on similarity alone; no approval or authorization path inside this operation can satisfy that criterion, and any exception process would be separate and customer-defined.",
-      "enforcement_point": "Before evidence promotion and again at the pre-persistence check.",
+      "title": "Registry-ID and legal-continuity identity gate (including negative control)",
+      "trigger": "Any proposal to treat two CRM accounts as one identity.",
+      "required_action": "Require for each candidate an exact official registry ID that matches the authoritative registry record, and separate evidence of legal continuity (a name change without dissolution, successor or new incorporation) applicable to the interval in scope. Names, domains, addresses and contact similarity are context only and never satisfy the gate. Candidates whose official registry IDs differ must not be merged regardless of similarity; the supplied policy defines no exception route, so an exception request is held for a customer policy decision.",
+      "enforcement_point": "Pre-persistence: evidence gate in the commit-boundary guard, before approval requests.",
       "required_evidence": [
-        "Official registry ID of each record",
-        "Corporate relationship evidence retained as a typed relation, not collapsed into identity"
+        "Official registry ID confirmed against the authoritative registry for each candidate",
+        "Evidence of legal continuity for the validity interval in scope",
+        "Recorded context-only treatment of name, domain, address and contact similarity"
       ],
-      "approval_requirement": "No approval can convert a distinct-registry-ID pair into this MERGE; any exception would be a separate customer-defined process outside this plan.",
-      "on_sufficient_support": "Not applicable: this control only blocks or holds.",
-      "on_conflict": "Block the merge and retain the parent/subsidiary or related-entity relation as a typed relation.",
-      "on_indeterminate": "HOLD pending evidence of the official registry IDs; similarity alone never resolves the case.",
-      "on_failure": "Do not persist any identity change; record the rejected candidate and reason.",
-      "owner": "Data Steward (customer-stated role)",
+      "approval_requirement": "None at this control.",
+      "on_sufficient_support": "Pass this gate only; continue to CTRL-03 through CTRL-12.",
+      "on_conflict": "Registry IDs differ or continuity is contradicted: block the merge; route any exception request to the customer policy owner.",
+      "on_indeterminate": "Registry ID or continuity evidence missing or unverified: HOLD and request evidence; similarity is not a substitute.",
+      "on_failure": "Fail closed: no promotion of the identity claim and no write.",
+      "owner": "Data Steward (per POL-MDM-07 role); policy owner unassigned",
       "provenance_refs": [
-        "SRC-POLICY",
+        "SRC-POLICY-MDM-07",
+        "SRC-CAND-RECORDS",
+        "SRC-REG-001",
         "SRC-MCP-PROFILE"
       ],
       "validation_test_ids": [
-        "TEST-02",
-        "TEST-03"
+        "TEST-EVID-01",
+        "TEST-EVID-02",
+        "TEST-EVID-03"
       ]
     },
     {
       "control_id": "CTRL-03",
       "operation_id": "OP-DEMO-2026-001",
-      "title": "Claim-specific evidence eligibility and provenance",
-      "trigger": "Supplied evidence (registry extract, verification record, agreement, migration report, crosswalk) is to be used to support the identity proposition.",
-      "required_action": "Admit evidence first as quarantined, promote it only for the specific proposition and role it supports, and record source, proposition, role, temporal applicability, validation basis and validator/policy version. Treat SRC-REG-001 as primary legal-continuity evidence only after its authenticity (SRC-REG-VERIFY-005, a supplied result) is tied to the exact extract and recorded. Treat SRC-LEGAL-002 as corroboration of post-rename name and registry ID. Do not count SRC-MIGRATION-003 and SRC-CROSSWALK-004 as independent identity evidence because they record the customer's own mapping to EC-004821 and share an upstream origin. Do not infer support from absence of a detected conflict.",
-      "enforcement_point": "Evidence admission and promotion step, before the approval request is created and again at pre-persistence evaluation.",
+      "title": "Evidence eligibility: provenance, independence and temporal applicability",
+      "trigger": "Any evidence item offered for the identity-continuity proposition.",
+      "required_action": "Admit each item first to quarantine, check admission conflicts, and promote only claim-specific eligible evidence with recorded source, proposition, evidentiary role (support, contradiction or unresolved), temporal applicability, validation basis, and validator and policy version. Do not count records that share an upstream origin (the migration report and the crosswalk) as independent proof. Treat a supplied signature-verification result as authentication of its source document only, not as separate identity evidence. Do not rely on planner confidence, repetition, an agent-generated verified label, or the absence of a detected conflict as support.",
+      "enforcement_point": "Pre-persistence: evidence admission and promotion service feeding the commit-boundary guard.",
       "required_evidence": [
-        "Provenance and validation record IDs per proposition",
-        "Verification record tied to the exact extract (hash/identifier) with validator identity and version",
-        "Independence assessment of each source"
+        "Source and provenance record for each item",
+        "Validator identity and version, and the policy that makes the item eligible",
+        "Temporal applicability against the validity interval and a customer-defined currency window",
+        "Dependency map showing shared upstream origins"
       ],
-      "approval_requirement": "Evidence eligibility authority is a customer decision (DEC-02).",
-      "on_sufficient_support": "Mark the proposition supported for the stated scope and interval and continue to the remaining controls.",
-      "on_conflict": "Keep conflicting observations quarantined for designated adjudication and block the candidate.",
-      "on_indeterminate": "Keep the observation UNVERIFIED and block the candidate; do not treat repetition or the Planner's own label as support.",
-      "on_failure": "Do not promote; record the unmet evidence requirement.",
-      "owner": "Data Steward (customer-stated role) for adjudication; evidence-promotion owner unassigned",
+      "approval_requirement": "Evidence eligibility rules are a customer policy decision (see GAP-02).",
+      "on_sufficient_support": "Eligible evidence is recorded per proposition and passed to the conflict check.",
+      "on_conflict": "Contested items stay quarantined for policy-designated adjudication.",
+      "on_indeterminate": "Unverified, stale or non-independent items are not authorization-eligible: HOLD or refresh.",
+      "on_failure": "Validator unavailable or promotion record missing: fail closed.",
+      "owner": "unassigned (customer evidence validator owner)",
       "provenance_refs": [
-        "SRC-POLICY",
         "SRC-MCP-EVID",
         "SRC-REG-001",
         "SRC-REG-VERIFY-005",
         "SRC-LEGAL-002",
         "SRC-MIGRATION-003",
-        "SRC-CROSSWALK-004"
+        "SRC-CROSSWALK-004",
+        "SRC-POLICY-MDM-07"
       ],
       "validation_test_ids": [
-        "TEST-01",
-        "TEST-05",
-        "TEST-06",
-        "TEST-07"
+        "TEST-EVID-01",
+        "TEST-EVID-03",
+        "TEST-EVID-04",
+        "TEST-EVID-06",
+        "TEST-EVID-07"
       ]
     },
     {
       "control_id": "CTRL-04",
       "operation_id": "OP-DEMO-2026-001",
-      "title": "Temporal continuity applicability and evidence freshness",
-      "trigger": "The continuity claim relies on a rename effective 2024-04-01 and a registry extract dated 2026-10-15; the authorization and commit occur later.",
-      "required_action": "Confirm that the continuity evidence applies to the referent and the interval from the rename to the authorization/commit time, that the extract is within a customer-defined freshness limit, and that no dissolution, successor, restructuring or new incorporation is recorded after the extract date. Refresh the evidence when stale or when its age is not covered by a defined freshness limit.",
-      "enforcement_point": "Pre-persistence evaluation and the immediate pre-write revalidation (CTRL-09).",
+      "title": "Claim-specific conflict and indeterminate-evidence handling",
+      "trigger": "Evaluation of the identity-continuity proposition and again at the commit boundary.",
+      "required_action": "Run a claim-specific conflict check across eligible, active-unverified and quarantined evidence. Clear only when no unresolved material conflict remains. A contradiction (for example dissolution, a successor entity, a different registration number or a new incorporation) blocks the merge; indeterminate or unverified evidence blocks commit and routes to human adjudication. Absence of a detected conflict is never positive support.",
+      "enforcement_point": "Pre-persistence: conflict check in the commit-boundary guard.",
       "required_evidence": [
-        "Customer-defined maximum evidence age",
-        "Registry status as of the authorization/commit time",
-        "Extract content showing before and after legal names"
+        "Conflict-check result with evidence record IDs",
+        "Adjudication record when a conflict or indeterminate result occurs"
       ],
-      "approval_requirement": "Freshness limit is a customer policy decision (DEC-02).",
-      "on_sufficient_support": "Continue to the remaining controls for the validated interval.",
-      "on_conflict": "Block and escalate when later registry evidence shows dissolution, succession or a distinct legal person.",
-      "on_indeterminate": "HOLD or refresh when the freshness limit is undefined, exceeded, or the interval cannot be shown to be covered.",
-      "on_failure": "Do not persist; require refreshed evidence and a new authorization record.",
-      "owner": "Data Steward (customer-stated role)",
+      "approval_requirement": "Adjudication authority is a customer decision (see GAP-02).",
+      "on_sufficient_support": "Conflict status clear: continue to remaining controls.",
+      "on_conflict": "Block the merge and retain the conflict for adjudication.",
+      "on_indeterminate": "Block commit and route to human adjudication; do not treat as clear.",
+      "on_failure": "Fail closed.",
+      "owner": "Data Steward (per POL-MDM-07 role)",
       "provenance_refs": [
-        "SRC-POLICY",
-        "SRC-MCP-PROFILE",
         "SRC-MCP-EVID",
-        "SRC-REG-001"
+        "SRC-MCP-PH1",
+        "SRC-MCP-PROFILE"
       ],
       "validation_test_ids": [
-        "TEST-01",
-        "TEST-05",
-        "TEST-08"
+        "TEST-EVID-01",
+        "TEST-EVID-05",
+        "TEST-EVID-06"
       ]
     },
     {
       "control_id": "CTRL-05",
       "operation_id": "OP-DEMO-2026-001",
-      "title": "Canonical record and identity-preserving requirements",
-      "trigger": "The merge direction, resulting names and historical state are determined for the write.",
-      "required_action": "Retain CRM-ACCT-1042 as canonical and merge CRM-ACCT-2097 into it; never the reverse. After an approved merge adopt the current legal name Northstar Industrial Components Limited on the canonical account while preserving the legacy name and all historical names with provenance; keep CRM-ACCT-2097 resolvable as a source alias; keep historical activity under its original account IDs; append, never update or delete, account_merge_history rows.",
-      "enforcement_point": "Candidate construction, the in-transaction pre-commit validation, and post-commit validation.",
+      "title": "Separate human approvals bound to the exact operation and state",
+      "trigger": "A request for commit authorization of OP-DEMO-2026-001.",
+      "required_action": "Require two separate human approvals, one from a Data Steward and one from a CRM Platform Owner, each bound to OP-DEMO-2026-001, the exact operation (MERGE of CRM-ACCT-2097 into CRM-ACCT-1042), idempotency key demo-merge-1042-2097-v1, source and canonical row versions (23 and 18), POL-MDM-07 v3.2, pre-commit validator 1.6 and the eligible-evidence record IDs. An approval is invalid if any bound element changes, if it is issued by an unauthorized or non-human principal, or if it precedes satisfaction of the evidence and write-set gates. No approval artifacts are currently supplied.",
+      "enforcement_point": "Pre-persistence: approval service and commit-boundary guard, rechecked at the commit boundary.",
       "required_evidence": [
-        "Canonical-record decision per POL-MDM-07 v3.2",
-        "Resulting-state specification: names, aliases, links, lineage",
-        "Identification of where historical names and provenance are stored"
+        "Data Steward approval record",
+        "CRM Platform Owner approval record",
+        "Binding fields (operation, key, row versions, policy and validator versions, evidence record IDs)"
       ],
-      "approval_requirement": "Approval of the resulting state is covered by CTRL-06.",
-      "on_sufficient_support": "Continue to the remaining controls.",
-      "on_conflict": "Block when the merge direction, canonical retention or name adoption contradicts the policy.",
-      "on_indeterminate": "HOLD when the storage of historical names or the disposition of the CRM-ACCT-2097 row is not specified (DEC-04).",
-      "on_failure": "Abort before commit; if detected after commit, stop dependent mutations and quarantine (CTRL-13).",
-      "owner": "CRM Platform Owner (customer-stated role)",
+      "approval_requirement": "Data Steward and CRM Platform Owner, separately; whether one person may hold both roles is not stated (see GAP-01).",
+      "on_sufficient_support": "Approval gate passes; the commit still requires every other control.",
+      "on_conflict": "A reviewer records a conflict: HOLD and return to evidence adjudication.",
+      "on_indeterminate": "Approval missing, incomplete or unbound: HOLD.",
+      "on_failure": "Fail closed: no write without both valid approvals.",
+      "owner": "Data Steward and CRM Platform Owner (approvers); approval service owner unassigned",
       "provenance_refs": [
-        "SRC-REQUEST",
-        "SRC-POLICY"
+        "SRC-POLICY-MDM-07",
+        "SRC-MCP-PH1",
+        "SRC-APP-CONTEXT"
       ],
       "validation_test_ids": [
-        "TEST-09",
-        "TEST-10"
+        "TEST-APPR-01",
+        "TEST-APPR-02",
+        "TEST-APPR-03"
       ]
     },
     {
       "control_id": "CTRL-06",
       "operation_id": "OP-DEMO-2026-001",
-      "title": "Separate human approvals bound to the exact operation and state",
-      "trigger": "The candidate has passed evidence and identity gates and is to be approved for persistence.",
-      "required_action": "Require two separate human approvals, one from a Data Steward and one from a CRM Platform Owner, each by a different authorized individual and each bound to the exact operation ID OP-DEMO-2026-001, idempotency key demo-merge-1042-2097-v1, source row versions 18 and 23, identity schema CRM-IDENTITY-5, MergeCoordinator 2.8.0, pre-commit validator 1.6, policy POL-MDM-07 v3.2, the promoted evidence set and the declared write set. Any change to a bound item invalidates the approvals. No approval artifacts have been supplied, so no approval exists. These ordinary approvals are not acceptance of non-recovery risk.",
-      "enforcement_point": "Approval service / MergeCoordinator pre-persistence check and the immediate pre-write revalidation (CTRL-09).",
+      "title": "Version binding and stale-state check",
+      "trigger": "Authorization time and again at the commit boundary.",
+      "required_action": "Bind and recheck source row version 23, canonical row version 18, POL-MDM-07 v3.2, pre-commit validator 1.6, identity schema CRM-IDENTITY-5 and the evidence eligibility state. Use compare-and-set or equivalent predicates on both account rows and on the link sets being re-pointed. Reject a stale authorization and re-evaluate from the beginning with a new authorization record (no replay) within one common retry budget. The SERIALIZABLE requirement is a customer requirement; whether it is sufficient against stale reads, lost updates, write skew and phantoms on the link sets needs database-specific design review, and isolation is assessed separately from atomicity.",
+      "enforcement_point": "Pre-persistence: commit-boundary guard and persistence adapter, at authorization and at the commit boundary.",
       "required_evidence": [
-        "Data Steward approval record bound to operation and state",
-        "CRM Platform Owner approval record bound to operation and state",
-        "Evidence that the two approvers are distinct and authorized"
+        "Version snapshot recorded at authorization",
+        "Current-version snapshot at the commit boundary",
+        "Customer-defined retry budget"
       ],
-      "approval_requirement": "Data Steward and CRM Platform Owner, separately (customer policy). Individual identities and the approval record format are not supplied (DEC-01).",
-      "on_sufficient_support": "Continue to the authorization-path and commit-boundary controls.",
-      "on_conflict": "Block when a required approver rejects or the approvals disagree on scope.",
-      "on_indeterminate": "HOLD when an approval is missing, unbound, unverifiable, expired or given by the same individual for both roles.",
-      "on_failure": "Reject the approval and require a new approval for the current state.",
-      "owner": "Data Steward and CRM Platform Owner (customer-stated roles)",
+      "approval_requirement": "Re-approval is required when a bound version changes.",
+      "on_sufficient_support": "All bound versions match: continue.",
+      "on_conflict": "A bound version changed or a competing change is detected: reject the authorization and re-evaluate.",
+      "on_indeterminate": "Versions cannot be read or compared: HOLD.",
+      "on_failure": "Fail closed; no replay of the stale candidate.",
+      "owner": "unassigned (customer to designate)",
       "provenance_refs": [
-        "SRC-REQUEST",
-        "SRC-POLICY",
-        "SRC-MCP-P1"
+        "SRC-MCP-PH1",
+        "SRC-MCP-PH2",
+        "SRC-APP-CONTEXT"
       ],
       "validation_test_ids": [
-        "TEST-11",
-        "TEST-12"
+        "TEST-VER-01",
+        "TEST-VER-02",
+        "TEST-ATOM-04"
       ]
     },
     {
       "control_id": "CTRL-07",
       "operation_id": "OP-DEMO-2026-001",
-      "title": "Protected-write authorization path (Path A recovery or Path B accepted non-recovery risk)",
-      "trigger": "OP-DEMO-2026-001 is a production IRREVERSIBLE_WRITE whose factual reversibility is unknown.",
-      "required_action": "Hold the write unless exactly one authorization path is established for this operation and its complete production effect scope. Path A requires A1 (documented recovery or compensation mechanism for this exact MERGE and complete effect scope), A2 (successful recovery test on materially equivalent state and schema using current persistence, policy and validator versions) and A3 (attestation by a customer-designated responsible role). When established Path A sets factual reversibility to reversible while the action class stays IRREVERSIBLE_WRITE. Path B is available only when Path A is not established and requires a current explicit customer policy accepting this exact operation's non-recovery risk, operation-specific approval by a role authorized by that policy, and customer-defined separation of duties from the ordinary approvals; it establishes neither reversible nor not_reversible. After Path A is established for the scope Path B is unavailable. An UNMERGE is not recovery for this MERGE unless it independently satisfies A1, A2 and A3. Neither path creates an automatic write.",
-      "enforcement_point": "Pre-persistence authorization decision and the immediate pre-write revalidation (CTRL-09).",
+      "title": "Pre-write HOLD until write-set completeness and atomicity are proven",
+      "trigger": "Before the first persistent write of OP-DEMO-2026-001.",
+      "required_action": "Require customer-verified evidence that (a) the persistent write set is complete: the seven declared tables plus every dependent record, foreign-key action, trigger, historical-name store and source-record disposition; (b) all database writes and the outbox insertion occur in one identified PostgreSQL transaction with an identified exact commit point; and (c) external and asynchronous effects are inventoried. Otherwise HOLD: begin no partial sequence of writes and do not rely on later rollback. Atomicity is not inferred from a database product, an isolation level or a sequence of application calls.",
+      "enforcement_point": "Pre-persistence: MergeCoordinator readiness gate, before the transaction begins.",
       "required_evidence": [
-        "A1 mechanism documentation",
-        "A2 recovery-test record with versions",
-        "A3 attestation by a designated role",
-        "Or: current Path B policy, operation-specific approval, separation-of-duties rule"
+        "Verified write-set inventory",
+        "Evidence identifying the transaction, its scope and the exact commit point",
+        "Inventory of asynchronous and external effects"
       ],
-      "approval_requirement": "A3 attester and Path B approver roles and the separation-of-duties rule are not defined by the supplied policy (DEC-03).",
-      "on_sufficient_support": "Record the established path and continue to the remaining controls; the path never replaces approvals, evidence or atomicity proof.",
-      "on_conflict": "Not applicable: path decision does not resolve identity conflicts.",
-      "on_indeterminate": "HOLD when neither path is fully established or the separation-of-duties question is unresolved.",
-      "on_failure": "HOLD; a stale Path A claim expires to unknown and does not automatically select Path B.",
-      "owner": "Unassigned (A3 attester and Path B approver roles to be defined by the customer)",
+      "approval_requirement": "Customer sign-off on the inventory (see GAP-03 and GAP-04).",
+      "on_sufficient_support": "Inventory and atomicity verified: continue to the remaining controls.",
+      "on_conflict": "An undeclared dependent or a second commit is found: HOLD and correct the inventory.",
+      "on_indeterminate": "Unknown or unverified boundary or inventory: HOLD.",
+      "on_failure": "Fail closed: no write begins.",
+      "owner": "CRM Platform Owner (inventory sign-off role; owner assignment unconfirmed)",
       "provenance_refs": [
-        "SRC-POLICY",
-        "SRC-MCP-PROFILE",
-        "SRC-MCP-P1"
+        "SRC-APP-CONTEXT",
+        "SRC-POLICY-MDM-07",
+        "SRC-MCP-PH2"
       ],
       "validation_test_ids": [
-        "TEST-13",
-        "TEST-14",
-        "TEST-15",
-        "TEST-16",
-        "TEST-17",
-        "TEST-18",
-        "TEST-19",
-        "TEST-20",
-        "TEST-21"
+        "TEST-ATOM-01",
+        "TEST-ATOM-02"
       ]
     },
     {
       "control_id": "CTRL-08",
       "operation_id": "OP-DEMO-2026-001",
-      "title": "Complete write-set and atomicity proof before the first persistent write",
-      "trigger": "Before any persistent write for the merge begins.",
-      "required_action": "Prove, with customer-held evidence, that the write set is complete (accounts, account_contact_links, account_contract_links, account_external_ids, account_merge_history, audit_events, transactional_outbox, plus the storage for preserved historical names and any dependent object found by dependency analysis) and that all of it, including outbox insertion, commits in one atomic SERIALIZABLE transaction with a single identified commit point. Prove that no historical activity record or other unlisted object is written. Isolation level alone does not prove atomicity or write-set completeness. If proof is absent, HOLD and begin no write.",
-      "enforcement_point": "Before the first persistent write, at the MergeCoordinator boundary.",
+      "title": "Pre-commit invariant validation and transaction abort",
+      "trigger": "After the merge writes are applied inside the transaction and before COMMIT.",
+      "required_action": "Evaluate the invariants and abort the whole transaction if any fails: the realized operation equals the authorized scope; the canonical record remains CRM-ACCT-1042; the current legal name is adopted with historical names and provenance preserved; account_merge_history is append-only (no update or delete); historical activity keeps original account IDs; source contract links are re-pointed so that no active contract is lost (inference from supplied counts: eight active contract links on the canonical record, subject to the confirmed inventory); contact links follow an approved duplicate rule; registry-ID and external-ID uniqueness holds; audit and outbox rows are present; bound versions are still valid. On abort, confirm that none of the transaction's writes are visible.",
+      "enforcement_point": "Pre-commit: pre-commit validator 1.6 evaluated inside the same transaction and snapshot (to be confirmed by the customer), before COMMIT.",
       "required_evidence": [
-        "Dependency inventory of objects referencing either account ID",
-        "Transaction-boundary evidence for every write-set member",
-        "Evidence that triggers and extensions have no effects outside the transaction"
+        "Invariant list and validator results",
+        "Same-snapshot evaluation evidence"
       ],
-      "approval_requirement": "CRM Platform Owner reviews the proof (customer-stated role).",
-      "on_sufficient_support": "Permit the write to proceed to the remaining controls.",
-      "on_conflict": "Block when a write outside the declared set or inside historical activity is found.",
-      "on_indeterminate": "HOLD when completeness, membership or the commit point is unknown or unverified.",
-      "on_failure": "Do not begin any write; do not start a partial sequence.",
-      "owner": "CRM Platform Owner (customer-stated role) with application/data owner",
+      "approval_requirement": "None at this control.",
+      "on_sufficient_support": "All invariants pass: COMMIT is permitted subject to every other control.",
+      "on_conflict": "Invariant conflict: abort the transaction.",
+      "on_indeterminate": "Validator result unknown or unavailable: abort and hold.",
+      "on_failure": "Abort the transaction (not a post-commit compensation) and confirm that no writes committed.",
+      "owner": "unassigned (customer to designate)",
       "provenance_refs": [
-        "SRC-REQUEST",
-        "SRC-POLICY",
-        "SRC-MCP-P1"
+        "SRC-MCP-PH2",
+        "SRC-POLICY-MDM-07",
+        "SRC-APP-CONTEXT"
       ],
       "validation_test_ids": [
-        "TEST-22",
-        "TEST-23"
+        "TEST-ATOM-03",
+        "TEST-ATOM-04",
+        "TEST-HIST-01"
       ]
     },
     {
       "control_id": "CTRL-09",
       "operation_id": "OP-DEMO-2026-001",
-      "title": "Immediate pre-write revalidation of record state, schema, coordinator, validator, policy and approvals",
-      "trigger": "Immediately before any persistent write, including after any delay since approval.",
-      "required_action": "Revalidate that CRM-ACCT-1042 is still at row version 18 and CRM-ACCT-2097 at row version 23 and both are active, that the identity schema is CRM-IDENTITY-5, the coordinator is MergeCoordinator 2.8.0, the pre-commit validator is 1.6, the policy is POL-MDM-07 v3.2, the evidence and eligibility state and the approvals and authorization-path basis are unchanged and unexpired, and the realized operation exactly matches the authorized operation and write set. Reject a stale authorization and re-evaluate from the evidence stage with a new authorization record; never replay a stale candidate. Retries share one customer-defined retry budget.",
-      "enforcement_point": "Immediately before the first persistent write, and again inside the transaction before commit.",
+      "title": "Post-commit validation and downstream reconciliation",
+      "trigger": "After the merge transaction commits.",
+      "required_action": "Read authoritative state and compare it with the authorized effect (adopted name, historical names, link counts, merge-history, audit and outbox rows). Track each outbox event through the CRM search-index, Billing customer read-model and ERP customer-crosswalk consumers with idempotent, replay-safe processing, and reconcile each against authoritative state; report divergence. Consumer updates happen outside the database transaction and must not be described as covered by it.",
+      "enforcement_point": "Post-commit: reconciliation service and outbox consumers.",
       "required_evidence": [
-        "Current row versions, schema, coordinator, validator and policy identifiers",
-        "Authorization record bound to those versions"
+        "Post-commit state comparison",
+        "Per-consumer reconciliation records"
       ],
-      "approval_requirement": "New approvals are required whenever a bound item changes (CTRL-06).",
-      "on_sufficient_support": "Proceed to the atomic transaction.",
-      "on_conflict": "Block when current state contradicts the authorized state or evidence.",
-      "on_indeterminate": "HOLD when a version or state cannot be read or compared.",
-      "on_failure": "Reject the authorization; require re-evaluation with a new authorization record.",
-      "owner": "CRM Platform Owner (customer-stated role)",
+      "approval_requirement": "None at this control.",
+      "on_sufficient_support": "Post-commit validation and reconciliation complete: record closure.",
+      "on_conflict": "Divergence found: apply CTRL-10.",
+      "on_indeterminate": "Reconciliation incomplete: keep the operation open and further dependent changes on HOLD.",
+      "on_failure": "Apply CTRL-10.",
+      "owner": "unassigned (customer to designate)",
       "provenance_refs": [
-        "SRC-REQUEST",
-        "SRC-POLICY",
-        "SRC-MCP-P1",
-        "SRC-MCP-P2"
+        "SRC-APP-CONTEXT",
+        "SRC-POLICY-MDM-07",
+        "SRC-MCP-PH2"
       ],
       "validation_test_ids": [
-        "TEST-12",
-        "TEST-24",
-        "TEST-29"
+        "TEST-POST-01",
+        "TEST-POST-02"
       ]
     },
     {
       "control_id": "CTRL-10",
       "operation_id": "OP-DEMO-2026-001",
-      "title": "Atomic SERIALIZABLE commit and pre-commit abort",
-      "trigger": "The write is executed after CTRL-01 to CTRL-09 are satisfied.",
-      "required_action": "Execute every write and the outbox insertion in one SERIALIZABLE transaction. Evaluate the pre-commit validator and the resulting-state invariants inside the transaction before COMMIT, including evidence-to-claim support and the identity-preserving requirements. Commit only on PASS with valid scope and versions. On any failure or serialization conflict before commit, abort the transaction so that no write in any of the seven tables becomes committed; this is a transaction abort, not post-commit compensation. Persist the idempotency key inside the same transaction so that its presence proves the commit.",
-      "enforcement_point": "In-transaction, immediately before COMMIT, in MergeCoordinator 2.8.0 with pre-commit validator 1.6.",
+      "title": "Post-commit and out-of-boundary failure handling",
+      "trigger": "An invariant failure or consumer failure detected after commit or outside the atomic boundary.",
+      "required_action": "Stop dependent mutations, including further merges that involve either account; reconcile the actual persisted state; and apply only a documented, tested, operation-specific compensation or recovery procedure. If none is established, quarantine the affected records and events and escalate to the designated owner, keeping the overall decision on HOLD for further changes. Do not claim that a database rollback reverses committed or external effects; do not treat another operation as recovery unless it independently satisfies A1, A2 and A3.",
+      "enforcement_point": "Post-commit: reconciliation and recovery service; incident escalation path.",
       "required_evidence": [
-        "Pre-commit validator result",
-        "Transaction identifier and commit evidence",
-        "Idempotency key persisted inside the transaction"
+        "Reconciled state record",
+        "Documented and tested same-operation compensation procedure, if one exists"
       ],
-      "approval_requirement": "None beyond CTRL-06.",
-      "on_sufficient_support": "COMMIT; record audit and outbox events committed in the same transaction.",
-      "on_conflict": "Abort the transaction and keep the candidate non-persistent.",
-      "on_indeterminate": "Abort the transaction; the validator or database being unavailable is a failure, not a pass.",
-      "on_failure": "Abort the transaction and confirm that no committed rows result.",
-      "owner": "CRM Platform Owner (customer-stated role)",
+      "approval_requirement": "Recovery owner approval per customer policy (see GAP-07).",
+      "on_sufficient_support": "Recovered state is verified by reconciliation: close the incident.",
+      "on_conflict": "Persisted state conflicts with the authorization: quarantine and escalate.",
+      "on_indeterminate": "State cannot be established: quarantine and escalate.",
+      "on_failure": "Quarantine and escalate; no assumed rollback.",
+      "owner": "unassigned (customer to designate)",
       "provenance_refs": [
-        "SRC-REQUEST",
-        "SRC-POLICY",
-        "SRC-MCP-P2"
+        "SRC-APP-CONTEXT",
+        "SRC-POLICY-MDM-07",
+        "SRC-MCP-PH2"
       ],
       "validation_test_ids": [
-        "TEST-10",
-        "TEST-25",
-        "TEST-26"
+        "TEST-POST-01",
+        "TEST-POST-02"
       ]
     },
     {
       "control_id": "CTRL-11",
       "operation_id": "OP-DEMO-2026-001",
-      "title": "Ambiguous commit reconciliation, idempotency and no blind retry",
-      "trigger": "The commit outcome is unknown (for example the connection is lost around COMMIT) or the same request is received again.",
-      "required_action": "Do not retry blindly. First reconcile authoritative state by reading, after the failure, whether the idempotency key demo-merge-1042-2097-v1 and the corresponding merge-history, audit and outbox rows exist. Retry only after confirming that the original operation did not commit and that a retry is safe and revalidated under CTRL-09. A duplicate request after a confirmed commit returns the original outcome and performs no second merge. A new authorization record requires a new idempotency key version.",
-      "enforcement_point": "Immediately after any failure or timeout at or after COMMIT, and at request intake for the idempotency key.",
+      "title": "Ambiguous commit outcome and idempotency",
+      "trigger": "A timeout, connection loss or other failure that leaves the commit outcome uncertain, or a repeated request.",
+      "required_action": "Persist and enforce idempotency key demo-merge-1042-2097-v1 (or an equivalent operation identifier) with the operation record. On an ambiguous commit outcome, do not retry; first reconcile authoritative state using the key and a read-after-failure check of the account rows, merge history, audit and outbox rows. Retry only after confirming that the original operation did not commit and that retry is safe, under the common retry budget and with fresh authorization when the snapshot changed. A duplicate request with the same key after a successful commit returns the recorded outcome and performs no second merge.",
+      "enforcement_point": "Cross-phase: MergeCoordinator outcome handler and persistence adapter.",
       "required_evidence": [
-        "Authoritative read-after-failure result keyed by the idempotency key",
-        "Reconciliation record"
+        "Idempotency key record",
+        "Read-after-failure reconciliation result"
       ],
-      "approval_requirement": "None; reconciliation is an automated or operator procedure with a named owner (DEC-05).",
-      "on_sufficient_support": "If the key is found committed, return the original outcome and continue to post-commit controls.",
-      "on_conflict": "If partial state is observed, stop and quarantine (CTRL-13).",
-      "on_indeterminate": "Stay on HOLD until authoritative state can be read.",
-      "on_failure": "Do not retry; escalate to the reconciliation owner.",
-      "owner": "Unassigned (reconciliation owner to be named by the customer)",
+      "approval_requirement": "None at this control.",
+      "on_sufficient_support": "Outcome established: proceed according to the established state.",
+      "on_conflict": "Reconciliation finds a conflicting or partial state: quarantine and escalate.",
+      "on_indeterminate": "Outcome cannot be established: no retry; HOLD and escalate.",
+      "on_failure": "No blind retry.",
+      "owner": "unassigned (customer to designate)",
       "provenance_refs": [
-        "SRC-REQUEST",
-        "SRC-POLICY"
+        "SRC-APP-CONTEXT",
+        "SRC-POLICY-MDM-07",
+        "SRC-MCP-PH2"
       ],
       "validation_test_ids": [
-        "TEST-27",
-        "TEST-28",
-        "TEST-29"
+        "TEST-AMB-01",
+        "TEST-IDEM-01"
       ]
     },
     {
       "control_id": "CTRL-12",
       "operation_id": "OP-DEMO-2026-001",
-      "title": "Post-commit validation and downstream propagation reconciliation",
-      "trigger": "The transaction has committed.",
-      "required_action": "Validate the committed state against the authorized operation and write set, then reconcile the asynchronous outbox consumers: CRM search index, Billing customer read model and ERP customer crosswalk. Consumers must be idempotent, tolerate duplicate and out-of-order delivery and tolerate a crosswalk that already maps both IDs to EC-004821. Detect and report divergence between the committed CRM state and each consumer. Stop dependent mutations while a mismatch is unresolved.",
-      "enforcement_point": "After commit: post-commit validator, outbox consumers and a reconciliation job.",
+      "title": "Reversibility and authorization-path gate (Path A or Path B)",
+      "trigger": "A request for commit authorization of OP-DEMO-2026-001.",
+      "required_action": "Treat OP-DEMO-2026-001 as IRREVERSIBLE_WRITE with factual reversibility unknown, and HOLD unless exactly one authorization path is established. Path A: A1 a documented recovery or compensation mechanism for this exact operation covering the complete production effect scope; A2 successful recovery tests on materially equivalent state and schema at current persistence, policy and validator versions; A3 attestation by a customer-designated responsible role. Path B (only when Path A is not established): a current explicit customer policy accepting this exact operation's non-recovery risk, operation-specific approval by an authorized role, and customer-defined separation of duties. Path A changes factual reversibility only; neither path changes the action class or replaces CTRL-01 through CTRL-11. Ordinary Data Steward and CRM Platform Owner approval does not count as acceptance of non-recovery risk. After Path A is established for the complete scope, Path B is unavailable for that scope. Path A eligibility expires on relevant version or scope drift, or when A2 or A3 goes stale.",
+      "enforcement_point": "Pre-persistence: authorization-path registry consulted by the commit-boundary guard.",
       "required_evidence": [
-        "Post-commit validation result",
-        "Per-consumer reconciliation result",
-        "Outbox delivery and retry records"
+        "A1 mechanism reference, A2 test records and A3 attestation (Path A)",
+        "Path B policy reference, operation-specific approval and separation-of-duties rule (Path B)"
       ],
-      "approval_requirement": "None.",
-      "on_sufficient_support": "Record reconciled and mark downstream consistent.",
-      "on_conflict": "Quarantine on a mismatch between committed state and the authorized operation.",
-      "on_indeterminate": "Treat unreconciled consumers as inconsistent; do not mark the operation complete.",
-      "on_failure": "Stop dependent mutations and quarantine (CTRL-13).",
-      "owner": "CRM Platform Owner (customer-stated role) with consumer owners unassigned",
+      "approval_requirement": "Path B approval role, A3 attester and separation-of-duties rule are customer decisions (see GAP-05).",
+      "on_sufficient_support": "One path established for the exact operation and scope: the gate passes; every other control still applies.",
+      "on_conflict": "Evidence shows both paths claimed for the same scope: block and resolve under customer policy.",
+      "on_indeterminate": "Neither path established or evidence stale: HOLD.",
+      "on_failure": "Fail closed.",
+      "owner": "unassigned (customer to designate)",
       "provenance_refs": [
-        "SRC-REQUEST",
-        "SRC-POLICY"
+        "SRC-MCP-PH1",
+        "SRC-MCP-PH2",
+        "SRC-POLICY-MDM-07",
+        "SRC-APP-CONTEXT"
       ],
       "validation_test_ids": [
-        "TEST-26",
-        "TEST-30",
-        "TEST-31"
-      ]
-    },
-    {
-      "control_id": "CTRL-13",
-      "operation_id": "OP-DEMO-2026-001",
-      "title": "Post-commit failure, quarantine and recovery",
-      "trigger": "An invariant fails after commit, an asynchronous effect fails or diverges, or no single atomic boundary can be guaranteed for an effect.",
-      "required_action": "Stop dependent mutations, reconcile the actual persisted state, and invoke only a documented and tested recovery or compensation procedure for this exact MERGE. If none is established, quarantine the affected accounts and downstream projections and escalate to a named owner while keeping the overall decision on HOLD for further identity changes. Do not claim that a database rollback can reverse a committed or asynchronous effect and do not assume UNMERGE as recovery.",
-      "enforcement_point": "After commit, on any post-commit validation or reconciliation failure.",
-      "required_evidence": [
-        "Documented tested recovery or compensation procedure (A1/A2) or a quarantine and escalation procedure",
-        "Incident and reconciliation record"
-      ],
-      "approval_requirement": "Recovery execution requires operation-specific approval under customer policy (DEC-07).",
-      "on_sufficient_support": "Return to normal once validation and reconciliation pass.",
-      "on_conflict": "Quarantine and escalate.",
-      "on_indeterminate": "Quarantine and escalate; remain on HOLD.",
-      "on_failure": "Quarantine and escalate; do not retry the merge.",
-      "owner": "Unassigned (recovery and quarantine owner to be named by the customer)",
-      "provenance_refs": [
-        "SRC-REQUEST",
-        "SRC-POLICY"
-      ],
-      "validation_test_ids": [
-        "TEST-30",
-        "TEST-32"
+        "TEST-PATHA-POS",
+        "TEST-PATHA-A1",
+        "TEST-PATHA-A2",
+        "TEST-PATHA-A3",
+        "TEST-PATHB-POS",
+        "TEST-PATHB-POLICY",
+        "TEST-PATHB-AUTH",
+        "TEST-PATHB-SOD",
+        "TEST-PATH-EXCL"
       ]
     }
   ],
@@ -622,913 +619,879 @@
     {
       "proposition_id": "CLAIM-01",
       "operation_id": "OP-DEMO-2026-001",
-      "claim": "CRM-ACCT-1042 and CRM-ACCT-2097 denote the same legal person identified by official registry ID FIC-REG-004821, which continued across a legal-name change.",
+      "claim_kind": "identity_proposition",
+      "claim": "CRM-ACCT-2097 and CRM-ACCT-1042 denote the same continuing legal person: the legal name changed on 2024-04-01 and the registration number and legal-person continuity are unchanged, with no dissolution, successor or new incorporation.",
       "required_categories": [
-        "Authoritative official registry record for FIC-REG-004821",
-        "Exact registry-ID match on both CRM records under a documented normalization rule",
-        "Evidence of legal-person continuity (registration number unchanged; no dissolution, successor or new incorporation)",
-        "Post-rename contracting evidence that corroborates name and registry ID"
+        "Authoritative registry evidence of the registration and of continuity across the name change",
+        "Authentication of that registry evidence by a customer-designated validator",
+        "Independent corroboration where customer policy requires it"
       ],
       "source_characteristics": [
-        "Official registry source with traceable provenance and authenticity validation",
-        "Scope covering the referent and the rename interval",
-        "Corroboration that is independent of the customer's own migration and crosswalk mapping"
+        "Issued by the authoritative registry and identifying the registration number",
+        "Authenticated with recorded validator identity and version",
+        "Independent of the CRM systems and of the migration that created the duplicate",
+        "Directly stating continuity, not inferred from similarity"
       ],
-      "temporal_applicability": "Must cover the period from the rename on 2024-04-01 to the authorization and commit time; the extract is dated 2026-10-15.",
-      "validation_method": "Customer promotion process records the proposition, role, provenance, temporal applicability, validation basis and validator/policy version for SRC-REG-001, SRC-REG-VERIFY-005 and SRC-LEGAL-002; the Planner has performed none of these checks.",
-      "conflict_handling": "Any indication of a distinct, successor or dissolved entity, or a differing official registry ID, is a conflict that blocks the merge until adjudicated.",
-      "unverified_handling": "Observations that are not promoted stay UNVERIFIED and are not authorization-eligible; similarity, repetition or Planner confidence is not support.",
-      "policy_owner": "Customer domain-policy owner for POL-MDM-07 v3.2 (named owner not supplied)",
+      "temporal_applicability": "Must cover the name change on 2024-04-01 and continuity from creation of CRM-ACCT-1042 (2019-06-12) through the commit time; the extract is dated 2026-10-15 and no currency window is defined.",
+      "validation_method": "Customer-defined: authoritative registry lookup or authenticated extract, with a promotion record naming the policy and validator version. Not performed by the Planner.",
+      "conflict_handling": "Any evidence of dissolution, successor entity, different registration number or new incorporation is a contradiction that blocks the merge and goes to Data Steward adjudication.",
+      "unverified_handling": "Keep unverified or quarantined items distinct from authorization-eligible evidence; do not treat them as support.",
+      "policy_owner": "unassigned (MDM policy owner for POL-MDM-07 not identified)",
       "gaps": [
-        "Extract content (before and after legal names, status fields) was described but not supplied.",
-        "Registry-ID normalization rule not stated.",
-        "Contract-side evidence for the six contracts on CRM-ACCT-1042 not supplied.",
-        "Evidence-eligibility authority not named."
+        "The description of the extract does not restate the registration number or the old and new legal names",
+        "Evidence currency window not defined",
+        "Whether one authoritative source suffices or corroboration is required is not stated",
+        "Promotion eligibility has not been decided by the customer"
       ],
       "provenance_refs": [
-        "SRC-POLICY",
+        "SRC-POLICY-MDM-07",
         "SRC-REG-001",
         "SRC-REG-VERIFY-005",
         "SRC-LEGAL-002",
-        "SRC-MCP-EVID",
-        "SRC-MCP-PROFILE"
-      ],
-      "claim_kind": "identity_proposition"
+        "SRC-MCP-PROFILE",
+        "SRC-MCP-EVID"
+      ]
     },
     {
       "proposition_id": "CLAIM-02",
       "operation_id": "OP-DEMO-2026-001",
-      "claim": "The legal-continuity evidence is temporally applicable: the name change on 2024-04-01 and unchanged legal-person identity apply to the interval through the authorization and commit time with no later dissolution or succession.",
+      "claim_kind": "candidate_qualification",
+      "claim": "Both candidate accounts carry the exact official registry ID FIC-REG-004821, and that ID matches the authoritative registry record for the legal person in the registry extract.",
       "required_categories": [
-        "Registry status as of the authorization/commit time",
-        "Rename effective date and continuity statement",
-        "Customer-defined maximum evidence age"
+        "Registry ID attribute on each candidate record",
+        "Authoritative registry record showing the same registration number"
       ],
       "source_characteristics": [
-        "Dated registry evidence with issuer and signature validation",
-        "Status information newer than the 2026-10-15 extract when the freshness limit requires it"
+        "Registry ID read from the authoritative registry, not only copied between CRM records",
+        "Exact match, not fuzzy or partial"
       ],
-      "temporal_applicability": "From 2024-04-01 to the authorization and commit time. The extract is 37 days older than the run date of 2026-11-21; the customer has not stated a freshness limit.",
-      "validation_method": "Customer-defined freshness check on the registry source at authorization and again at the pre-write revalidation.",
-      "conflict_handling": "A later dissolution, successor, restructuring or new incorporation contradicts continuity and blocks the merge.",
-      "unverified_handling": "Evidence of unknown age is UNVERIFIED for temporal applicability and holds the candidate.",
-      "policy_owner": "Customer domain-policy owner (named owner not supplied)",
+      "temporal_applicability": "Current at evaluation time and at the commit boundary.",
+      "validation_method": "Customer-defined authoritative lookup; shared values across the two CRM records are not by themselves proof.",
+      "conflict_handling": "A mismatch or a different registry ID for either candidate blocks the merge (negative control).",
+      "unverified_handling": "A registry ID appearing only in CRM fields is a candidate attribute, not verified identity evidence.",
+      "policy_owner": "unassigned (MDM policy owner for POL-MDM-07 not identified)",
       "gaps": [
-        "Freshness limit not defined.",
-        "Whether the extract states the legacy and current names exactly as on the two records is not evidenced."
+        "The registry extract description does not state the registration number; the extract identifier containing 004821 and the enterprise-entity code EC-004821 are not accepted as proof of the registry ID"
       ],
       "provenance_refs": [
-        "SRC-POLICY",
+        "SRC-CAND-RECORDS",
         "SRC-REG-001",
-        "SRC-REG-VERIFY-005",
-        "SRC-MCP-EVID",
-        "SRC-MCP-PROFILE"
-      ],
-      "claim_kind": "temporal_applicability"
+        "SRC-POLICY-MDM-07"
+      ]
     },
     {
       "proposition_id": "CLAIM-03",
       "operation_id": "OP-DEMO-2026-001",
-      "claim": "Both records are active customer-account records of the same entity class at the recorded row versions (18 and 23) under identity schema CRM-IDENTITY-5, and CRM-ACCT-1042 qualifies as the canonical retained record under POL-MDM-07 v3.2.",
+      "claim_kind": "temporal_applicability",
+      "claim": "The name-change continuity claim applies to the relevant referent and validity interval: the change took effect on 2024-04-01, before the source record was created on 2024-05-15, and continuity still holds at the time of commit.",
       "required_categories": [
-        "Current record state and row versions",
-        "Entity class and schema version",
-        "Canonical-retention rule from the policy"
+        "Registry statement of the effective date of the name change",
+        "Evidence currency relative to the commit time",
+        "Link between each CRM record's creation date and the pre-change or post-change name"
       ],
       "source_characteristics": [
-        "Authoritative CRM state read at authorization and again before the write",
-        "Policy text identifying the canonical-retention rule"
+        "States an effective date",
+        "Dated, with a customer-defined currency window"
       ],
-      "temporal_applicability": "Current state at authorization and at the pre-write revalidation.",
-      "validation_method": "MergeCoordinator pre-persistence read of row versions, status and schema, compared with the authorized values.",
-      "conflict_handling": "A changed row version, status or schema is a stale-state conflict that requires re-evaluation with a new authorization record.",
-      "unverified_handling": "State that cannot be read or compared is treated as unverified and holds the candidate.",
-      "policy_owner": "CRM Platform Owner (customer-stated role)",
+      "temporal_applicability": "Interval from 2019-06-12 (creation of CRM-ACCT-1042) through the commit time, including 2024-04-01 and 2024-05-15.",
+      "validation_method": "Customer-defined comparison of the extract date and effective date with policy; recheck at the commit boundary.",
+      "conflict_handling": "Defer if temporal applicability or legal continuity is unresolved.",
+      "unverified_handling": "Stale or undated evidence is not authorization-eligible.",
+      "policy_owner": "unassigned (MDM policy owner for POL-MDM-07 not identified)",
       "gaps": [
-        "Policy text itself not supplied; only the supplied summary was used."
+        "No evidence currency window",
+        "No statement that the legal agreement of 2025-02-14 is linked to either CRM account"
       ],
       "provenance_refs": [
-        "SRC-REQUEST",
-        "SRC-POLICY",
-        "SRC-MCP-P1"
-      ],
-      "claim_kind": "candidate_qualification"
+        "SRC-REG-001",
+        "SRC-MIGRATION-003",
+        "SRC-LEGAL-002",
+        "SRC-CAND-RECORDS",
+        "SRC-MCP-PROFILE"
+      ]
     },
     {
       "proposition_id": "CLAIM-04",
       "operation_id": "OP-DEMO-2026-001",
-      "claim": "The migration report and the account-to-entity crosswalk, which both map the two CRM accounts to entity EC-004821, are internal mapping records that share an upstream origin and are not independent evidence of identity.",
+      "claim_kind": "other",
+      "claim": "Evidence items count as independent corroboration only when they do not share an upstream origin; the migration report and the crosswalk form one dependency cluster and are not independent identity proof.",
       "required_categories": [
-        "Origin and derivation of the EC-004821 mapping",
-        "Independence assessment relative to the registry evidence"
+        "Dependency map of evidence origins",
+        "Recorded provenance of each mapping"
       ],
       "source_characteristics": [
-        "Recorded provenance showing whether the mapping derived from the same matching decision"
+        "Separate origin from the CRM migration",
+        "Not produced or induced by the merge hypothesis"
       ],
-      "temporal_applicability": "Mapping created at migration on 2024-05-15; later changes not supplied.",
-      "validation_method": "Customer review of how the mapping to EC-004821 was produced; until then it is context only.",
-      "conflict_handling": "If the mapping contradicts registry evidence (for example a different entity) it is a conflict to adjudicate, not a vote.",
-      "unverified_handling": "Treated as UNRESOLVED_INDICATION or context; never promoted as sole or corroborating support for the identity proposition.",
-      "policy_owner": "Customer domain-policy owner (named owner not supplied)",
+      "temporal_applicability": "Origin and creation dates of the migration report (2024-05-15) and the crosswalk.",
+      "validation_method": "Customer-defined dependency analysis recorded with the promotion decision.",
+      "conflict_handling": "Do not promote a mapping solely because the planner hypothesis induced the retrieval or the mapping.",
+      "unverified_handling": "Keep both items as context in the active set; neither counts as independent support.",
+      "policy_owner": "unassigned (MDM policy owner for POL-MDM-07 not identified)",
       "gaps": [
-        "Provenance of the EC-004821 mapping not supplied.",
-        "Whether the pre-existing crosswalk is correct or itself an earlier unverified resolution is unknown."
+        "The derivation of the crosswalk from the migration report is not described"
       ],
       "provenance_refs": [
         "SRC-MIGRATION-003",
         "SRC-CROSSWALK-004",
         "SRC-MCP-EVID"
-      ],
-      "claim_kind": "other"
+      ]
     },
     {
       "proposition_id": "CLAIM-05",
       "operation_id": "OP-DEMO-2026-001",
-      "claim": "The complete persistent write set for this MERGE is known and all of it, including the outbox insertion, commits in one atomic transaction with a single commit point, with no write to historical activity or to any undeclared object.",
+      "claim_kind": "candidate_qualification",
+      "claim": "Two related companies with different official registry IDs are not the same legal person and must not be merged merely because names, domain, address or contacts are similar (negative control).",
       "required_categories": [
-        "Dependency inventory of objects referencing either account ID",
-        "Transaction-boundary evidence for each write-set member",
-        "Storage location for preserved historical names and provenance"
+        "Official registry ID of each company from the authoritative registry"
       ],
       "source_characteristics": [
-        "Customer-held schema, catalog and transaction evidence",
-        "Evidence produced in a non-production environment with the same schema, not by a production write"
+        "Authoritative, exact registry IDs"
       ],
-      "temporal_applicability": "Applies to the exact schema CRM-IDENTITY-5 and coordinator version 2.8.0 current at authorization and commit.",
-      "validation_method": "Customer-owned dependency analysis and transaction-boundary review; a design-review method is a customer decision.",
-      "conflict_handling": "A write found outside the declared set or inside historical activity contradicts the proposition and blocks the write.",
-      "unverified_handling": "Unproven membership stays UNKNOWN_UNVERIFIED and holds the write before the first persistent write.",
-      "policy_owner": "CRM Platform Owner (customer-stated role)",
+      "temporal_applicability": "Current at evaluation time.",
+      "validation_method": "Exact registry-ID comparison before any similarity is considered.",
+      "conflict_handling": "Different registry IDs block the merge; the policy defines no exception route, so exceptions are a customer policy decision.",
+      "unverified_handling": "Similarity evidence is context only and is never promoted as identity support.",
+      "policy_owner": "unassigned (MDM policy owner for POL-MDM-07 not identified)",
       "gaps": [
-        "No transaction-boundary evidence supplied.",
-        "Storage location of historical names not stated.",
-        "Disposition of the CRM-ACCT-2097 row not stated."
+        "Exception process, if any, is undefined"
       ],
       "provenance_refs": [
-        "SRC-REQUEST",
-        "SRC-POLICY",
-        "SRC-MCP-P1"
-      ],
-      "claim_kind": "other"
+        "SRC-POLICY-MDM-07",
+        "SRC-MCP-PROFILE"
+      ]
     },
     {
       "proposition_id": "CLAIM-06",
       "operation_id": "OP-DEMO-2026-001",
-      "claim": "An authorization path can be established for this protected MERGE: either Path A (documented, tested and attested recovery or compensation for this exact operation and complete effect scope) or, only if Path A is not established, Path B (explicitly accepted non-recovery risk under current customer policy, operation-specific approval and separation of duties).",
+      "claim_kind": "authorization_path_eligibility",
+      "claim": "An authorization path for the protected merge may be established only through Path A (A1, A2 and A3 demonstrating recovery for the complete production effect scope) or, when Path A is not established, Path B (explicit customer acceptance of the exact operation's non-recovery risk with operation-specific authorized approval and separation of duties); Path B does not demonstrate recoverability.",
       "required_categories": [
-        "A1 recovery mechanism documentation",
-        "A2 recovery test record with versions",
-        "A3 attestation by a customer-designated role",
-        "Or Path B policy, operation-specific approval and separation-of-duties rule"
+        "A1 mechanism, A2 test records and A3 attestation for Path A",
+        "Current policy, operation-specific approval and separation-of-duties rule for Path B"
       ],
       "source_characteristics": [
-        "Operation-specific evidence for this MERGE and its complete effect scope",
-        "Customer-designated attester and approver roles"
+        "Operation-specific and scope-complete",
+        "Current relevant versions",
+        "Customer-designated roles"
       ],
-      "temporal_applicability": "Version-bound: valid only while the equivalent state and schema and the persistence, policy and validator versions evidenced by A2 remain current at authorization and commit.",
-      "validation_method": "Customer attestation and approval process; none is supplied.",
-      "conflict_handling": "A stale or failed Path A claim expires to unknown and does not select Path B automatically; an unresolved separation-of-duties question keeps Path B on HOLD.",
-      "unverified_handling": "Unproven A1, A2 or A3, or an unproven Path B policy, approval or separation of duties, holds the write.",
-      "policy_owner": "Unassigned (customer must designate attester and Path B approver roles)",
+      "temporal_applicability": "Current at authorization and at the commit boundary; expires on relevant version or scope drift.",
+      "validation_method": "Customer-defined attestation and approval records; none supplied.",
+      "conflict_handling": "Both paths claimed for the same scope, or stale evidence: HOLD.",
+      "unverified_handling": "Absence of recovery evidence leaves factual reversibility unknown; it does not prove irreversibility.",
+      "policy_owner": "unassigned (customer to designate A3 attester and Path B approver)",
       "gaps": [
-        "No recovery mechanism, recovery test, attestation or non-recovery-risk policy supplied."
+        "No A1, A2 or A3 evidence supplied",
+        "No Path B policy, approver or separation-of-duties rule supplied",
+        "Path A and Path B are Skill-level planning constraints; the reference contract retrieved here defines the protected authorization phases, not these paths"
       ],
       "provenance_refs": [
-        "SRC-POLICY",
-        "SRC-MCP-P1",
-        "SRC-MCP-PROFILE"
+        "SRC-MCP-PH1",
+        "SRC-MCP-PH2",
+        "SRC-POLICY-MDM-07",
+        "SRC-APP-CONTEXT"
       ],
-      "claim_kind": "authorization_path_eligibility",
       "authorization_path_semantics": {
         "path_a": "demonstrates_recoverability_only_when_A1_A2_A3_are_established",
         "path_b": "accepts_non_recovery_risk_without_demonstrating_recoverability",
         "factual_reversibility_effect": "path_b_does_not_establish_reversible_or_not_reversible"
       }
+    },
+    {
+      "proposition_id": "CLAIM-07",
+      "operation_id": "OP-DEMO-2026-001",
+      "claim_kind": "other",
+      "claim": "Two separate human approvals (Data Steward and CRM Platform Owner) exist and are bound to the exact operation and state before the commit boundary.",
+      "required_categories": [
+        "Approval records from both roles",
+        "Binding fields: operation, idempotency key, row versions, policy and validator versions, evidence record IDs"
+      ],
+      "source_characteristics": [
+        "Human principals authorized for the role",
+        "Issued after the evidence gate and bound to current versions"
+      ],
+      "temporal_applicability": "Valid only while the bound versions and evidence remain current.",
+      "validation_method": "Customer approval service and commit-boundary guard.",
+      "conflict_handling": "Changed binding or conflicting reviewer finding: HOLD.",
+      "unverified_handling": "No approval artifacts were supplied; none is assumed.",
+      "policy_owner": "unassigned (customer to designate approvers)",
+      "gaps": [
+        "No approval artifacts supplied",
+        "Whether one person may hold both roles is not stated",
+        "Approval expiry not stated"
+      ],
+      "provenance_refs": [
+        "SRC-POLICY-MDM-07",
+        "SRC-MCP-PH1"
+      ]
+    },
+    {
+      "proposition_id": "CLAIM-08",
+      "operation_id": "OP-DEMO-2026-001",
+      "claim_kind": "other",
+      "claim": "The complete persistent write set and the single atomic transaction boundary are established before the first write, and the realized operation will equal the authorized effect scope.",
+      "required_categories": [
+        "Verified write-set inventory",
+        "Evidence identifying the transaction, its scope and the exact commit point",
+        "Inventory of asynchronous and external effects"
+      ],
+      "source_characteristics": [
+        "Customer-verified, not only declared",
+        "Specific to this operation"
+      ],
+      "temporal_applicability": "Current at the commit boundary.",
+      "validation_method": "Customer verification of schema, foreign-key actions, triggers and coordinator behaviour; database-specific design review.",
+      "conflict_handling": "Any undeclared effect or second commit: HOLD.",
+      "unverified_handling": "Declared architecture is a requirement, not verified fact.",
+      "policy_owner": "CRM Platform Owner (inventory sign-off role; owner assignment unconfirmed)",
+      "gaps": [
+        "Seven tables declared; dependent tables, history and name-preservation stores, source-record disposition and triggers are not described",
+        "Transaction membership and commit point are not evidenced"
+      ],
+      "provenance_refs": [
+        "SRC-APP-CONTEXT",
+        "SRC-POLICY-MDM-07",
+        "SRC-MCP-PH2"
+      ]
     }
   ],
   "implementation_points": [
     {
       "point_id": "IMPL-01",
-      "component": "MergeCoordinator 2.8.0 (candidate preparation and transaction owner)",
-      "responsibility": "Assemble the candidate operation, bind it to operation ID, idempotency key and versions, run the pre-write revalidation and execute the single SERIALIZABLE transaction.",
+      "component": "MergeCoordinator 2.8.0",
+      "responsibility": "Customer-declared coordinator of the merge: receive the request, bind operation and scope, sequence the controls and the single transaction.",
       "inputs": [
-        "Candidate records",
-        "Operation ID and idempotency key",
+        "Candidate operation",
         "Authorization record"
       ],
       "outputs": [
-        "Candidate operation",
-        "Transaction outcome"
+        "Operation record",
+        "Commit or abort outcome"
       ],
-      "owner": "CRM Platform Owner (customer-stated role)",
+      "owner": "unassigned",
       "status": "existing"
     },
     {
       "point_id": "IMPL-02",
-      "component": "Evidence admission and promotion service",
-      "responsibility": "Quarantine evidence, check conflicts, promote evidence for specific propositions and roles with recorded provenance and validator/policy version.",
+      "component": "Customer evidence gateway",
+      "responsibility": "Customer-declared service that reported signature and issuer-certificate verification of the registry extract; supply validator identity and version to the promotion record.",
       "inputs": [
-        "Registry extract",
-        "Verification record",
-        "Agreement, migration and crosswalk records"
+        "Registry extract"
       ],
       "outputs": [
-        "Promotion and validation record IDs per proposition"
+        "Verification result with validator identity and version"
       ],
-      "owner": null,
-      "status": "unknown"
-    },
-    {
-      "point_id": "IMPL-03",
-      "component": "Evidence-control record and verification of the registry extract",
-      "responsibility": "Verify signature and issuer certificate of the extract and tie the result to the exact extract.",
-      "inputs": [
-        "Registry extract",
-        "Issuer certificate chain"
-      ],
-      "outputs": [
-        "Verification record with validator identity and version"
-      ],
-      "owner": "Customer evidence-control function (name not supplied)",
+      "owner": "unassigned",
       "status": "existing"
     },
     {
-      "point_id": "IMPL-04",
-      "component": "Policy evaluator for POL-MDM-07 v3.2",
-      "responsibility": "Evaluate exact registry ID, continuity, canonical-record and name-adoption requirements and the distinct-registry-ID prohibition.",
+      "point_id": "IMPL-03",
+      "component": "Evidence admission and promotion service",
+      "responsibility": "Quarantine admission, conflict check and claim-specific promotion with recorded provenance, role, temporal applicability and validator version.",
       "inputs": [
-        "Promoted evidence",
-        "Record attributes",
+        "Evidence items",
         "Policy version"
       ],
       "outputs": [
-        "Policy evaluation result"
+        "Eligible-evidence record IDs",
+        "Conflict status"
       ],
-      "owner": null,
-      "status": "unknown"
+      "owner": "unassigned",
+      "status": "customer_action_required"
+    },
+    {
+      "point_id": "IMPL-04",
+      "component": "POL-MDM-07 policy evaluator",
+      "responsibility": "Evaluate the registry-ID and continuity rules, retain-canonical rule and name-adoption rule against eligible evidence.",
+      "inputs": [
+        "Eligible evidence",
+        "Operation record"
+      ],
+      "outputs": [
+        "Policy decision with policy version"
+      ],
+      "owner": "unassigned (MDM policy owner)",
+      "status": "customer_action_required"
     },
     {
       "point_id": "IMPL-05",
-      "component": "Approval service for Data Steward and CRM Platform Owner approvals",
-      "responsibility": "Create approval requests, capture two separate approvals bound to operation and state, and invalidate them on change.",
+      "component": "Approval service",
+      "responsibility": "Collect and validate separate Data Steward and CRM Platform Owner approvals bound to the exact operation and state.",
       "inputs": [
-        "Operation ID",
-        "Idempotency key",
-        "Versions",
-        "Evidence set",
-        "Write set"
+        "Operation record",
+        "Binding fields"
       ],
       "outputs": [
         "Bound approval records"
       ],
-      "owner": "Data Steward and CRM Platform Owner (customer-stated roles)",
+      "owner": "Data Steward and CRM Platform Owner (approvers)",
       "status": "customer_action_required"
     },
     {
       "point_id": "IMPL-06",
-      "component": "Authorization-path service (Path A / Path B)",
-      "responsibility": "Record A1/A2/A3 or the Path B policy, approval and separation-of-duties basis and expire them on version drift.",
-      "inputs": [
-        "A1/A2/A3 records",
-        "Path B policy and approval"
-      ],
-      "outputs": [
-        "Authorization-path decision"
-      ],
-      "owner": null,
-      "status": "customer_action_required"
-    },
-    {
-      "point_id": "IMPL-07",
       "component": "Pre-commit validator 1.6",
-      "responsibility": "Validate the resulting state and evidence-to-claim support inside the transaction before COMMIT.",
+      "responsibility": "Customer-declared validator; confirm that it can evaluate the listed invariants inside the same transaction and snapshot before COMMIT.",
       "inputs": [
-        "Candidate state inside the transaction",
-        "Authorization record"
+        "Uncommitted transaction state",
+        "Invariant list"
       ],
       "outputs": [
-        "PASS or failure result"
+        "Invariant results"
       ],
-      "owner": "CRM Platform Owner (customer-stated role)",
+      "owner": "unassigned",
       "status": "existing"
     },
     {
-      "point_id": "IMPL-08",
-      "component": "Idempotency and ambiguous-commit reconciliation component",
-      "responsibility": "Persist the idempotency key inside the transaction and reconcile unknown outcomes by authoritative read before any retry.",
+      "point_id": "IMPL-07",
+      "component": "Commit-boundary guard",
+      "responsibility": "Verify operation, scope, evidence, conflicts, approvals, versions, write-set and atomicity proof and authorization path before the first write and at the commit boundary; fail closed.",
       "inputs": [
-        "Idempotency key",
-        "Merge-history, audit and outbox rows"
+        "Operation record",
+        "Evidence record IDs",
+        "Approvals",
+        "Version snapshots",
+        "Path A or Path B record"
       ],
       "outputs": [
-        "Reconciliation record"
+        "Allow or HOLD decision with reasons"
       ],
-      "owner": null,
+      "owner": "unassigned",
       "status": "customer_action_required"
     },
     {
+      "point_id": "IMPL-08",
+      "component": "PostgreSQL 16.5 persistence adapter and transaction",
+      "responsibility": "Customer-declared single SERIALIZABLE transaction over the declared tables and outbox insertion; identify the exact commit point; compare-and-set on row versions.",
+      "inputs": [
+        "Approved operation"
+      ],
+      "outputs": [
+        "Committed or aborted state"
+      ],
+      "owner": "unassigned",
+      "status": "existing"
+    },
+    {
       "point_id": "IMPL-09",
-      "component": "Asynchronous outbox consumers (CRM search index, Billing customer read model, ERP customer crosswalk)",
-      "responsibility": "Apply committed outbox events idempotently after commit.",
+      "component": "Transactional outbox and consumers (search index, Billing read model, ERP crosswalk)",
+      "responsibility": "Customer-declared asynchronous consumers after commit; require idempotent, replay-safe processing and reconciliation.",
       "inputs": [
         "Outbox events"
       ],
       "outputs": [
-        "Updated projections",
-        "Delivery records"
+        "Consumer updates",
+        "Delivery status"
       ],
-      "owner": "Consumer owners (not supplied)",
+      "owner": "unassigned",
       "status": "existing"
     },
     {
       "point_id": "IMPL-10",
-      "component": "Post-commit validation and reconciliation job",
-      "responsibility": "Compare committed CRM state with the authorized operation and each consumer and report divergence.",
+      "component": "Reconciliation and recovery service",
+      "responsibility": "Post-commit validation, ambiguous-commit reconciliation by idempotency key, downstream reconciliation, quarantine and escalation.",
       "inputs": [
-        "Committed state",
-        "Consumer state"
+        "Idempotency key",
+        "Authoritative state",
+        "Consumer status"
       ],
       "outputs": [
-        "Reconciliation result"
+        "Reconciliation record",
+        "Quarantine or closure"
       ],
-      "owner": null,
+      "owner": "unassigned",
       "status": "customer_action_required"
     },
     {
       "point_id": "IMPL-11",
-      "component": "Quarantine and escalation procedure",
-      "responsibility": "Stop dependent mutations, quarantine affected accounts and projections and escalate to a named owner.",
+      "component": "Audit trail (audit_events and retention)",
+      "responsibility": "Record every gate decision, rejection and outcome, including rejections recorded outside an aborted transaction.",
       "inputs": [
-        "Failure signal",
-        "Affected IDs"
-      ],
-      "outputs": [
-        "Quarantine record",
-        "Escalation"
-      ],
-      "owner": null,
-      "status": "customer_action_required"
-    },
-    {
-      "point_id": "IMPL-12",
-      "component": "Audit recording (audit_events)",
-      "responsibility": "Record operation, evidence, approvals, versions, decisions and outcomes.",
-      "inputs": [
-        "Decision events"
+        "Gate decisions",
+        "Outcomes"
       ],
       "outputs": [
         "Audit records"
       ],
-      "owner": "CRM Platform Owner (customer-stated role)",
+      "owner": "unassigned",
       "status": "existing"
+    },
+    {
+      "point_id": "IMPL-12",
+      "component": "Authorization-path registry",
+      "responsibility": "Hold A1, A2 and A3 evidence and the Path B policy, approval and separation-of-duties records, with version-drift expiry.",
+      "inputs": [
+        "Recovery mechanism, test and attestation records",
+        "Path B policy and approval"
+      ],
+      "outputs": [
+        "Path A or Path B eligibility with expiry"
+      ],
+      "owner": "unassigned (customer to designate)",
+      "status": "customer_action_required"
     }
   ],
   "validation_tests": [
     {
-      "test_id": "TEST-01",
-      "scenario": "Sufficient support under customer policy (hypothetical positive path)",
-      "setup": "HYPOTHETICAL FIXTURE (not customer data or evidence): the registry evidence for FIC-REG-004821 is authentic, current within the customer's freshness limit, shows the 2024-04-01 name change with unchanged registration number and legal-person continuity, and no dissolution or successor; both records carry the same registry ID under the documented normalization rule.",
-      "action": "Submit the candidate MERGE of CRM-ACCT-2097 into CRM-ACCT-1042 to the identity and evidence gates.",
-      "expected_result": "CTRL-01, CTRL-03 and CTRL-04 report support for the stated interval and the candidate advances to the remaining controls. No authorization to write results from this test alone.",
+      "test_id": "TEST-EVID-01",
+      "scenario": "Sufficient support under policy (hypothetical positive)",
+      "setup": "HYPOTHETICAL fixture, not customer evidence or policy. Both candidates carry the same official registry ID confirmed against the authoritative registry; an authenticated, currently applicable registry extract states a legal-name change on 2024-04-01 with unchanged registration number and continuity and no dissolution, successor or new incorporation; the validator, policy version and promotion record are recorded; no conflicting evidence exists in eligible, active or quarantined sets.",
+      "action": "Submit the proposed MERGE OP-DEMO-2026-001 to the evidence gate (registry-ID and continuity gate, evidence eligibility and conflict check).",
+      "expected_result": "The gate records support with a clear conflict status and per-proposition evidence record IDs. The result does not authorize the operation: approvals, version binding, write-set and atomicity proof, and the authorization-path gate all still apply.",
       "validates": [
-        "CTRL-01",
+        "CTRL-02",
         "CTRL-03",
         "CTRL-04"
       ],
       "status": "proposed",
-      "execution_evidence": null,
       "operation_ids": [
         "OP-DEMO-2026-001"
-      ],
-      "execution_note": null
+      ]
     },
     {
-      "test_id": "TEST-02",
-      "scenario": "Similarity without sufficient identity support",
-      "setup": "HYPOTHETICAL FIXTURE (not customer data or evidence): two records share a similar name, domain, address and contacts, but no official registry ID or continuity evidence is attached.",
-      "action": "Submit the candidate MERGE.",
-      "expected_result": "The candidate is held; names, domains, addresses and contact similarity are not accepted as identity proof; no persistent write occurs.",
+      "test_id": "TEST-EVID-02",
+      "scenario": "Negative control: related companies with different official registry IDs",
+      "setup": "HYPOTHETICAL fixture, not customer evidence or policy. A synthetic pair of related companies (for example parent and subsidiary) with similar names, the same domain, the same address and overlapping contacts, but different official registry IDs, each confirmed by the authoritative registry.",
+      "action": "Propose a MERGE of the synthetic pair through the same gate that evaluates OP-DEMO-2026-001.",
+      "expected_result": "The exact registry-ID requirement fails. Name, domain, address and contact similarity is recorded as context only. No merge authorization can be produced and the request is held with no write started. Any exception request is routed to a customer policy decision because the supplied policy defines no exception route.",
       "validates": [
-        "CTRL-01",
         "CTRL-02"
       ],
       "status": "proposed",
-      "execution_evidence": null,
       "operation_ids": [
         "OP-DEMO-2026-001"
-      ],
-      "execution_note": null
+      ]
     },
     {
-      "test_id": "TEST-03",
-      "scenario": "Negative control: parent and subsidiary with different official registration IDs",
-      "setup": "HYPOTHETICAL FIXTURE (not customer data or evidence): a parent company record and a subsidiary record have near-identical names, the same web domain and address and shared contacts, but different official registry IDs.",
-      "action": "Submit the candidate MERGE through the same merge gates, with every approval present in the fixture.",
-      "expected_result": "The merge is blocked on the distinct registry IDs; no approval or authorization path overrides it; the related-entity relation is retained as a typed relation; no persistent write occurs.",
+      "test_id": "TEST-EVID-03",
+      "scenario": "Same registry ID but no legal-continuity evidence",
+      "setup": "Both candidates carry the same registry ID; only name, domain and address similarity and internal mappings are available; no registry extract or equivalent continuity evidence is supplied.",
+      "action": "Submit OP-DEMO-2026-001 to the evidence gate.",
+      "expected_result": "Required positive support is missing: HOLD, no promotion of the internal mappings as identity proof, and a request for continuity evidence. Similarity is not accepted as a substitute.",
       "validates": [
         "CTRL-02",
-        "CTRL-01"
+        "CTRL-03"
       ],
       "status": "proposed",
-      "execution_evidence": null,
       "operation_ids": [
         "OP-DEMO-2026-001"
-      ],
-      "execution_note": null
+      ]
     },
     {
-      "test_id": "TEST-04",
-      "scenario": "Registry ID equal only after ambiguous normalization",
-      "setup": "HYPOTHETICAL FIXTURE (not customer data or evidence): the two registry ID values differ in formatting (case, spacing or leading characters) and the customer has not defined a normalization rule.",
-      "action": "Submit the candidate MERGE.",
-      "expected_result": "The candidate is held until a documented normalization rule resolves the comparison; no persistent write occurs.",
+      "test_id": "TEST-EVID-04",
+      "scenario": "Non-independent corroboration (shared upstream origin)",
+      "setup": "The only corroboration for the identity claim is the migration report and the crosswalk that both map the two CRM IDs to one enterprise-entity code, plus the matching registry-ID field copied into both CRM records.",
+      "action": "Submit OP-DEMO-2026-001 to the evidence gate with no registry-origin evidence.",
+      "expected_result": "The migration report and crosswalk are treated as one dependency cluster and are not counted as independent identity proof; the claim stays unsupported and the request is held.",
       "validates": [
-        "CTRL-01"
+        "CTRL-03"
       ],
       "status": "proposed",
-      "execution_evidence": null,
       "operation_ids": [
         "OP-DEMO-2026-001"
-      ],
-      "execution_note": null
+      ]
     },
     {
-      "test_id": "TEST-05",
+      "test_id": "TEST-EVID-05",
       "scenario": "Material contradiction in registry evidence",
-      "setup": "HYPOTHETICAL FIXTURE (not customer data or evidence): fresh registry evidence shows a dissolution of the entity or a successor/new incorporation after the 2024-04-01 name change.",
-      "action": "Submit the candidate MERGE with the new evidence quarantined and adjudicated as a contradiction.",
-      "expected_result": "The candidate is blocked and escalated for designated adjudication; absence of a conflict is never treated as proof; no persistent write occurs.",
+      "setup": "HYPOTHETICAL fixture, not customer evidence or policy. The registry evidence shows a different registration number for one candidate, or records a dissolution, a successor entity or a new incorporation that reuses the trading name.",
+      "action": "Submit OP-DEMO-2026-001 to the evidence gate.",
+      "expected_result": "A material contradiction is established: the merge is blocked, the conflict is retained for Data Steward adjudication, and no write begins. The planner cannot override or weaken the finding.",
+      "validates": [
+        "CTRL-04"
+      ],
+      "status": "proposed",
+      "operation_ids": [
+        "OP-DEMO-2026-001"
+      ]
+    },
+    {
+      "test_id": "TEST-EVID-06",
+      "scenario": "Unverified or indeterminate evidence (verification absent, failed or validator unavailable)",
+      "setup": "The signature and issuer-certificate verification result for the registry extract is absent, failed, from an unidentified validator, or the evidence gateway is unavailable.",
+      "action": "Submit OP-DEMO-2026-001 to the evidence gate.",
+      "expected_result": "The extract stays quarantined or unverified, is not authorization-eligible, and the request is held (fail closed). An unverified item is not treated as clear.",
       "validates": [
         "CTRL-03",
         "CTRL-04"
       ],
       "status": "proposed",
-      "execution_evidence": null,
       "operation_ids": [
         "OP-DEMO-2026-001"
-      ],
-      "execution_note": null
+      ]
     },
     {
-      "test_id": "TEST-06",
-      "scenario": "Authenticity of the registry extract indeterminate",
-      "setup": "HYPOTHETICAL FIXTURE (not customer data or evidence): the verification record cannot be tied to the exact extract (identifier or hash mismatch) or lacks validator identity and version.",
-      "action": "Submit the candidate MERGE.",
-      "expected_result": "The extract stays UNVERIFIED and quarantined; it is not promoted as authorization-eligible support; the candidate is held.",
+      "test_id": "TEST-EVID-07",
+      "scenario": "Temporal mismatch or stale registry evidence",
+      "setup": "The registry extract is older than the customer-defined currency window, or does not cover the 2024-04-01 name change and the validity interval in scope.",
+      "action": "Submit OP-DEMO-2026-001 to the evidence gate.",
+      "expected_result": "Temporal applicability fails: HOLD, refresh the evidence, and re-evaluate with a new authorization record.",
       "validates": [
         "CTRL-03"
       ],
       "status": "proposed",
-      "execution_evidence": null,
       "operation_ids": [
         "OP-DEMO-2026-001"
-      ],
-      "execution_note": null
+      ]
     },
     {
-      "test_id": "TEST-07",
-      "scenario": "Only non-independent internal mapping evidence",
-      "setup": "HYPOTHETICAL FIXTURE (not customer data or evidence): the only support is the migration report mapping and the account-to-entity crosswalk, with no registry or contract evidence.",
-      "action": "Submit the candidate MERGE.",
-      "expected_result": "The two records are treated as non-independent internal mappings that share an upstream origin; they are not counted as independent corroboration; the candidate is held.",
+      "test_id": "TEST-SCOPE-01",
+      "scenario": "Wrong operation scope, direction or canonical record",
+      "setup": "The request is altered so that it merges CRM-ACCT-1042 into CRM-ACCT-2097, adds a third account, or names a canonical record other than CRM-ACCT-1042, contrary to the retain-canonical rule.",
+      "action": "Submit the altered request to the operation and scope binding check for OP-DEMO-2026-001.",
+      "expected_result": "The request is blocked; a new operation ID and fresh evaluation are required; no write begins.",
       "validates": [
-        "CTRL-03"
+        "CTRL-01"
       ],
       "status": "proposed",
-      "execution_evidence": null,
       "operation_ids": [
         "OP-DEMO-2026-001"
-      ],
-      "execution_note": null
+      ]
     },
     {
-      "test_id": "TEST-08",
-      "scenario": "Temporal mismatch or stale evidence",
-      "setup": "HYPOTHETICAL FIXTURE (not customer data or evidence): the registry extract is older than the customer's freshness limit, or the freshness limit is undefined, or the evidence does not cover the interval to the commit time.",
-      "action": "Re-evaluate the candidate at the pre-persistence check.",
-      "expected_result": "The candidate is held until refreshed registry evidence covers the interval; a new authorization record is required; no persistent write occurs.",
-      "validates": [
-        "CTRL-04"
-      ],
-      "status": "proposed",
-      "execution_evidence": null,
-      "operation_ids": [
-        "OP-DEMO-2026-001"
-      ],
-      "execution_note": null
-    },
-    {
-      "test_id": "TEST-09",
-      "scenario": "Wrong merge direction or canonical record",
-      "setup": "HYPOTHETICAL FIXTURE (not customer data or evidence): the candidate attempts to retain CRM-ACCT-2097 as canonical, or to merge CRM-ACCT-1042 into CRM-ACCT-2097.",
-      "action": "Submit the candidate for pre-persistence validation.",
-      "expected_result": "The candidate is blocked because POL-MDM-07 v3.2 retains CRM-ACCT-1042 as canonical; no persistent write occurs.",
+      "test_id": "TEST-APPR-01",
+      "scenario": "Only one of the two required approvals",
+      "setup": "Evidence and write-set gates are satisfied in a fixture; only the Data Steward approval exists (then repeat with only the CRM Platform Owner approval).",
+      "action": "Request commit authorization for OP-DEMO-2026-001.",
+      "expected_result": "HOLD in both variants: both separate human approvals are required and neither substitutes for the other.",
       "validates": [
         "CTRL-05"
       ],
       "status": "proposed",
-      "execution_evidence": null,
       "operation_ids": [
         "OP-DEMO-2026-001"
-      ],
-      "execution_note": null
+      ]
     },
     {
-      "test_id": "TEST-10",
-      "scenario": "Resulting-state check fails on name adoption or history preservation",
-      "setup": "HYPOTHETICAL FIXTURE (not customer data or evidence): the prepared resulting state drops the legacy name, omits provenance of historical names, rewrites historical activity to the canonical ID, or updates or deletes an existing account_merge_history row.",
-      "action": "Run the pre-commit validator inside the transaction.",
-      "expected_result": "Validation fails and the transaction aborts with no committed rows in any of the seven tables; the current legal name is adopted only with historical names and provenance preserved.",
+      "test_id": "TEST-APPR-02",
+      "scenario": "Approvals bound to a different operation or state",
+      "setup": "HYPOTHETICAL fixture, not customer evidence or policy. Both approvals exist but are bound to a different operation ID, a different idempotency key, row versions other than 18 and 23, or a different policy version.",
+      "action": "Request commit authorization for OP-DEMO-2026-001.",
+      "expected_result": "The approvals are invalid for this operation and state: HOLD and request new approvals bound to the exact operation and state.",
       "validates": [
-        "CTRL-05",
-        "CTRL-10"
+        "CTRL-01",
+        "CTRL-05"
       ],
       "status": "proposed",
-      "execution_evidence": null,
       "operation_ids": [
         "OP-DEMO-2026-001"
-      ],
-      "execution_note": null
+      ]
     },
     {
-      "test_id": "TEST-11",
-      "scenario": "Required approvals missing",
-      "setup": "HYPOTHETICAL FIXTURE (not customer data or evidence): no approval, or only one of the Data Steward and CRM Platform Owner approvals, exists.",
-      "action": "Attempt to proceed to persistence.",
-      "expected_result": "The operation is held before any persistent write; approvals are not inferred or accepted from the Planner.",
+      "test_id": "TEST-APPR-03",
+      "scenario": "Valid bound approvals (hypothetical positive)",
+      "setup": "HYPOTHETICAL fixture, not customer evidence or policy. Data Steward and CRM Platform Owner approvals are issued by principals authorized for those roles, are human, and are bound to OP-DEMO-2026-001, its idempotency key, row versions 18 and 23, the policy version and the evidence record IDs.",
+      "action": "Request commit authorization for OP-DEMO-2026-001 after the evidence gate has passed.",
+      "expected_result": "The approval gate passes only. The commit still requires version binding, write-set and atomicity proof, pre-commit invariants and the authorization-path gate.",
+      "validates": [
+        "CTRL-05"
+      ],
+      "status": "proposed",
+      "operation_ids": [
+        "OP-DEMO-2026-001"
+      ]
+    },
+    {
+      "test_id": "TEST-VER-01",
+      "scenario": "Stale row version between approval and commit",
+      "setup": "After approval, the canonical row version changes from 18 to 19, or the source row version from 23 to 24, before the commit boundary.",
+      "action": "Attempt to commit OP-DEMO-2026-001 with the existing authorization.",
+      "expected_result": "The authorization is rejected as stale; the stale candidate is not replayed; evaluation restarts from the beginning with a new authorization record within the common retry budget.",
       "validates": [
         "CTRL-06"
       ],
       "status": "proposed",
-      "execution_evidence": null,
       "operation_ids": [
         "OP-DEMO-2026-001"
-      ],
-      "execution_note": null
+      ]
     },
     {
-      "test_id": "TEST-12",
-      "scenario": "Approval invalid, unbound or replayed on changed state",
-      "setup": "HYPOTHETICAL FIXTURE (not customer data or evidence): an approval is not bound to the operation ID, idempotency key and state, or both roles were filled by the same individual, or the row version changed after approval.",
-      "action": "Attempt to proceed to persistence.",
-      "expected_result": "The approval is rejected as invalid and a new approval for the current state is required; no persistent write occurs.",
+      "test_id": "TEST-VER-02",
+      "scenario": "Policy, validator or schema version drift",
+      "setup": "After approval, the policy version moves from POL-MDM-07 v3.2, or the pre-commit validator from 1.6, or the identity schema from CRM-IDENTITY-5.",
+      "action": "Attempt to commit OP-DEMO-2026-001 with the existing authorization.",
+      "expected_result": "The authorization is stale: HOLD and re-evaluate against the current versions; no replay of the earlier decision.",
+      "validates": [
+        "CTRL-06"
+      ],
+      "status": "proposed",
+      "operation_ids": [
+        "OP-DEMO-2026-001"
+      ]
+    },
+    {
+      "test_id": "TEST-ATOM-01",
+      "scenario": "Write-set completeness unverified before first write",
+      "setup": "HYPOTHETICAL fixture, not customer evidence or policy. Review finds a dependent table, foreign-key action or trigger that references either account but is outside the seven declared tables.",
+      "action": "Request the pre-write readiness check for OP-DEMO-2026-001.",
+      "expected_result": "HOLD before the first persistent write; no partial sequence of writes begins; the inventory is corrected and re-reviewed before any retry.",
+      "validates": [
+        "CTRL-07"
+      ],
+      "status": "proposed",
+      "operation_ids": [
+        "OP-DEMO-2026-001"
+      ]
+    },
+    {
+      "test_id": "TEST-ATOM-02",
+      "scenario": "Atomicity unverified before first write",
+      "setup": "Evidence cannot show that all database writes and the outbox insertion occur in one identified transaction with a single commit point (for example the outbox insert is issued separately, or more than one commit is used).",
+      "action": "Request the pre-write readiness check for OP-DEMO-2026-001.",
+      "expected_result": "HOLD; no reliance on later rollback; the SERIALIZABLE setting is not accepted as proof of atomicity; database-specific design review is required.",
+      "validates": [
+        "CTRL-07"
+      ],
+      "status": "proposed",
+      "operation_ids": [
+        "OP-DEMO-2026-001"
+      ]
+    },
+    {
+      "test_id": "TEST-ATOM-03",
+      "scenario": "Pre-commit invariant failure inside a verified atomic transaction",
+      "setup": "HYPOTHETICAL fixture, not customer evidence or policy. Atomicity is verified for the fixture. The validator then detects a violated invariant, such as an update to account_merge_history, a lost contract link, or missing historical-name preservation.",
+      "action": "Run the pre-commit invariant validation for OP-DEMO-2026-001.",
+      "expected_result": "The whole transaction is aborted; none of the transaction's writes, including audit and outbox rows, are committed; the rejection is recorded outside the aborted transaction; no event is published.",
+      "validates": [
+        "CTRL-08"
+      ],
+      "status": "proposed",
+      "operation_ids": [
+        "OP-DEMO-2026-001"
+      ]
+    },
+    {
+      "test_id": "TEST-ATOM-04",
+      "scenario": "Serialization failure (definite abort) under the SERIALIZABLE requirement",
+      "setup": "HYPOTHETICAL fixture, not customer evidence or policy. A concurrent transaction causes the database to report a serialization failure for the merge transaction.",
+      "action": "Execute the fixture transaction for OP-DEMO-2026-001.",
+      "expected_result": "The transaction is rolled back with no partial effects; the stale candidate is not replayed; evaluation restarts from a fresh snapshot with a new authorization record within the common retry budget; when the budget is exhausted the request is held and escalated.",
       "validates": [
         "CTRL-06",
-        "CTRL-09"
-      ],
-      "status": "proposed",
-      "execution_evidence": null,
-      "operation_ids": [
-        "OP-DEMO-2026-001"
-      ],
-      "execution_note": null
-    },
-    {
-      "test_id": "TEST-13",
-      "scenario": "Path A positive (hypothetical fixture)",
-      "setup": "HYPOTHETICAL FIXTURE (not customer data or evidence): A1 (documented recovery or compensation mechanism for this exact MERGE and its complete effect scope), A2 (successful recovery test on materially equivalent state and schema using current persistence, policy and validator versions) and A3 (attestation by a customer-designated role) are all established; the write set is complete.",
-      "action": "Evaluate the authorization path for the operation.",
-      "expected_result": "Path A eligibility is recorded and factual reversibility becomes reversible for the proven scope while the action class remains IRREVERSIBLE_WRITE; every other control still applies and nothing is written automatically.",
-      "validates": [
-        "CTRL-07"
-      ],
-      "status": "proposed",
-      "execution_evidence": null,
-      "operation_ids": [
-        "OP-DEMO-2026-001"
-      ],
-      "execution_note": null
-    },
-    {
-      "test_id": "TEST-14",
-      "scenario": "Path A negative: A1 missing or incomplete",
-      "setup": "HYPOTHETICAL FIXTURE (not customer data or evidence): the recovery mechanism is absent, undocumented, for a different operation, or does not cover the complete effect scope; A2 and A3 are otherwise present.",
-      "action": "Evaluate the authorization path.",
-      "expected_result": "Path A is not established and the operation is held.",
-      "validates": [
-        "CTRL-07"
-      ],
-      "status": "proposed",
-      "execution_evidence": null,
-      "operation_ids": [
-        "OP-DEMO-2026-001"
-      ],
-      "execution_note": null
-    },
-    {
-      "test_id": "TEST-15",
-      "scenario": "Path A negative: A2 missing, failed, stale or non-equivalent",
-      "setup": "HYPOTHETICAL FIXTURE (not customer data or evidence): recovery tests are absent, failed, run against non-equivalent state or schema, or predate a change in persistence, policy or validator version; A1 and A3 are otherwise present.",
-      "action": "Evaluate the authorization path.",
-      "expected_result": "Path A is not established and the operation is held.",
-      "validates": [
-        "CTRL-07"
-      ],
-      "status": "proposed",
-      "execution_evidence": null,
-      "operation_ids": [
-        "OP-DEMO-2026-001"
-      ],
-      "execution_note": null
-    },
-    {
-      "test_id": "TEST-16",
-      "scenario": "Path A negative: A3 attestation missing or invalid",
-      "setup": "HYPOTHETICAL FIXTURE (not customer data or evidence): the attestation is absent, given by a non-designated role, or does not attest the applicability and results of A1 and A2; A1 and A2 are otherwise present.",
-      "action": "Evaluate the authorization path.",
-      "expected_result": "Path A is not established and the operation is held.",
-      "validates": [
-        "CTRL-07"
-      ],
-      "status": "proposed",
-      "execution_evidence": null,
-      "operation_ids": [
-        "OP-DEMO-2026-001"
-      ],
-      "execution_note": null
-    },
-    {
-      "test_id": "TEST-17",
-      "scenario": "Path B positive (hypothetical fixture)",
-      "setup": "HYPOTHETICAL FIXTURE (not customer data or evidence): Path A is not established; a current explicit customer policy accepts this exact operation's non-recovery risk; an authorized role gives operation-specific approval; the customer-defined separation of duties from the ordinary approvals is satisfied.",
-      "action": "Evaluate the authorization path.",
-      "expected_result": "Path B eligibility is recorded; the action class stays IRREVERSIBLE_WRITE and factual reversibility stays unknown; every other control still applies and nothing is written automatically.",
-      "validates": [
-        "CTRL-07"
-      ],
-      "status": "proposed",
-      "execution_evidence": null,
-      "operation_ids": [
-        "OP-DEMO-2026-001"
-      ],
-      "execution_note": null
-    },
-    {
-      "test_id": "TEST-18",
-      "scenario": "Path B negative: no current policy accepting the non-recovery risk",
-      "setup": "HYPOTHETICAL FIXTURE (not customer data or evidence): Path A is not established and no current customer policy accepts this exact operation's non-recovery risk.",
-      "action": "Evaluate the authorization path.",
-      "expected_result": "Path B is unavailable and the operation is held.",
-      "validates": [
-        "CTRL-07"
-      ],
-      "status": "proposed",
-      "execution_evidence": null,
-      "operation_ids": [
-        "OP-DEMO-2026-001"
-      ],
-      "execution_note": null
-    },
-    {
-      "test_id": "TEST-19",
-      "scenario": "Path B negative: approval absent or from an unauthorized role",
-      "setup": "HYPOTHETICAL FIXTURE (not customer data or evidence): a policy exists but operation-specific approval is absent, not specific to this operation, or given by a role the policy does not authorize; the Data Steward and CRM Platform Owner approvals are present.",
-      "action": "Evaluate the authorization path.",
-      "expected_result": "Path B is unavailable and the operation is held; ordinary approvals do not count as acceptance of non-recovery risk.",
-      "validates": [
-        "CTRL-07"
-      ],
-      "status": "proposed",
-      "execution_evidence": null,
-      "operation_ids": [
-        "OP-DEMO-2026-001"
-      ],
-      "execution_note": null
-    },
-    {
-      "test_id": "TEST-20",
-      "scenario": "Path B negative: separation of duties absent, unresolved or violated",
-      "setup": "HYPOTHETICAL FIXTURE (not customer data or evidence): policy and approval exist but separation of duties from the ordinary approvals is not defined, is unresolved, or the same individual gave both approvals.",
-      "action": "Evaluate the authorization path.",
-      "expected_result": "Path B is unavailable and the operation is held.",
-      "validates": [
-        "CTRL-07"
-      ],
-      "status": "proposed",
-      "execution_evidence": null,
-      "operation_ids": [
-        "OP-DEMO-2026-001"
-      ],
-      "execution_note": null
-    },
-    {
-      "test_id": "TEST-21",
-      "scenario": "Path A and Path B mutual exclusivity",
-      "setup": "HYPOTHETICAL FIXTURE (not customer data or evidence): Path A is established for the complete effect scope.",
-      "action": "Attempt to solicit or record acceptance of non-recovery risk for the same operation and scope.",
-      "expected_result": "Path B is unavailable for that operation and scope; no non-recovery-risk acceptance is solicited or recorded while Path A remains established.",
-      "validates": [
-        "CTRL-07"
-      ],
-      "status": "proposed",
-      "execution_evidence": null,
-      "operation_ids": [
-        "OP-DEMO-2026-001"
-      ],
-      "execution_note": null
-    },
-    {
-      "test_id": "TEST-22",
-      "scenario": "Write-set completeness or atomicity unverified before the first write",
-      "setup": "HYPOTHETICAL FIXTURE (not customer data or evidence): no evidence shows that all seven tables, the storage for historical names and the outbox insertion are covered by one atomic transaction with a single commit point.",
-      "action": "Request execution.",
-      "expected_result": "The operation is held before the first persistent write; no partial write sequence starts and isolation level is not accepted as proof of atomicity.",
-      "validates": [
         "CTRL-08"
       ],
       "status": "proposed",
-      "execution_evidence": null,
       "operation_ids": [
         "OP-DEMO-2026-001"
-      ],
-      "execution_note": null
+      ]
     },
     {
-      "test_id": "TEST-23",
-      "scenario": "Write outside the declared set or into historical activity",
-      "setup": "HYPOTHETICAL FIXTURE (not customer data or evidence): dependency analysis finds an object referencing the account IDs that is not in the declared write set, or the candidate write set includes a historical activity record.",
-      "action": "Evaluate the write set.",
-      "expected_result": "The operation is blocked and held until the write set is reconciled; historical activity keeps its original account IDs.",
+      "test_id": "TEST-POST-01",
+      "scenario": "Post-commit validation failure",
+      "setup": "HYPOTHETICAL fixture, not customer evidence or policy. After commit, read-after-commit validation finds a divergence from the authorized effect (for example link counts or the adopted legal name).",
+      "action": "Run post-commit validation for OP-DEMO-2026-001.",
+      "expected_result": "Dependent mutations stop; actual persisted state is reconciled; only a documented, tested compensation for this exact operation may be used, otherwise affected records and events are quarantined and escalated; no claim that rollback undoes the commit.",
       "validates": [
-        "CTRL-08"
-      ],
-      "status": "proposed",
-      "execution_evidence": null,
-      "operation_ids": [
-        "OP-DEMO-2026-001"
-      ],
-      "execution_note": null
-    },
-    {
-      "test_id": "TEST-24",
-      "scenario": "State, schema, coordinator, validator or policy drift before the write",
-      "setup": "HYPOTHETICAL FIXTURE (not customer data or evidence): after approval, CRM-ACCT-1042 moves from row version 18 or CRM-ACCT-2097 from row version 23, or the schema, coordinator, validator or policy identifier changes.",
-      "action": "Run the immediate pre-write revalidation.",
-      "expected_result": "The authorization is rejected as stale and the candidate is re-evaluated from the evidence stage with a new authorization record; the stale candidate is not replayed.",
-      "validates": [
-        "CTRL-09"
-      ],
-      "status": "proposed",
-      "execution_evidence": null,
-      "operation_ids": [
-        "OP-DEMO-2026-001"
-      ],
-      "execution_note": null
-    },
-    {
-      "test_id": "TEST-25",
-      "scenario": "Pre-commit invariant failure inside the atomic transaction",
-      "setup": "HYPOTHETICAL FIXTURE (not customer data or evidence): the pre-commit validator returns a failure or the database reports a serialization conflict before COMMIT.",
-      "action": "Execute the write inside the single SERIALIZABLE transaction.",
-      "expected_result": "The transaction aborts and a read of all seven tables shows no committed change from the operation; this is a transaction abort and not post-commit compensation.",
-      "validates": [
+        "CTRL-09",
         "CTRL-10"
       ],
       "status": "proposed",
-      "execution_evidence": null,
       "operation_ids": [
         "OP-DEMO-2026-001"
-      ],
-      "execution_note": null
+      ]
     },
     {
-      "test_id": "TEST-26",
-      "scenario": "Outbox atomicity",
-      "setup": "HYPOTHETICAL FIXTURE (not customer data or evidence): a failure is injected after the outbox insertion but before COMMIT, and separately after a successful COMMIT.",
-      "action": "Execute the write and inspect the outbox.",
-      "expected_result": "The outbox event exists if and only if the merge committed; no downstream event is emitted for an aborted transaction.",
+      "test_id": "TEST-POST-02",
+      "scenario": "Consumer failure and duplicate events outside the database transaction",
+      "setup": "HYPOTHETICAL fixture, not customer evidence or policy. The ERP crosswalk consumer times out and the search-index consumer receives the same outbox event twice.",
+      "action": "Process the outbox events for OP-DEMO-2026-001 and run downstream reconciliation.",
+      "expected_result": "Consumers are idempotent (no double apply); failed deliveries are retried from the outbox; reconciliation reports divergence against authoritative state; the database merge is not re-executed and the Billing read model is not reported complete until reconciled.",
       "validates": [
-        "CTRL-10",
-        "CTRL-12"
+        "CTRL-09",
+        "CTRL-10"
       ],
       "status": "proposed",
-      "execution_evidence": null,
       "operation_ids": [
         "OP-DEMO-2026-001"
-      ],
-      "execution_note": null
+      ]
     },
     {
-      "test_id": "TEST-27",
+      "test_id": "TEST-AMB-01",
       "scenario": "Ambiguous commit outcome",
-      "setup": "HYPOTHETICAL FIXTURE (not customer data or evidence): the connection is lost at COMMIT and the outcome is unknown.",
-      "action": "Trigger reconciliation without retrying.",
-      "expected_result": "No blind retry occurs; the authoritative state is read by idempotency key demo-merge-1042-2097-v1; the original outcome is returned if committed; retry is considered only after confirming non-commit.",
+      "setup": "HYPOTHETICAL fixture, not customer evidence or policy. The connection is lost while the COMMIT of the merge transaction is in flight.",
+      "action": "Handle the failure for OP-DEMO-2026-001 under key demo-merge-1042-2097-v1.",
+      "expected_result": "No blind retry. Authoritative state is read back using the idempotency key (account rows, merge history, audit and outbox rows). A retry occurs only after confirming the original did not commit and retry is safe; if it did commit, post-commit validation and consumer reconciliation proceed instead.",
       "validates": [
         "CTRL-11"
       ],
       "status": "proposed",
-      "execution_evidence": null,
       "operation_ids": [
         "OP-DEMO-2026-001"
-      ],
-      "execution_note": null
+      ]
     },
     {
-      "test_id": "TEST-28",
-      "scenario": "Duplicate request after a confirmed commit",
-      "setup": "HYPOTHETICAL FIXTURE (not customer data or evidence): the merge committed and the same idempotency key is submitted again.",
-      "action": "Submit the duplicate request.",
-      "expected_result": "No second merge is performed and the original outcome is returned.",
+      "test_id": "TEST-IDEM-01",
+      "scenario": "Duplicate request and idempotency key reuse",
+      "setup": "HYPOTHETICAL fixture, not customer evidence or policy. The operation already committed under key demo-merge-1042-2097-v1; the same request is submitted again, and separately a request with the same key but different content is submitted.",
+      "action": "Submit both requests for OP-DEMO-2026-001.",
+      "expected_result": "The identical request returns the recorded outcome with no second merge and no duplicate outbox event; the same key with different content is rejected.",
       "validates": [
         "CTRL-11"
       ],
       "status": "proposed",
-      "execution_evidence": null,
       "operation_ids": [
         "OP-DEMO-2026-001"
-      ],
-      "execution_note": null
+      ]
     },
     {
-      "test_id": "TEST-29",
-      "scenario": "Retry after confirmed non-commit",
-      "setup": "HYPOTHETICAL FIXTURE (not customer data or evidence): reconciliation confirms the original transaction did not commit and the failure was a serialization conflict.",
-      "action": "Request a retry.",
-      "expected_result": "The retry is allowed only after revalidation of state, versions and approvals, within the common retry budget, with a new authorization record if any bound item changed.",
+      "test_id": "TEST-HIST-01",
+      "scenario": "Preservation invariants (history, append-only, name adoption)",
+      "setup": "HYPOTHETICAL fixture, not customer evidence or policy. A merge fixture in which historical activity rows are touched, account_merge_history is updated or deleted, the current legal name is not adopted, or historical names and provenance are dropped.",
+      "action": "Run pre-commit invariant validation for OP-DEMO-2026-001.",
+      "expected_result": "Each violation is detected and aborts the transaction; in the conforming fixture, historical activity keeps its original account IDs, merge history is append-only, the current legal name is adopted, and historical names and provenance are preserved.",
       "validates": [
-        "CTRL-11",
-        "CTRL-09"
+        "CTRL-08"
       ],
       "status": "proposed",
-      "execution_evidence": null,
       "operation_ids": [
         "OP-DEMO-2026-001"
-      ],
-      "execution_note": null
+      ]
     },
     {
-      "test_id": "TEST-30",
-      "scenario": "Post-commit validation mismatch",
-      "setup": "HYPOTHETICAL FIXTURE (not customer data or evidence): after commit the canonical account has a contract or contact link count that differs from the authorized result, or the historical names were not preserved.",
-      "action": "Run post-commit validation.",
-      "expected_result": "Dependent mutations stop, the accounts and projections are quarantined, and the overall decision stays on HOLD for further identity changes.",
-      "validates": [
-        "CTRL-12",
-        "CTRL-13"
-      ],
-      "status": "proposed",
-      "execution_evidence": null,
-      "operation_ids": [
-        "OP-DEMO-2026-001"
-      ],
-      "execution_note": null
-    },
-    {
-      "test_id": "TEST-31",
-      "scenario": "Downstream consumer failure, duplicate delivery or divergence",
-      "setup": "HYPOTHETICAL FIXTURE (not customer data or evidence): the search index, Billing read model or ERP crosswalk consumer fails, receives the event twice, or diverges; the ERP crosswalk already maps both IDs to EC-004821.",
-      "action": "Run outbox consumers and the reconciliation job.",
-      "expected_result": "Consumers handle duplicates idempotently; divergence is detected and reconciled without re-running the merge; the operation is not marked complete until all consumers reconcile.",
+      "test_id": "TEST-PATHA-POS",
+      "scenario": "Path A positive (hypothetical): A1, A2 and A3 established",
+      "setup": "HYPOTHETICAL fixture, not customer evidence or policy. A1: a documented recovery or compensation mechanism for this exact MERGE operation covers the complete production effect scope, including the downstream consumer effects. A2: successful recovery tests on materially equivalent state and schema at the current PostgreSQL, policy, validator and schema versions. A3: attestation by a customer-designated responsible role confirms A1 and A2 applicability and results. The write-set inventory is complete.",
+      "action": "Evaluate the authorization path for OP-DEMO-2026-001.",
+      "expected_result": "Path A eligibility and factual reversibility reversible for the proven scope only; the action class stays IRREVERSIBLE_WRITE; all other controls still apply.",
       "validates": [
         "CTRL-12"
       ],
       "status": "proposed",
-      "execution_evidence": null,
       "operation_ids": [
         "OP-DEMO-2026-001"
-      ],
-      "execution_note": null
+      ]
     },
     {
-      "test_id": "TEST-32",
-      "scenario": "Post-commit failure with no tested recovery procedure",
-      "setup": "HYPOTHETICAL FIXTURE (not customer data or evidence): a post-commit failure is detected and no documented, tested compensation procedure for this exact MERGE exists.",
-      "action": "Handle the failure.",
-      "expected_result": "Dependent mutations stop, affected accounts and projections are quarantined and escalated, the decision stays on HOLD, and UNMERGE is not assumed to be recovery.",
+      "test_id": "TEST-PATHA-A1",
+      "scenario": "Path A negative A1: mechanism missing, wrong operation or incomplete scope",
+      "setup": "A2 and A3 exist, but the documented recovery mechanism is absent, belongs to a different operation (for example a separate unmerge procedure not independently qualified), or does not cover the complete effect scope.",
+      "action": "Evaluate the authorization path for OP-DEMO-2026-001.",
+      "expected_result": "Path A is not established: HOLD; factual reversibility remains unknown.",
       "validates": [
-        "CTRL-13"
+        "CTRL-12"
       ],
       "status": "proposed",
-      "execution_evidence": null,
       "operation_ids": [
         "OP-DEMO-2026-001"
+      ]
+    },
+    {
+      "test_id": "TEST-PATHA-A2",
+      "scenario": "Path A negative A2: recovery test absent, failed, stale or not equivalent",
+      "setup": "A1 and A3 exist, but recovery tests are absent, failed, stale, or run on non-equivalent state, schema or non-current persistence, policy or validator versions.",
+      "action": "Evaluate the authorization path for OP-DEMO-2026-001.",
+      "expected_result": "Path A is not established: HOLD; factual reversibility remains unknown.",
+      "validates": [
+        "CTRL-12"
       ],
-      "execution_note": null
+      "status": "proposed",
+      "operation_ids": [
+        "OP-DEMO-2026-001"
+      ]
+    },
+    {
+      "test_id": "TEST-PATHA-A3",
+      "scenario": "Path A negative A3: attestation absent, unauthorized or not covering A1/A2",
+      "setup": "A1 and A2 exist, but the attestation is absent, signed by a role not designated by the customer, or does not attest A1 and A2 applicability and results.",
+      "action": "Evaluate the authorization path for OP-DEMO-2026-001.",
+      "expected_result": "Path A is not established: HOLD; factual reversibility remains unknown.",
+      "validates": [
+        "CTRL-12"
+      ],
+      "status": "proposed",
+      "operation_ids": [
+        "OP-DEMO-2026-001"
+      ]
+    },
+    {
+      "test_id": "TEST-PATHB-POS",
+      "scenario": "Path B positive (hypothetical): explicit acceptance of non-recovery risk",
+      "setup": "HYPOTHETICAL fixture, not customer evidence or policy. Path A is not established. A current explicit customer policy accepts this exact operation's non-recovery risk; an authorized role gives operation-specific approval; the customer-defined separation of duties is satisfied.",
+      "action": "Evaluate the authorization path for OP-DEMO-2026-001.",
+      "expected_result": "Path B eligibility only. The action class stays IRREVERSIBLE_WRITE and factual reversibility stays unknown; Path B does not demonstrate recoverability. All other controls still apply.",
+      "validates": [
+        "CTRL-12"
+      ],
+      "status": "proposed",
+      "operation_ids": [
+        "OP-DEMO-2026-001"
+      ]
+    },
+    {
+      "test_id": "TEST-PATHB-POLICY",
+      "scenario": "Path B negative policy: no current policy accepting this risk",
+      "setup": "Path A is not established and approvals exist, but no current explicit policy accepts this exact operation's non-recovery risk.",
+      "action": "Evaluate the authorization path for OP-DEMO-2026-001.",
+      "expected_result": "HOLD; Path B is unavailable.",
+      "validates": [
+        "CTRL-12"
+      ],
+      "status": "proposed",
+      "operation_ids": [
+        "OP-DEMO-2026-001"
+      ]
+    },
+    {
+      "test_id": "TEST-PATHB-AUTH",
+      "scenario": "Path B negative approval or authority",
+      "setup": "A current policy exists, but operation-specific risk-acceptance approval is absent or given by a role the policy does not authorize; only the ordinary Data Steward and CRM Platform Owner merge approvals exist.",
+      "action": "Evaluate the authorization path for OP-DEMO-2026-001.",
+      "expected_result": "HOLD; ordinary merge approval does not count as acceptance of non-recovery risk.",
+      "validates": [
+        "CTRL-12"
+      ],
+      "status": "proposed",
+      "operation_ids": [
+        "OP-DEMO-2026-001"
+      ]
+    },
+    {
+      "test_id": "TEST-PATHB-SOD",
+      "scenario": "Path B negative separation of duties",
+      "setup": "A current policy and an authorized approval exist, but separation of duties is undefined, unresolved or violated (for example the risk approver is the ordinary approver and the policy requires independence).",
+      "action": "Evaluate the authorization path for OP-DEMO-2026-001.",
+      "expected_result": "HOLD; Path B is unavailable until separation of duties is resolved under customer policy.",
+      "validates": [
+        "CTRL-12"
+      ],
+      "status": "proposed",
+      "operation_ids": [
+        "OP-DEMO-2026-001"
+      ]
+    },
+    {
+      "test_id": "TEST-PATH-EXCL",
+      "scenario": "Path exclusivity after Path A is established",
+      "setup": "HYPOTHETICAL fixture, not customer evidence or policy. Path A is established for the complete effect scope of this operation.",
+      "action": "Attempt to solicit or record non-recovery-risk acceptance (Path B) for OP-DEMO-2026-001.",
+      "expected_result": "Path B is unavailable for that operation and scope; no risk acceptance is solicited or recorded. If A2 or A3 later goes stale or a relevant version drifts, Path A expires, factual reversibility returns to unknown, and HOLD applies until Path A is renewed or Path B is independently established.",
+      "validates": [
+        "CTRL-12"
+      ],
+      "status": "proposed",
+      "operation_ids": [
+        "OP-DEMO-2026-001"
+      ]
     }
   ],
   "planner_checks": [
     {
       "planner_check_id": "PCHK-MCP-01",
-      "scenario": "MCP unavailable or materially incomplete",
-      "setup": "A required public reference retrieval is unavailable or a required response field (profile version, requested mutation type or action class, phase) is materially incomplete.",
+      "scenario": "Public reference MCP unavailable or materially incomplete",
+      "setup": "A required public MCP retrieval is unavailable or a required response field is materially incomplete.",
       "action": "Apply the reference dependency fallback.",
-      "expected_result": "Use degraded_reference_unavailable, mark the affected claims unresolved, list the exact missing retrievals and invent no reference-backed content or provenance.",
+      "expected_result": "Use degraded_reference_unavailable; mark affected claims unresolved; invent no reference-backed content or provenance.",
       "validates": "mcp_availability_and_response_completeness",
       "source_refs": [
-        "SRC-MCP-STATUS",
-        "SRC-MCP-PROFILE",
-        "SRC-MCP-EVID",
-        "SRC-MCP-P1",
-        "SRC-MCP-P2"
+        "SRC-MCP-STATUS"
       ],
       "status": "proposed"
     },
     {
       "planner_check_id": "PCHK-REF-01",
       "scenario": "Reference version drift within one run",
-      "setup": "Two required retrievals in the same run expose incompatible reference-set versions.",
-      "action": "Compare version basis and source identifiers and resolve the mismatch.",
+      "setup": "Two or more required retrievals in the same run expose incompatible reference-set versions.",
+      "action": "Compare the version basis of each source and resolve the mismatch.",
       "expected_result": "Do not silently combine versions; refresh consistently or mark dependent decisions unresolved or degraded.",
       "validates": "reference_version_consistency",
       "source_refs": [
@@ -1540,9 +1503,9 @@
     {
       "planner_check_id": "PCHK-SCOPE-01",
       "scenario": "Request outside the supported scope",
-      "setup": "The request is not an identity-changing entity-resolution task, for example an unrelated field update.",
-      "action": "Qualify the request against the Skill scope.",
-      "expected_result": "State the scope boundary and fabricate no operations, controls or reference coverage.",
+      "setup": "The request is not an identity-changing entity-resolution operation (for example an ordinary field update).",
+      "action": "Qualify the request against the Skill's scope.",
+      "expected_result": "State the scope boundary; fabricate no operations, controls or reference coverage.",
       "validates": "scope_qualification",
       "status": "proposed"
     }
@@ -1550,151 +1513,177 @@
   "assumptions": [
     {
       "assumption_id": "ASM-01",
-      "statement": "The merge may be difficult or impossible to reverse and is classified as the protected IRREVERSIBLE_WRITE path.",
-      "basis": "A production MERGE changes shared account identity and propagates downstream; no recovery mechanism, test or attestation was supplied.",
-      "impact": "If recovery is later proven through Path A the action class remains IRREVERSIBLE_WRITE and only factual reversibility changes.",
-      "verification": "Customer supplies A1/A2/A3 or a Path B policy (DEC-03)."
+      "statement": "The evidence descriptions (registry extract, gateway result, agreement, migration report, crosswalk) accurately describe the underlying documents.",
+      "basis": "Customer-supplied task input; the Planner saw no source document.",
+      "impact": "If a description is inaccurate the support assessment may change or reverse.",
+      "verification": "Data Steward reviews the original documents, not the descriptions."
     },
     {
       "assumption_id": "ASM-02",
-      "statement": "The seven tables named by the customer are the intended write set, and the customer's statement that all writes and outbox insertion must be atomic in one SERIALIZABLE transaction is a requirement, not proof of the implementation.",
-      "basis": "The request states the write set and the required atomicity but supplies no transaction evidence; POL-MDM-07 requires proof before the first write.",
-      "impact": "If the implementation differs, the write set or atomic boundary is wrong and the write must stay on HOLD.",
-      "verification": "Customer dependency analysis and transaction-boundary review (DEC-04)."
+      "statement": "The architecture and write set (seven tables, one SERIALIZABLE transaction including outbox insertion, asynchronous consumers) are customer-declared requirements and are not verified implementation facts.",
+      "basis": "Instruction in the task input.",
+      "impact": "If the implementation differs, atomicity and write-set completeness fail and HOLD applies.",
+      "verification": "Customer verifies schema, coordinator behaviour and consumers (GAP-03, GAP-04)."
     },
     {
       "assumption_id": "ASM-03",
-      "statement": "The registry extract, verification record, agreement, migration report and crosswalk say what the request describes; their content was not supplied and none was verified by the Planner.",
-      "basis": "Only descriptions of the evidence were supplied.",
-      "impact": "Different content could change the evidence assessment or reveal a conflict.",
-      "verification": "Customer evidence-promotion process reviews the actual documents (DEC-02)."
+      "statement": "The customer's premise that both CRM records may represent one legal person is a hypothesis to be tested, not a conclusion.",
+      "basis": "Customer-supplied proposition.",
+      "impact": "Treating it as established would bypass the evidence gate.",
+      "verification": "Evidence gate in CTRL-02 to CTRL-04."
     },
     {
       "assumption_id": "ASM-04",
-      "statement": "SRC-MIGRATION-003 and SRC-CROSSWALK-004 share an upstream origin and are not independent identity evidence.",
-      "basis": "Both record the customer's own mapping of the two accounts to EC-004821; the derivation of that mapping was not supplied.",
-      "impact": "If the mapping was derived independently from authoritative evidence it could be re-assessed for corroboration.",
-      "verification": "Customer documents the origin of the EC-004821 mapping (DEC-08)."
+      "statement": "The full text of POL-MDM-07 v3.2 matches the summary supplied; no exception route, evidence currency window or approver identities are defined.",
+      "basis": "Task input summarizes the policy; the document was not supplied.",
+      "impact": "A different policy may change evidence sufficiency or approval rules.",
+      "verification": "Policy owner confirms the summary and answers GAP-01 and GAP-02."
     },
     {
       "assumption_id": "ASM-05",
-      "statement": "The three downstream consumers exist as stated and run after commit, outside the transaction, and read only committed outbox rows.",
-      "basis": "Customer statement; no consumer evidence supplied.",
-      "impact": "Consumer behaviour, ordering or idempotency could differ.",
-      "verification": "Customer consumer owners document idempotency and ordering (DEC-06)."
+      "statement": "Source row version 23 and canonical row version 18 are the current versions at the time of the request and are re-read at authorization and at the commit boundary.",
+      "basis": "Customer-supplied current row versions.",
+      "impact": "Stale versions invalidate authorization.",
+      "verification": "CTRL-06 and TEST-VER-01."
     },
     {
       "assumption_id": "ASM-06",
-      "statement": "The pre-commit validator evaluates the candidate state inside the same transaction before COMMIT, so uncommitted writes are the isolated candidate state for Phase 2 validation.",
-      "basis": "Design mapping from the reference contract to the stated stack; not stated by the customer.",
-      "impact": "If the validator runs outside the transaction the pre-commit abort guarantee does not hold.",
-      "verification": "Customer confirms where validator 1.6 runs."
+      "statement": "The enterprise-entity code EC-004821 and the registry ID FIC-REG-004821 are different identifiers; similarity of their digits is not treated as proof of equivalence.",
+      "basis": "Different prefixes and sources in the task input.",
+      "impact": "Treating them as equivalent could count an internal mapping as registry proof.",
+      "verification": "Registry lookup in CLAIM-02."
     },
     {
       "assumption_id": "ASM-07",
-      "statement": "Only a MERGE operation is in scope; no UNMERGE, SPLIT or staging operation is planned, and no customer requirement for this MERGE is extended to any other mutation type.",
-      "basis": "The request defines one operation.",
-      "impact": "A separate UNMERGE or staging operation would need its own classification, controls and tests.",
-      "verification": "Customer requests a separate plan if needed."
+      "statement": "All case data are synthetic; this is a planning exercise with no production access, database write, deployment or real authorization.",
+      "basis": "Task input.",
+      "impact": "None for a synthetic case; a real run would need production-safe handling.",
+      "verification": "Not applicable."
     },
     {
       "assumption_id": "ASM-08",
-      "statement": "The extract date of 2026-10-15 and the run date of 2026-11-21 make the extract 37 days old; no customer freshness limit applies.",
-      "basis": "Dates supplied or taken from the execution clock.",
-      "impact": "A defined limit could make the extract stale or acceptable.",
-      "verification": "Customer defines the freshness limit (DEC-02)."
+      "statement": "Operation ID OP-DEMO-2026-001 and idempotency key demo-merge-1042-2097-v1 are intended for this exact operation only.",
+      "basis": "Customer-supplied identifiers.",
+      "impact": "Reuse for a different operation would defeat idempotency and binding.",
+      "verification": "CTRL-01, CTRL-11, TEST-IDEM-01."
+    },
+    {
+      "assumption_id": "ASM-09",
+      "statement": "Arguments sent to the public reference service in this run contained only abstract labels (action class, mutation type, entity class, observation domain, temporal scope, include flags).",
+      "basis": "The submitted arguments were inspected in this run.",
+      "impact": "A leak would be a privacy breach of customer information.",
+      "verification": "Review the recorded call arguments listed in the README."
     }
   ],
   "unresolved_decisions": [
     {
-      "decision_id": "DEC-01",
-      "question": "Who are the Data Steward and CRM Platform Owner approvers, what is the approval record format, and how are approvals bound to operation OP-DEMO-2026-001 and its state?",
-      "impact": "No approval artifacts exist and none were supplied; the operation cannot be authorized.",
-      "owner": "Customer Data Steward and CRM Platform Owner",
+      "decision_id": "GAP-01",
+      "question": "No approval artifacts were supplied. Who are the authorized Data Steward and CRM Platform Owner, what binding format and expiry apply, and may one person hold both roles?",
+      "impact": "No commit authorization is possible without both separate, bound human approvals.",
+      "owner": "Customer MDM policy owner",
       "blocking": true
     },
     {
-      "decision_id": "DEC-02",
-      "question": "Which evidence is eligible for promotion for the identity and continuity claims, who decides eligibility, what is the registry-ID normalization rule, what is the maximum evidence age, and does the extract show the legacy and current names exactly?",
-      "impact": "The identity proposition cannot be treated as authorization-eligible until the customer promotes evidence under a defined policy.",
-      "owner": "Customer domain-policy owner and Data Steward",
+      "decision_id": "GAP-02",
+      "question": "Who or what designates the registry extract and the supplied gateway result as authorization-eligible; which validator and version; what evidence currency window applies; is one authoritative source sufficient; and does the actual extract state the registration number and the old and new legal names?",
+      "impact": "Evidence supports the proposition on its description only; it is not authorization-eligible until promoted under a defined policy.",
+      "owner": "Customer MDM policy owner and Data Steward",
       "blocking": true
     },
     {
-      "decision_id": "DEC-03",
-      "question": "Is there a documented, tested and attested recovery for this MERGE (Path A), or does a current policy accept non-recovery risk with an authorized approver and separation of duties (Path B)?",
-      "impact": "Factual reversibility is unknown and the protected write cannot be authorized without exactly one path.",
-      "owner": "Customer risk owner and CRM Platform Owner",
+      "decision_id": "GAP-03",
+      "question": "What is the complete persistent write set? Confirm dependent tables, foreign-key actions and triggers, where historical legal names and provenance are stored, the disposition of the source record, contact-link duplicate handling, uniqueness constraints and where historical activity keeps original account IDs.",
+      "impact": "Write-set completeness is unverified; HOLD applies before the first persistent write.",
+      "owner": "CRM Platform Owner",
       "blocking": true
     },
     {
-      "decision_id": "DEC-04",
-      "question": "What is the proven complete write set and atomic boundary, where are historical names and provenance stored, what is the disposition of the CRM-ACCT-2097 row, and which other objects reference the account IDs?",
-      "impact": "POL-MDM-07 requires proof before the first write; completeness and atomicity are unproven.",
-      "owner": "Customer CRM application and data owner",
+      "decision_id": "GAP-04",
+      "question": "What evidence shows that all database writes and the outbox insertion run in one PostgreSQL transaction with an identified commit point, that pre-commit validator 1.6 can evaluate invariants in the same snapshot before COMMIT, and that SERIALIZABLE is adequate for the link-set anomalies?",
+      "impact": "Atomicity is unverified; no reliance on rollback is permitted.",
+      "owner": "CRM Platform Owner and database engineering",
       "blocking": true
     },
     {
-      "decision_id": "DEC-05",
-      "question": "How is the idempotency key persisted atomically, what is the retry budget, and who owns ambiguous-commit reconciliation?",
-      "impact": "Blind retries are prohibited and reconciliation needs an authoritative key and an owner.",
-      "owner": "Customer CRM application owner",
+      "decision_id": "GAP-05",
+      "question": "Is Path A (A1, A2, A3) established for this operation, or will the customer accept non-recovery risk under Path B? Who attests A3, who may approve Path B, and must the Path B approver be independent of the ordinary approvers?",
+      "impact": "Factual reversibility is unknown; HOLD applies until exactly one path is established.",
+      "owner": "Customer risk owner",
       "blocking": true
     },
     {
-      "decision_id": "DEC-06",
-      "question": "Are the outbox consumers idempotent and ordered, and who owns downstream reconciliation for the search index, Billing read model and ERP crosswalk?",
-      "impact": "Post-commit validation and reconciliation cannot be assured without consumer evidence.",
-      "owner": "Customer consumer owners",
+      "decision_id": "GAP-06",
+      "question": "How are row versions 18 and 23, policy v3.2, validator 1.6 and schema CRM-IDENTITY-5 bound to the authorization and rechecked at the commit boundary, and what is the retry budget?",
+      "impact": "Without an enforced binding a stale authorization could commit.",
+      "owner": "CRM Platform Owner",
       "blocking": true
     },
     {
-      "decision_id": "DEC-07",
-      "question": "Who owns quarantine, escalation and any tested compensation after a post-commit failure?",
-      "impact": "Without an owner and procedure a post-commit failure has no safe path.",
-      "owner": "Customer CRM Platform Owner",
+      "decision_id": "GAP-07",
+      "question": "Are the search-index, Billing read-model and ERP-crosswalk consumers idempotent and ordered, who owns reconciliation and recovery, and does any documented and tested compensation exist for this operation?",
+      "impact": "Effects outside the database transaction cannot be rolled back with it; without a tested procedure the response is quarantine and escalation.",
+      "owner": "CRM Platform Owner and downstream system owners",
       "blocking": true
     },
     {
-      "decision_id": "DEC-08",
-      "question": "What is the origin of the EC-004821 mapping in the migration report and crosswalk, and should the crosswalk be reviewed independently of this merge?",
-      "impact": "The Planner treats these records as non-independent; a reviewed origin could change how they are used. Not blocking because the design does not rely on them.",
-      "owner": "Customer Data Steward",
+      "decision_id": "GAP-08",
+      "question": "Where is idempotency key demo-merge-1042-2097-v1 persisted and enforced, and what authoritative read-after-failure query reconciles an ambiguous commit?",
+      "impact": "Without it a retry could repeat or conflict with a committed merge.",
+      "owner": "CRM Platform Owner",
+      "blocking": true
+    },
+    {
+      "decision_id": "GAP-09",
+      "question": "Do active contracts held under the legacy legal name need legal notice or amendment after the current legal name is adopted?",
+      "impact": "Outside this identity-guardrail plan; legal or commercial handling by the customer.",
+      "owner": "Customer legal counsel",
+      "blocking": false
+    },
+    {
+      "decision_id": "GAP-10",
+      "question": "What audit-event and outbox-event schemas, versions and retention periods apply?",
+      "impact": "Needed for audit completeness and consumer compatibility; does not change the HOLD logic.",
+      "owner": "CRM Platform Owner",
       "blocking": false
     }
   ],
   "limitations": [
-    "This is a design-time plan; no database operation was executed, no record was modified, no production system was accessed and no authorization was granted.",
-    "No approval artifacts were supplied, so the operation is not authorized to commit and no approval has been assumed.",
-    "The registry extract, verification record, agreement, migration report, crosswalk and policy text were described but not supplied; the Planner had no independent access to the fictional registry and verified nothing.",
-    "The reference MCP provided reference requirements and illustrative examples only; it did not assess customer evidence, instantiate policy, issue authorization or return a commit verdict.",
-    "No Draft 2020-12 JSON Schema engine was available, so structural schema validation, validator-enforced format checks and the format negative controls were not run.",
-    "Proposed tests were designed, not executed; customer runtime tests were not run."
+    "Design-time plan only: no controls were deployed, no runtime authorization was performed, no database was accessed and no customer data was changed.",
+    "All evidence is customer-supplied description; the Planner verified nothing and declares no evidence verified or authorization-eligible.",
+    "The architecture, write set and policy are customer-declared requirements, not verified implementation facts; write-set completeness and atomicity are unverified.",
+    "No approval artifacts exist and none is assumed; the operation is not authorized to commit.",
+    "Reference material returned by the public service is a non-executable reference; constraint examples are illustrative and mappings are non-normative; the service does not assess evidence or issue verdicts.",
+    "Path A and Path B are Skill-level planning constraints, not text of the retrieved reference contract.",
+    "No Draft 2020-12 JSON Schema engine, format checker or RFC 8785 implementation was available: schema validation, format validation and negative controls, and sidecar checks that depend on them were not run; the package is not fully validated.",
+    "Customer runtime tests, external-client compatibility and ZIP integrity were not run; all proposed validation tests and planner checks remain proposed.",
+    "Nothing here is legal advice or a legal-entity determination."
   ],
   "implementation_readiness": {
     "status": "not_implementation_ready",
     "blocking_decision_ids": [
-      "DEC-01",
-      "DEC-02",
-      "DEC-03",
-      "DEC-04",
-      "DEC-05",
-      "DEC-06",
-      "DEC-07"
+      "GAP-01",
+      "GAP-02",
+      "GAP-03",
+      "GAP-04",
+      "GAP-05",
+      "GAP-06",
+      "GAP-07",
+      "GAP-08"
     ],
     "blocking_validation_checks": [],
     "unverified_validation_checks": [
       "schema_validation",
+      "format_validation",
       "format_checker_negative_control"
     ]
   },
   "validation_record": {
-    "validator": "No compatible JSON Schema Draft 2020-12 validator was invoked (Python jsonschema not installed; only Ajv 6.15.0, which does not implement Draft 2020-12, was found; network disabled). Supplementary custom Python helper scripts (structural conformance probe and semantic checker) were used; they are not JSON Schema validators.",
-    "validated_at": "2026-11-21T11:48:06Z",
+    "validator": "No compatible JSON Schema Draft 2020-12 engine was invoked. Supplementary helper: custom Python 3.12.3 script check.py (semantic/reference-integrity and Markdown/JSON consistency checker; it is not a JSON Schema validator).",
+    "validated_at": "2026-11-21T11:55:21Z",
     "checks": {
       "schema_validation": "not_run",
       "artifact_ledger_schema_validation": "deferred_post_freeze",
-      "format_validation": "manual_pass",
+      "format_validation": "not_run",
       "semantic_reference_validation": "executed_pass",
       "operation_coverage_validation": "executed_pass",
       "test_operation_scope_validation": "executed_pass",
@@ -1707,25 +1696,23 @@
       "authorization_path_coverage_validation": "manual_pass",
       "operation_effect_boundary_validation": "manual_pass",
       "mcp_provenance_validation": "manual_pass",
-      "planner_checks_validation": "manual_pass",
+      "planner_checks_validation": "executed_pass",
       "artifact_coherence_validation": "deferred_post_freeze",
       "timestamp_chronology_validation": "executed_pass"
     },
     "notes": [
-      "Design-time plan only. No database operation, production access, approval or authorization occurred.",
-      "schema_validation, format_checker_negative_control and validator-enforced format assertion were not run because no Draft 2020-12 engine with format support was available. A custom structural conformance probe (reimplementing a subset of keywords) reported no deviations on the candidate JSON and on the bundled CRM example; it is not a JSON Schema validator and does not substitute for schema_validation.",
-      "format_validation is a manual review: a helper script applied RFC 3339 date-time and absolute-URI patterns to every date-time and url value; not schema-engine format assertion.",
-      "Semantic checks (custom script): unique IDs, operation/control/test/source/evidence/planner-check references, reciprocal control-test links, operation coverage, explicit OP-ID mentions against operation_ids, chronology, README/JSON consistency including the validation table and readiness fields.",
-      "Manual checks: operation classification, authorization-path coverage (nine tests TEST-13 to TEST-21), effect-boundary semantics, MCP provenance and planner checks.",
-      "MCP calls in this run used only abstract labels; all call arguments were inspected and contained no customer-specific data. retrieved_at values are the shared run timestamp.",
-      "Candidate-stage readiness: not_implementation_ready because blocking customer decisions exist; schema_validation and format_checker_negative_control are unverified.",
-      "zip_integrity, customer_runtime_tests and external_client_compatibility were not run. Artifact ledger schema validation and artifact coherence are deferred to the post-freeze sidecar and handoff."
+      "Environment discovery: Python 3.12.3 could not import jsonschema, fastjsonschema or jsonschema_rs; Node v22.23.5 provided only Ajv 6.15.0 (Draft-07 only; ajv/dist/2020 absent) and no ajv-formats. No package was installed, as instructed.",
+      "schema_validation, format_validation and format_checker_negative_control are not_run for that reason. JSON parsing was used only as a prerequisite and is not schema validation. Because these readiness-critical checks are unverified, the plan cannot be reported as validated.",
+      "No RFC 8785 (JCS) implementation was available in the environment; sidecar comparison S1 depends on one and is therefore expected to be not_run; no ad hoc serializer was substituted.",
+      "Five public MCP retrievals succeeded in this run (get_reference_status, get_mutation_guardrail_profile, get_evidence_promotion_contract, get_commit_boundary_contract for PHASE_1 and PHASE_2); the status and profile responses reported identical reference-set versions. The submitted arguments were inspected and contained only abstract labels.",
+      "Judgement checks (operation classification, authorization-path coverage, effect boundaries, MCP provenance interpretation) were performed manually and are recorded manual_pass. Mechanical checks were run by check.py.",
+      "All 31 customer-operation tests and 3 planner checks are proposed; none was executed. customer_runtime_tests, external_client_compatibility and zip_integrity were not run."
     ]
   },
   "artifact_creation_ledger": {
     "ledger_filename": "artifact-creation-ledger.json",
     "ledger_version": "2.1.1",
-    "run_id": "2026-11-21T01:15:46Z",
+    "run_id": "2026-11-21T01:44:38Z",
     "hash_algorithm": "SHA-256",
     "attestation_scope": "nine_frozen_plan_artifacts_and_post_freeze_sidecar_checks"
   }
