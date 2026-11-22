@@ -901,8 +901,8 @@ for (const artifact of resolvedArtifacts) {
   const graph = structured["@graph"];
   if (!Array.isArray(graph)) throw new Error("Expected a JSON-LD @graph in " + artifact.page);
   const personNode = graph.find((node) => node["@id"] === artifactMetadata.author.id);
-  if (!personNode || personNode.mainEntityOfPage?.["@id"] !== "https://danielberanek.cz/od-pultu-az-k-seo-a-copy-s-ostrymi-hroty-profesni-bio/#profilepage") {
-    throw new Error("Missing canonical Person → ProfilePage relationship in " + artifact.page);
+  if (!personNode || personNode.url !== "https://danielberanek.cz/od-pultu-az-k-seo-a-copy-s-ostrymi-hroty-profesni-bio/") {
+    throw new Error("Person must resolve to the canonical professional profile URL in " + artifact.page);
   }
   const softwareNode = graph.find((node) => node["@id"] === productArtifact.url + "#software");
   if (!softwareNode || softwareNode["@type"] !== "SoftwareApplication" || softwareNode.mainEntityOfPage?.["@id"] !== productArtifact.url + "#webpage") {
