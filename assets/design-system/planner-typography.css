@@ -102,3 +102,22 @@
     font-size: var(--dio-font-size-meta);
   }
 }
+
+
+/* Primary reading text on light surfaces: pure black by design.
+   Secondary metadata, dark surfaces and inverse text keep their own colors. */
+body,
+.section-heading > p,
+.comparison-card > p:not(.card-kicker),
+.comparison-card ul,
+.workflow-step p,
+.decision-band > p,
+.case-story > p:not(.card-kicker),
+.case-outcome p,
+.deliverable-intro > p:last-child,
+.integrity-note p,
+.audience-grid p,
+.reference-grid p:not(.eyebrow),
+.demo-caveat p {
+  color: var(--dio-color-text);
+}
