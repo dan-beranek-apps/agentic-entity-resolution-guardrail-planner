@@ -912,7 +912,7 @@ for (const artifact of resolvedArtifacts) {
   if (!pageNode || pageNode.isPartOf?.["@id"] !== artifactMetadata.site.id) {
     throw new Error("Missing page → Planner WebSite relationship in " + artifact.page);
   }
-  if (graph.some((node) => typeof node["@id"] === "string" && node["@id"].endsWith("#product"))) {
+  if (graph.some((node) => node["@id"] === productArtifact.url + "#product")) {
     throw new Error("Deprecated #product identifier remains in " + artifact.page);
   }
   for (const marker of [
