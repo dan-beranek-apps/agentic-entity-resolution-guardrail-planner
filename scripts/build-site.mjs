@@ -595,6 +595,8 @@ const requiredOutputs = [
   "methodology/index.html",
   "demo/index.html",
   "assets/site.css",
+  "assets/design-system/dio-core.css",
+  "assets/design-system/planner-typography.css",
   "assets/site.js",
   "assets/data/distribution-platforms.json",
   "assets/data/artifact-metadata.json",
