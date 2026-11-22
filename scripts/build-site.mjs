@@ -912,8 +912,9 @@ for (const artifact of resolvedArtifacts) {
   if (!pageNode || pageNode.isPartOf?.["@id"] !== artifactMetadata.site.id) {
     throw new Error("Missing page → Planner WebSite relationship in " + artifact.page);
   }
-  if (graph.some((node) => node["@id"] === productArtifact.url + "#product")) {
-    throw new Error("Deprecated #product identifier remains in " + artifact.page);
+  const legacyProductIds = graph.filter((node) => node["@id"] === productArtifact.url + "#product").map((node) => node["@id"]);
+  if (legacyProductIds.length) {
+    throw new Error("Deprecated Planner product identifier remains in " + artifact.page + ": " + legacyProductIds.join(", "));
   }
   for (const marker of [
     '<link rel="canonical" href="' + artifact.url + '">',
