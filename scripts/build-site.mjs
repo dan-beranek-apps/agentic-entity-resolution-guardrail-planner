@@ -697,9 +697,6 @@ const authorNode = {
   "@id": artifactMetadata.author.id,
   name: artifactMetadata.author.name,
   url: artifactMetadata.author.url,
-  mainEntityOfPage: {
-    "@id": "https://danielberanek.cz/od-pultu-az-k-seo-a-copy-s-ostrymi-hroty-profesni-bio/#profilepage"
-  },
   sameAs: artifactMetadata.author.same_as
 };
 const productArtifact = resolvedArtifacts.find((artifact) => artifact.id === "planner-product");
