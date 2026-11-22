@@ -683,6 +683,7 @@ const websiteNode = {
   description: artifactMetadata.site.artifact_role,
   inLanguage: artifactMetadata.site.in_language,
   creator: { "@id": artifactMetadata.author.id },
+  publisher: { "@id": artifactMetadata.author.id },
   additionalProperty: [
     { "@type": "PropertyValue", propertyID: "hosting", name: "Hosting", value: artifactMetadata.site.implementation.hosting },
     { "@type": "PropertyValue", propertyID: "buildRuntime", name: "Build runtime", value: artifactMetadata.site.implementation.build_runtime },
@@ -701,7 +702,7 @@ const authorNode = {
 const productArtifact = resolvedArtifacts.find((artifact) => artifact.id === "planner-product");
 const productNode = {
   "@type": "SoftwareApplication",
-  "@id": productArtifact.url + "#product",
+  "@id": productArtifact.url + "#software",
   name: productArtifact.name,
   description: productArtifact.description,
   url: productArtifact.url,
@@ -714,6 +715,7 @@ const productNode = {
   installUrl: productArtifact.distribution[0].url,
   featureList: productArtifact.features,
   creator: { "@id": artifactMetadata.author.id },
+  mainEntityOfPage: { "@id": productArtifact.url + "#webpage" },
   about: productArtifact.about_concepts.map((id) => ({ "@id": id })),
   isBasedOn: productArtifact.based_on.map((item) => ({ "@id": item.id })),
   citation: productArtifact.citations.map((item) => ({ "@id": item.id })),
@@ -830,9 +832,9 @@ const graphFor = (artifact) => {
       }))
     ]
   };
-  if (isProduct) pageNode.mainEntity = { "@id": productArtifact.url + "#product" };
+  if (isProduct) pageNode.mainEntity = { "@id": productArtifact.url + "#software" };
   else if (isDemo) pageNode.mainEntity = { "@id": artifact.url + "#case-study" };
-  else pageNode.mainEntity = { "@id": productArtifact.url + "#product" };
+  else pageNode.about.push({ "@id": productArtifact.url + "#software" });
 
   const extraNodes = [];
   if (isDemo) {
@@ -891,7 +893,29 @@ for (const artifact of resolvedArtifacts) {
   const keywordMatch = pageHtml.match(/<meta name="keywords" content="([^"]*)">/);
   if (!keywordMatch || keywordMatch[1] !== expectedKeywords) throw new Error("Generated keyword sequence mismatch in " + artifact.page);
   if (!pageHtml.includes('<meta name="dio-odi-keyword-profile" content="' + artifact.keyword_profile_id + '">')) throw new Error("Missing object-specific keyword profile in " + artifact.page);
-  if (!pageHtml.includes('application/ld+json')) throw new Error("Missing JSON-LD output in " + artifact.page);
+  const jsonLdOpen = '<script type="application/ld+json">';
+  const jsonLdStart = pageHtml.indexOf(jsonLdOpen);
+  const jsonLdEnd = pageHtml.indexOf("</script>", jsonLdStart);
+  if (jsonLdStart < 0 || jsonLdEnd < 0) throw new Error("Missing JSON-LD output in " + artifact.page);
+  const structured = JSON.parse(pageHtml.slice(jsonLdStart + jsonLdOpen.length, jsonLdEnd).trim());
+  const graph = structured["@graph"];
+  if (!Array.isArray(graph)) throw new Error("Expected a JSON-LD @graph in " + artifact.page);
+  const personNode = graph.find((node) => node["@id"] === artifactMetadata.author.id);
+  if (!personNode || personNode.url !== "https://danielberanek.cz/od-pultu-az-k-seo-a-copy-s-ostrymi-hroty-profesni-bio/") {
+    throw new Error("Person must resolve to the canonical professional profile URL in " + artifact.page);
+  }
+  const softwareNode = graph.find((node) => node["@id"] === productArtifact.url + "#software");
+  if (!softwareNode || softwareNode["@type"] !== "SoftwareApplication" || softwareNode.mainEntityOfPage?.["@id"] !== productArtifact.url + "#webpage") {
+    throw new Error("Missing canonical Planner SoftwareApplication → WebPage relationship in " + artifact.page);
+  }
+  const pageNode = graph.find((node) => node["@id"] === artifact.url + "#webpage");
+  if (!pageNode || pageNode.isPartOf?.["@id"] !== artifactMetadata.site.id) {
+    throw new Error("Missing page → Planner WebSite relationship in " + artifact.page);
+  }
+  const legacyProductIds = graph.filter((node) => node["@id"] === productArtifact.url + "#product").map((node) => node["@id"]);
+  if (legacyProductIds.length) {
+    throw new Error("Deprecated Planner product identifier remains in " + artifact.page + ": " + legacyProductIds.join(", "));
+  }
   for (const marker of [
     '<link rel="canonical" href="' + artifact.url + '">',
     '<meta property="og:url" content="' + artifact.url + '">',
