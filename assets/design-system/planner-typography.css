@@ -1,5 +1,5 @@
 /* DIO Web Design System — Agentic ER Planner pilot
- * DIO-WDS version: 0.1.0
+ * DIO-WDS version: 0.1.1
  * This layer adjusts text only. Layout, color, spacing, display heading scale,
  * component geometry and project-specific interactions remain in site.css.
  */
@@ -120,4 +120,11 @@ body,
 .reference-grid p:not(.eyebrow),
 .demo-caveat p {
   color: var(--dio-color-text);
+}
+
+
+/* Inverse copy on the blue investigation panel.
+   This explicit variant must win over the light-surface black reading-text rule. */
+.section-heading-inverse > p {
+  color: var(--dio-color-text-inverse);
 }
