@@ -1,0 +1,103 @@
+/* DIO Web Design System — Agentic ER Planner pilot
+ * DIO-WDS version: 0.1.0
+ * This layer adjusts text only. Layout, color, spacing, display heading scale,
+ * component geometry and project-specific interactions remain in site.css.
+ */
+
+/* Brand navigation and controls */
+.brand-copy,
+.primary-nav a,
+.mobile-menu nav a,
+.platform-link,
+.header-cta .platform-link,
+.text-link,
+.back-link,
+.method-publication a,
+.method-header-back,
+.reference-links a,
+.deliverable-list a,
+.footer-brand,
+.footer-links a {
+  font-size: var(--dio-font-size-compact);
+}
+.platform-name,
+.eyebrow,
+.hero-meta,
+.visual-caption,
+.signal-index,
+.card-kicker,
+.group-heading > span,
+.investigation-item > span,
+.workflow-number,
+.control-item span,
+.deliverable-list a > span:first-child,
+.audience-grid article > span,
+.footer-label,
+.demo-table th,
+.method-publication > span,
+.bibliography li::marker,
+.bibliography-author {
+  font-size: var(--dio-font-size-meta);
+}
+.visual-topline,
+.hero-stat-row span {
+  font-size: var(--dio-font-size-micro);
+}
+
+/* Supporting and explanatory copy */
+.affiliate-note,
+.micro-note,
+.comparison-footnote,
+.small-note,
+.integrity-note p,
+.boundary-bottom,
+.footer-main > div:first-child > p,
+.case-facts span,
+.method-header-back {
+  font-size: var(--dio-font-size-compact);
+}
+.signal-card p,
+.comparison-card ul,
+.boundary-card ul,
+.investigation-item p,
+.workflow-step p,
+.decision-band > p,
+.control-item p,
+.case-story > p:not(.card-kicker),
+.case-outcome p,
+.deliverable-intro > p:last-child,
+.audience-grid p,
+.demo-table td,
+.demo-caveat p,
+.bibliography-source,
+.research-resources li {
+  font-size: var(--dio-font-size-reading);
+}
+.case-outcome strong,
+.method-return .text-link {
+  font-size: var(--dio-font-size-reading);
+}
+.integrity-note strong {
+  font-size: var(--dio-font-size-compact);
+}
+
+/* Narrower desktop headers need a slightly more compact navigation row. */
+@media (max-width: 1080px) {
+  .primary-nav a {
+    font-size: var(--dio-font-size-meta);
+  }
+}
+
+/* The mobile rules in this layer intentionally keep the same reading sizes:
+   cards and table cells may grow vertically rather than shrinking text. */
+@media (max-width: 620px) {
+  .brand-copy,
+  .mobile-menu nav a,
+  .deliverable-list a,
+  .demo-table td {
+    font-size: var(--dio-font-size-compact);
+  }
+  .demo-table th {
+    font-size: var(--dio-font-size-meta);
+  }
+}
