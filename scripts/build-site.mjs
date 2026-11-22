@@ -116,6 +116,45 @@ function validatePng(buffer, expectedWidth, expectedHeight, label) {
 
 const config = JSON.parse(await fs.readFile(configPath, "utf8"));
 const artifactMetadata = JSON.parse(await fs.readFile(artifactMetadataPath, "utf8"));
+const entityRegistryLockPath = path.join(root, "assets/data/entity-registry.lock.json");
+const entityRegistrySnapshotPath = path.join(root, "assets/data/entity-registry.snapshot.json");
+const entityRegistryLock = JSON.parse(await fs.readFile(entityRegistryLockPath, "utf8"));
+const entityRegistry = JSON.parse(await fs.readFile(entityRegistrySnapshotPath, "utf8"));
+if (entityRegistry.status !== "canonical-approved" ||
+    entityRegistry.registry_version !== entityRegistryLock.registry_version ||
+    !/^[0-9a-f]{40}$/.test(entityRegistryLock.registry_commit ?? "")) {
+  throw new Error("The pinned Entity Registry is missing, unapproved, or inconsistent with its lock.");
+}
+const entityByKey = new Map(entityRegistry.entities.map((entity) => [entity.key, entity]));
+function requireEntity(key) {
+  const entity = entityByKey.get(key);
+  if (!entity || entity.status !== "active") throw new Error("Missing active Entity Registry record: " + key);
+  return entity;
+}
+const personIdentity = requireEntity("person-daniel-beranek");
+const plannerIdentity = requireEntity("software-agentic-er-guardrail-planner");
+requireEntity("service-dio-odi-mcp-api");
+requireEntity("software-dio-odi-mcp");
+const legacyAuthor = artifactMetadata.author;
+if (legacyAuthor.id !== personIdentity["@id"] ||
+    legacyAuthor.name !== personIdentity.name ||
+    legacyAuthor.url !== personIdentity.url ||
+    JSON.stringify(legacyAuthor.same_as) !== JSON.stringify(personIdentity.sameAs ?? [])) {
+  throw new Error("Local author metadata diverges from the pinned Entity Registry.");
+}
+artifactMetadata.author = {
+  id: personIdentity["@id"],
+  name: personIdentity.name,
+  url: personIdentity.url,
+  same_as: personIdentity.sameAs ?? []
+};
+const plannerSourceArtifact = artifactMetadata.artifacts.find((artifact) => artifact.id === "planner-product");
+if (!plannerSourceArtifact ||
+    plannerSourceArtifact.name !== plannerIdentity.name ||
+    plannerSourceArtifact.url !== plannerIdentity.url ||
+    plannerSourceArtifact.schema_type !== "SoftwareApplication") {
+  throw new Error("Planner product metadata diverges from its canonical Entity Registry identity.");
+}
 const siteRootUrl = new URL(artifactMetadata.site.url);
 if (siteRootUrl.protocol !== "https:" || !siteRootUrl.pathname.endsWith("/") || siteRootUrl.search || siteRootUrl.hash) {
   throw new Error("site.url must be an HTTPS URL ending in a slash, without query or fragment.");
@@ -667,6 +706,13 @@ const resolvedMetadata = {
   },
   site: artifactMetadata.site,
   author: artifactMetadata.author,
+  entity_registry: {
+    repository: entityRegistryLock.registry_repository,
+    version: entityRegistry.registry_version,
+    commit: entityRegistryLock.registry_commit,
+    snapshot_path: entityRegistryLock.snapshot_path,
+    source_url: "https://raw.githubusercontent.com/" + entityRegistryLock.registry_repository + "/" + entityRegistryLock.registry_commit + "/" + entityRegistryLock.source_path
+  },
   artifacts: resolvedArtifacts,
   referenced_work_profiles: referencedWorkProfiles,
   artifact_relations: artifactRelations,
@@ -702,10 +748,10 @@ const authorNode = {
 const productArtifact = resolvedArtifacts.find((artifact) => artifact.id === "planner-product");
 const productNode = {
   "@type": "SoftwareApplication",
-  "@id": productArtifact.url + "#software",
-  name: productArtifact.name,
+  "@id": plannerIdentity["@id"],
+  name: plannerIdentity.name,
   description: productArtifact.description,
-  url: productArtifact.url,
+  url: plannerIdentity.url,
   applicationCategory: "DeveloperApplication",
   applicationSubCategory: "Agent Skill — design-time entity-resolution planning",
   operatingSystem: "Compatible AI agent environment",
@@ -901,8 +947,9 @@ for (const artifact of resolvedArtifacts) {
   const graph = structured["@graph"];
   if (!Array.isArray(graph)) throw new Error("Expected a JSON-LD @graph in " + artifact.page);
   const personNode = graph.find((node) => node["@id"] === artifactMetadata.author.id);
-  if (!personNode || personNode.url !== "https://danielberanek.cz/od-pultu-az-k-seo-a-copy-s-ostrymi-hroty-profesni-bio/") {
-    throw new Error("Person must resolve to the canonical professional profile URL in " + artifact.page);
+  if (!personNode || personNode.name !== personIdentity.name || personNode.url !== personIdentity.url ||
+      JSON.stringify(personNode.sameAs ?? []) !== JSON.stringify(personIdentity.sameAs ?? [])) {
+    throw new Error("Person identity must match the pinned Entity Registry in " + artifact.page);
   }
   const softwareNode = graph.find((node) => node["@id"] === productArtifact.url + "#software");
   if (!softwareNode || softwareNode["@type"] !== "SoftwareApplication" || softwareNode.mainEntityOfPage?.["@id"] !== productArtifact.url + "#webpage") {
