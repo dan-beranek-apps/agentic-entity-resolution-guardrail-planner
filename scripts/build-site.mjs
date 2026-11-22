@@ -834,7 +834,7 @@ const graphFor = (artifact) => {
   };
   if (isProduct) pageNode.mainEntity = { "@id": productArtifact.url + "#software" };
   else if (isDemo) pageNode.mainEntity = { "@id": artifact.url + "#case-study" };
-  else pageNode.mainEntity = { "@id": productArtifact.url + "#software" };
+  else pageNode.about.push({ "@id": productArtifact.url + "#software" });
 
   const extraNodes = [];
   if (isDemo) {
