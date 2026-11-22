@@ -835,9 +835,9 @@ const graphFor = (artifact) => {
       }))
     ]
   };
-  if (isProduct) pageNode.mainEntity = { "@id": productArtifact.url + "#product" };
+  if (isProduct) pageNode.mainEntity = { "@id": productArtifact.url + "#software" };
   else if (isDemo) pageNode.mainEntity = { "@id": artifact.url + "#case-study" };
-  else pageNode.mainEntity = { "@id": productArtifact.url + "#product" };
+  else pageNode.mainEntity = { "@id": productArtifact.url + "#software" };
 
   const extraNodes = [];
   if (isDemo) {
@@ -896,9 +896,11 @@ for (const artifact of resolvedArtifacts) {
   const keywordMatch = pageHtml.match(/<meta name="keywords" content="([^"]*)">/);
   if (!keywordMatch || keywordMatch[1] !== expectedKeywords) throw new Error("Generated keyword sequence mismatch in " + artifact.page);
   if (!pageHtml.includes('<meta name="dio-odi-keyword-profile" content="' + artifact.keyword_profile_id + '">')) throw new Error("Missing object-specific keyword profile in " + artifact.page);
-  const jsonLdMatch = pageHtml.match(/<script type="application\\/ld\\+json">([\\s\\S]*?)<\\/script>/i);
-  if (!jsonLdMatch) throw new Error("Missing JSON-LD output in " + artifact.page);
-  const structured = JSON.parse(jsonLdMatch[1]);
+  const jsonLdOpen = '<script type="application/ld+json">';
+  const jsonLdStart = pageHtml.indexOf(jsonLdOpen);
+  const jsonLdEnd = pageHtml.indexOf("</script>", jsonLdStart);
+  if (jsonLdStart < 0 || jsonLdEnd < 0) throw new Error("Missing JSON-LD output in " + artifact.page);
+  const structured = JSON.parse(pageHtml.slice(jsonLdStart + jsonLdOpen.length, jsonLdEnd).trim());
   const graph = structured["@graph"];
   if (!Array.isArray(graph)) throw new Error("Expected a JSON-LD @graph in " + artifact.page);
   const personNode = graph.find((node) => node["@id"] === artifactMetadata.author.id);
