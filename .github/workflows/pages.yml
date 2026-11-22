@@ -30,6 +30,8 @@ jobs:
         uses: actions/setup-python@v6
         with:
           python-version: "3.x"
+      - name: Verify pinned Entity Registry snapshot
+        run: node scripts/verify-entity-registry.mjs
       - name: Install Pillow for social preview generation
         run: python -m pip install --disable-pip-version-check Pillow
       - name: Generate valid social preview PNGs
