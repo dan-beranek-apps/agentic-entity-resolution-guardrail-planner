@@ -191,6 +191,10 @@ const worksRegistrySha256 = createHash("sha256").update(worksResource.text).dige
 const relationsRegistrySha256 = createHash("sha256").update(relationsResource.text).digest("hex");
 if (!Array.isArray(worksRegistry.works) || !worksRegistry.registry_version) throw new Error("The DIO/ODI works registry is malformed.");
 if (!Array.isArray(relationsRegistry.relations) || !relationsRegistry.registry_version) throw new Error("The DIO/ODI relations registry is malformed.");
+if (worksRegistry.author?.person_uri !== artifactMetadata.author.id ||
+    worksRegistry.author?.name !== artifactMetadata.author.name) {
+  throw new Error("The DIO/ODI works-registry author must match the pinned Entity Registry Person.");
+}
 function parseVersion(value) {
   const match = /^(\d+)\.(\d+)\.(\d+)$/.exec(value ?? "");
   if (!match) throw new Error("Invalid semantic version in keyword registry: " + value);
@@ -763,8 +767,8 @@ const productNode = {
   creator: { "@id": artifactMetadata.author.id },
   mainEntityOfPage: { "@id": productArtifact.url + "#webpage" },
   about: productArtifact.about_concepts.map((id) => ({ "@id": id })),
-  isBasedOn: productArtifact.based_on.map((item) => ({ "@id": item.id })),
-  citation: productArtifact.citations.map((item) => ({ "@id": item.id })),
+  isBasedOn: productArtifact.based_on.map((item) => ({ "@id": canonicalWorkUriForIdentifier(item.id, "planner product isBasedOn") })),
+  citation: productArtifact.citations.map((item) => ({ "@id": canonicalWorkUriForIdentifier(item.id, "planner product citations") })),
   subjectOf: [{ "@id": base + "/methodology/#webpage" }],
   workExample: [{ "@id": base + "/demo/#case-study" }],
   additionalProperty: [
@@ -786,19 +790,53 @@ function schemaTypeForWork(work) {
   if (work.type === "web-publication") return "WebPage";
   return "CreativeWork";
 }
+function licenseUriForWork(work) {
+  if (work.license === "CC-BY-4.0") return "https://creativecommons.org/licenses/by/4.0/";
+  if (work.license === "MIT") return "https://opensource.org/license/mit/";
+  if (typeof work.license === "string" && /^https:\/\//i.test(work.license)) return work.license;
+  return null;
+}
+function imageUriForWork(work) {
+  if (!work.image) {
+    if (work.type === "publication-preprint") {
+      throw new Error(work.id + ": ScholarlyArticle is missing its canonical image URL in metadata/works.json.");
+    }
+    return null;
+  }
+  let imageUrl;
+  try {
+    imageUrl = new URL(work.image);
+  } catch {
+    throw new Error(work.id + ": invalid image URL in metadata/works.json.");
+  }
+  if (imageUrl.protocol !== "https:") {
+    throw new Error(work.id + ": publication image URLs must use HTTPS.");
+  }
+  return imageUrl.href;
+}
 for (const profile of referencedWorkProfiles) {
   const work = workById.get(profile.id);
   const uri = canonicalWorkUri(work);
   if (!uri) continue;
   const parents = referenceRelations.filter((edge) => edge.subject === profile.id && edge.relation === "isDerivedFrom")
     .map((edge) => canonicalWorkUri(workById.get(edge.object))).filter(Boolean).map((id) => ({ "@id": id }));
+  const isArticle = work.type === "publication-preprint";
+  const image = imageUriForWork(work);
+  const license = licenseUriForWork(work);
+  const personReference = { "@id": artifactMetadata.author.id };
   referenceNodes.set(uri, {
     "@id": uri,
     "@type": schemaTypeForWork(work),
     name: work.title,
+    ...(isArticle ? { headline: work.title, author: personReference } : {}),
+    ...(image ? { image } : {}),
+    ...(work.description ? { description: work.description } : {}),
+    ...(work.publication_date ? { datePublished: work.publication_date } : {}),
     url: uri,
+    creator: personReference,
+    ...(license ? { license } : {}),
     keywords: profile.keywords,
-    isBasedOn: parents,
+    ...(parents.length ? { isBasedOn: parents } : {}),
     additionalProperty: [
       { "@type": "PropertyValue", propertyID: "registryWorkId", name: "DIO/ODI registry work ID", value: profile.id },
       { "@type": "PropertyValue", propertyID: "keywordProfile", name: "DIO/ODI keyword profile", value: profile.keyword_profile_id },
@@ -814,28 +852,48 @@ function canonicalWorkUri(work) {
   if (!candidate) return null;
   return /^https?:\/\//i.test(candidate) ? candidate : "https://doi.org/" + candidate;
 }
+function canonicalWorkUriForIdentifier(identifier, context) {
+  const workId = matchRegistryWork(identifier, context);
+  const work = workId ? workById.get(workId) : null;
+  return (work && canonicalWorkUri(work)) || identifier;
+}
 for (const artifact of resolvedArtifacts) {
   for (const item of [...(artifact.citations ?? []), ...(artifact.based_on ?? [])]) {
-    if (!referenceNodes.has(item.id)) {
-      const workId = matchRegistryWork(item.id, artifact.id + " JSON-LD");
-      const workProfile = workId ? referencedWorkById.get(workId) : null;
-      const work = workId ? workById.get(workId) : null;
+    const workId = matchRegistryWork(item.id, artifact.id + " JSON-LD");
+    const workProfile = workId ? referencedWorkById.get(workId) : null;
+    const work = workId ? workById.get(workId) : null;
+    const referenceUri = (work && canonicalWorkUri(work)) || item.id;
+    if (!referenceNodes.has(referenceUri)) {
+      const itemType = work ? schemaTypeForWork(work) : (item.type || "CreativeWork");
+      const isArticle = ["Article", "ScholarlyArticle", "NewsArticle", "BlogPosting", "TechArticle"].includes(itemType);
+      if (isArticle && !work) {
+        throw new Error("Cannot emit an Article node without canonical work-registry metadata: " + item.id);
+      }
       const parentWorkIds = workId ? referenceRelations
         .filter((edge) => edge.subject === workId && edge.relation === "isDerivedFrom")
         .map((edge) => edge.object) : [];
       const isBasedOn = parentWorkIds.map((id) => canonicalWorkUri(workById.get(id))).filter(Boolean).map((id) => ({ "@id": id }));
-      referenceNodes.set(item.id, {
-        "@id": item.id,
-        "@type": item.type || "CreativeWork",
+      const image = work ? imageUriForWork(work) : null;
+      const license = work ? licenseUriForWork(work) : null;
+      const personReference = { "@id": artifactMetadata.author.id };
+      referenceNodes.set(referenceUri, {
+        "@id": referenceUri,
+        "@type": itemType,
         name: item.name || work?.title,
-        url: item.id,
+        ...(isArticle ? { headline: work.title, author: personReference } : {}),
+        ...(image ? { image } : {}),
+        ...(work?.description ? { description: work.description } : {}),
+        ...(work?.publication_date ? { datePublished: work.publication_date } : {}),
+        url: referenceUri,
+        ...(work ? { creator: personReference } : {}),
+        ...(license ? { license } : {}),
         ...(workProfile ? { keywords: workProfile.keywords } : {}),
+        ...(isBasedOn.length ? { isBasedOn } : {}),
         ...(workId ? {
-          isBasedOn,
           additionalProperty: [
             { "@type": "PropertyValue", propertyID: "registryWorkId", name: "DIO/ODI registry work ID", value: workId },
-            { "@type": "PropertyValue", propertyID: "keywordProfile", name: "DIO/ODI keyword profile", value: workProfile.keyword_profile_id },
-            { "@type": "PropertyValue", propertyID: "artifactType", name: "Artifact type", value: workProfile.artifact_type }
+            { "@type": "PropertyValue", propertyID: "keywordProfile", name: "DIO/ODI keyword profile", value: workProfile?.keyword_profile_id || work.keyword_profile || "unprofiled" },
+            { "@type": "PropertyValue", propertyID: "artifactType", name: "Artifact type", value: work.type }
           ]
         } : {})
       });
@@ -855,10 +913,15 @@ const graphFor = (artifact) => {
     inLanguage: "en",
     isPartOf: { "@id": artifactMetadata.site.id },
     creator: { "@id": artifactMetadata.author.id },
+    ...(isDemo ? {
+      headline: artifact.name,
+      author: { "@id": artifactMetadata.author.id },
+      image: socialPreviewUrl
+    } : {}),
     keywords: artifact.keywords,
     about: artifact.about_concepts.map((id) => ({ "@id": id })),
-    citation: (artifact.citations ?? []).map((item) => ({ "@id": item.id })),
-    isBasedOn: (artifact.based_on ?? []).map((item) => ({ "@id": item.id })),
+    citation: (artifact.citations ?? []).map((item) => ({ "@id": canonicalWorkUriForIdentifier(item.id, artifact.id + " citations") })),
+    isBasedOn: (artifact.based_on ?? []).map((item) => ({ "@id": canonicalWorkUriForIdentifier(item.id, artifact.id + " isBasedOn") })),
     mentions: (artifact.technology_work_ids ?? []).map((id) => canonicalWorkUri(workById.get(id))).filter(Boolean).map((id) => ({ "@id": id })),
     additionalProperty: [
       { "@type": "PropertyValue", propertyID: "artifactRole", name: "Artifact role", value: artifact.artifact_role },
@@ -888,10 +951,13 @@ const graphFor = (artifact) => {
       "@type": "TechArticle",
       "@id": artifact.url + "#case-study",
       name: artifact.name,
+      headline: artifact.name,
       description: artifact.description,
+      author: { "@id": artifactMetadata.author.id },
+      image: socialPreviewUrl,
       url: artifact.url,
       version: artifact.generated_with.version,
-      isBasedOn: artifact.based_on.map((item) => ({ "@id": item.id })),
+      isBasedOn: artifact.based_on.map((item) => ({ "@id": canonicalWorkUriForIdentifier(item.id, artifact.id + " case-study isBasedOn") })),
       about: artifact.about_concepts.map((id) => ({ "@id": id })),
       encodingFormat: artifact.output_formats,
       hasPart: artifact.deliverables.map((item) => ({
@@ -946,6 +1012,27 @@ for (const artifact of resolvedArtifacts) {
   const structured = JSON.parse(pageHtml.slice(jsonLdStart + jsonLdOpen.length, jsonLdEnd).trim());
   const graph = structured["@graph"];
   if (!Array.isArray(graph)) throw new Error("Expected a JSON-LD @graph in " + artifact.page);
+  const schemaTypesForNode = (node) => Array.isArray(node["@type"]) ? node["@type"] : [node["@type"]];
+  const articleNodes = graph.filter((node) =>
+    schemaTypesForNode(node).some((type) => ["Article", "ScholarlyArticle", "NewsArticle", "BlogPosting", "TechArticle"].includes(type))
+  );
+  for (const article of articleNodes) {
+    const articleImage = typeof article.image === "string" ? article.image : article.image?.url || article.image?.contentUrl;
+    let parsedImage;
+    try { parsedImage = new URL(articleImage); } catch {
+      throw new Error("Article image must be a valid URL in " + artifact.page + ": " + (article["@id"] || "unknown article"));
+    }
+    if (!article.headline?.trim() || article.author?.["@id"] !== artifactMetadata.author.id || parsedImage.protocol !== "https:") {
+      throw new Error("Article JSON-LD requires headline, the canonical Person author and an HTTPS image in " + artifact.page + ": " + (article["@id"] || "unknown article"));
+    }
+  }
+  const datasetNodes = graph.filter((node) => schemaTypesForNode(node).includes("Dataset"));
+  for (const dataset of datasetNodes) {
+    if (!dataset.name?.trim() || !dataset.description?.trim() || dataset.creator?.["@id"] !== artifactMetadata.author.id ||
+        typeof dataset.license !== "string" || !dataset.license.startsWith("https://")) {
+      throw new Error("Dataset JSON-LD requires name, description, canonical creator and license URL in " + artifact.page + ": " + (dataset["@id"] || "unknown dataset"));
+    }
+  }
   const personNode = graph.find((node) => node["@id"] === artifactMetadata.author.id);
   if (!personNode || personNode.name !== personIdentity.name || personNode.url !== personIdentity.url ||
       JSON.stringify(personNode.sameAs ?? []) !== JSON.stringify(personIdentity.sameAs ?? [])) {
