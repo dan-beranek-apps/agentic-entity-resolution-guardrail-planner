@@ -60,6 +60,7 @@ Reference-backed mode can use the public, read-only DIO/ODI Reference MCP:
 - Transport: Streamable HTTP
 - The buyer connects the endpoint separately in a compatible agent or client.
 - The MCP provides reference material; it does not receive customer records, inspect customer application state or authorize customer writes.
+- The related Agentic ER architecture mapping formalizes the paper's conceptual and functional relations: https://vocab.danielberanek.cz/mappings/agentic-er-architecture/. It is a research/reference artefact, not an implementation of runtime controls.
 
 The design approach is informed by the conceptual paper Constraining the Commit Boundary: A DIO/ODI-Informed Authorization Guardrail for Agentic Entity Resolution (https://arxiv.org/abs/2610.37407). Buyers do not need prior knowledge of DIO/ODI.
 
