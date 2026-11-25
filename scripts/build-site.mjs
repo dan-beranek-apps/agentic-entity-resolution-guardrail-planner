@@ -22,6 +22,7 @@ function escapeHtml(value) {
 function urlMetadataMarkup(artifact) {
   return [
     '<link rel="canonical" href="' + escapeHtml(artifact.url) + '">',
+    '<link rel="ai-catalog" type="application/ai-catalog+json" href="https://vocab.danielberanek.cz/.well-known/ai-catalog.json">',
     '<meta property="og:url" content="' + escapeHtml(artifact.url) + '">',
     '<meta property="og:image" content="' + escapeHtml(socialPreviewUrl) + '">',
     '<meta property="og:image:secure_url" content="' + escapeHtml(socialPreviewUrl) + '">',
