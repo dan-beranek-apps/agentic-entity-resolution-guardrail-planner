@@ -56,6 +56,7 @@ The central planning distinction is between an agent's proposed entity match and
 - Genealogical Foundations of DIO/ODI: https://vocab.danielberanek.cz/research-genealogy/foundations/ — interpretive reconstruction connecting the historical, professional, intellectual and methodological foundations represented in the genealogy.
 - DIO/ODI Reference MCP: https://mcp.danielberanek.cz/mcp
 - DIO/ODI Reference Model: https://vocab.danielberanek.cz/
+- Agentic ER architecture mapping: https://vocab.danielberanek.cz/mappings/agentic-er-architecture/ — provenance-linked formalization of the commit-boundary architecture paper's conceptual and functional relations.
 
 ## Machine-readable artifact metadata
 

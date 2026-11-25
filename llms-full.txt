@@ -121,6 +121,7 @@ The author maintains the DIO/ODI Reference Model and Reference Vocabulary:
 - Archived Reference Model v0.9.0: https://doi.org/10.5281/zenodo.24085589
 - Research Genealogy: https://vocab.danielberanek.cz/research-genealogy/ — navigable registry of research objects, exploratory processes, thematic clusters, outputs, archival observations and provenance leads.
 - Genealogical Foundations of DIO/ODI: https://vocab.danielberanek.cz/research-genealogy/foundations/ — interpretive reconstruction connecting the historical, professional, intellectual and methodological foundations represented in the genealogy.
+- Agentic ER architecture mapping: https://vocab.danielberanek.cz/mappings/agentic-er-architecture/ — a provenance-linked machine-readable formalization of the conceptual and functional relations in the commit-boundary architecture paper.
 
 The Planner's optional reference-backed mode can use the public DIO/ODI Reference MCP at https://mcp.danielberanek.cz/mcp . The buyer connects the endpoint separately in a compatible agent or client. It is a read-only reference service. It provides DIO/ODI reference material; it does not receive customer records, inspect customer application state, make customer policy decisions, authorize writes or execute mutations.
 
