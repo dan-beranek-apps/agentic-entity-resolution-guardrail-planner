@@ -109,7 +109,7 @@ Daniel Beránek's related research includes:
 - Beránek, D. *Minimum Viable Digital Identity Optimization (DIO): From Adversarial Reduction to the Semantic Field Dynamics of Digital Identity.* Zenodo. https://doi.org/10.5281/zenodo.23226205
 - Beránek, D. *From Entity Resolution Anomalies to Reconstruction Failure Modes: A Taxonomic Note Following Minimum Viable DIO.* Zenodo. https://doi.org/10.5281/zenodo.23269323
 
-These works provide conceptual, diagnostic and architectural context. The arXiv item is an arXiv preprint, not represented here as a journal article. Repository placement or public availability does not by itself imply peer review or independent empirical validation.
+These works provide conceptual, diagnostic and architectural context. The arXiv item is an arXiv preprint, not represented here as a journal article.
 
 ## 9. Reference model and optional MCP
 
@@ -119,6 +119,8 @@ The author maintains the DIO/ODI Reference Model and Reference Vocabulary:
 - Canonical Reference Vocabulary: https://vocab.danielberanek.cz/dio-odi/
 - Reference Model concept DOI: https://doi.org/10.5281/zenodo.23272897
 - Archived Reference Model v0.9.0: https://doi.org/10.5281/zenodo.24085589
+- Research Genealogy: https://vocab.danielberanek.cz/research-genealogy/ — navigable registry of research objects, exploratory processes, thematic clusters, outputs, archival observations and provenance leads.
+- Genealogical Foundations of DIO/ODI: https://vocab.danielberanek.cz/research-genealogy/foundations/ — interpretive reconstruction connecting the historical, professional, intellectual and methodological foundations represented in the genealogy.
 
 The Planner's optional reference-backed mode can use the public DIO/ODI Reference MCP at https://mcp.danielberanek.cz/mcp . The buyer connects the endpoint separately in a compatible agent or client. It is a read-only reference service. It provides DIO/ODI reference material; it does not receive customer records, inspect customer application state, make customer policy decisions, authorize writes or execute mutations.
 
