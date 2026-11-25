@@ -52,6 +52,8 @@ The Planner was created by Daniel Beránek, author of Digital Identity Optimizat
 The central planning distinction is between an agent's proposed entity match and the evidence and engineering controls required before a persistent identity-changing operation can be committed. The optional DIO/ODI Reference MCP is public and read-only; it provides reference material only and does not receive customer records or authorize customer writes.
 
 - Methodology and related research: {{SITE_BASE}}/methodology/
+- DIO/ODI Research Genealogy: https://vocab.danielberanek.cz/research-genealogy/ — navigable registry of research objects, exploratory processes, thematic clusters, outputs, archival observations and provenance leads.
+- Genealogical Foundations of DIO/ODI: https://vocab.danielberanek.cz/research-genealogy/foundations/ — interpretive reconstruction connecting the historical, professional, intellectual and methodological foundations represented in the genealogy.
 - DIO/ODI Reference MCP: https://mcp.danielberanek.cz/mcp
 - DIO/ODI Reference Model: https://vocab.danielberanek.cz/
 
